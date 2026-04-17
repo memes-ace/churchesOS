@@ -18,16 +18,7 @@ const planData = [
   { name: 'Enterprise', value: 9, color: '#7C3AED' },
 ]
 
-const churches = [
-  { id: 1, name: 'Grace Chapel International', pastor: 'Rev. Samuel Mensah', location: 'Accra, Ghana', members: 1247, plan: 'Growth', status: 'Active', joined: '2024-01-15', revenue: 5400, lastActive: '2025-04-17' },
-  { id: 2, name: 'Restoration Church', pastor: 'Ps. Kofi Asante', location: 'Kumasi, Ghana', members: 834, plan: 'Starter', status: 'Active', joined: '2024-02-20', revenue: 1800, lastActive: '2025-04-16' },
-  { id: 3, name: 'Living Word Assembly', pastor: 'Bishop Emmanuel Owusu', location: 'Takoradi, Ghana', members: 2103, plan: 'Enterprise', status: 'Active', joined: '2023-11-05', revenue: 10200, lastActive: '2025-04-17' },
-  { id: 4, name: 'New Life Church', pastor: 'Rev. Ama Boateng', location: 'Tema, Ghana', members: 456, plan: 'Free', status: 'Active', joined: '2024-03-10', revenue: 0, lastActive: '2025-04-15' },
-  { id: 5, name: 'Mount Zion Ministry', pastor: 'Ps. Yaw Frimpong', location: 'Cape Coast, Ghana', members: 312, plan: 'Starter', status: 'Suspended', joined: '2024-01-28', revenue: 1800, lastActive: '2025-03-20' },
-  { id: 6, name: 'Harvest Church', pastor: 'Rev. Adwoa Mensah', location: 'Sunyani, Ghana', members: 189, plan: 'Free', status: 'Pending', joined: '2025-04-10', revenue: 0, lastActive: '2025-04-10' },
-  { id: 7, name: 'Word of Life', pastor: 'Ps. Kwame Darko', location: 'Tamale, Ghana', members: 678, plan: 'Growth', status: 'Active', joined: '2024-05-15', revenue: 5400, lastActive: '2025-04-14' },
-  { id: 8, name: 'Glory Temple', pastor: 'Bishop Abena Asare', location: 'Ho, Ghana', members: 923, plan: 'Growth', status: 'Active', joined: '2024-06-01', revenue: 5400, lastActive: '2025-04-17' },
-]
+const churches = []
 
 const planConfig = {
   Free: { bg: '#F3F4F6', text: '#6B7280', price: 0 },

@@ -6,7 +6,8 @@ import { LayoutDashboard, Building, DollarSign, ShoppingBag, LogOut, Menu, X, Sh
 const navItems = [
   { label: 'Overview', path: '/super-admin', icon: LayoutDashboard, exact: true },
   { label: 'All Churches', path: '/super-admin/churches', icon: Building },
-  { label: 'Vendors', path: '/super-admin/vendors', icon: '🏪' },
+  { label: 'Vendors', path: '/super-admin/vendors' },
+  { label: 'Quote Requests', path: '/super-admin/quotes', icon: '🏪' },
   { label: 'Revenue', path: '/super-admin/revenue', icon: DollarSign },
   { label: 'Marketplace', path: '/super-admin/marketplace', icon: ShoppingBag },
 ]

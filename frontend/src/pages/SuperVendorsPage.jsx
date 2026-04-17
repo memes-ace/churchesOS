@@ -172,12 +172,10 @@ function VendorDetailModal({ vendor, onClose, onApprove, onReject, onSuspend }) 
 }
 
 export default function SuperVendorsPage() {
-  const getVendors = () => {
+  const [vendors, setVendors] = useState(() => {
     try { return JSON.parse(localStorage.getItem('cos_vendor_applications') || '[]') }
     catch(e) { return [] }
-  }
-
-  const [vendors, setVendors] = useState(getVendors)
+  })
   const [selected, setSelected] = useState(null)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
@@ -333,6 +331,99 @@ export default function SuperVendorsPage() {
           onReject={reject}
           onSuspend={suspend}
         />
+      )}
+    </div>
+  )
+}
+
+export function QuoteRequestsPage() {
+  const getRequests = () => {
+    try { return JSON.parse(localStorage.getItem('cos_quote_requests') || '[]') }
+    catch(e) { return [] }
+  }
+  const [requests, setRequests] = useState(getRequests)
+  const [filter, setFilter] = useState('All')
+
+  const updateStatus = (id, status) => {
+    const updated = requests.map(r => r.id === id ? { ...r, status } : r)
+    setRequests(updated)
+    try { localStorage.setItem('cos_quote_requests', JSON.stringify(updated)) } catch(e) {}
+  }
+
+  const filtered = filter === 'All' ? requests : requests.filter(r => r.status === filter)
+
+  const statusConfig = {
+    Pending: { bg: '#FEF9C3', text: '#854D0E' },
+    Responded: { bg: '#DBEAFE', text: '#1E40AF' },
+    Booked: { bg: '#DCFCE7', text: '#166634' },
+    Cancelled: { bg: '#FEE2E2', text: '#991B1B' },
+  }
+
+  return (
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-8 fade-in">
+        <div>
+          <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Quote Requests</h1>
+          <p className="text-gray-400 text-sm mt-1">{requests.length} total • {requests.filter(r => r.status === 'Pending').length} pending</p>
+        </div>
+      </div>
+
+      <div className="flex gap-2 mb-5">
+        {['All', 'Pending', 'Responded', 'Booked', 'Cancelled'].map(f => (
+          <button key={f} onClick={() => setFilter(f)}
+            className="px-3 py-2 rounded-lg text-xs font-medium transition"
+            style={{ background: filter === f ? '#1B4FD8' : 'white', color: filter === f ? 'white' : '#6B7280', border: '1px solid ' + (filter === f ? '#1B4FD8' : '#E5E7EB') }}>
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {requests.length === 0 ? (
+        <div className="text-center py-24">
+          <p className="text-4xl mb-3">📋</p>
+          <p className="text-gray-400 text-sm">No quote requests yet</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100">
+                {['Church', 'Vendor', 'Event', 'Date', 'Budget', 'Status', 'Actions'].map(h => (
+                  <th key={h} className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filtered.map(r => (
+                <tr key={r.id} className="hover:bg-gray-50">
+                  <td className="py-4 px-4">
+                    <p className="text-sm font-semibold text-gray-800">{r.churchName}</p>
+                    <p className="text-xs text-gray-400">{r.contactName} • {r.contactPhone}</p>
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-700">{r.vendorName}</td>
+                  <td className="py-4 px-4 text-sm text-gray-600">{r.eventType}</td>
+                  <td className="py-4 px-4 text-xs text-gray-500">{r.eventDate}</td>
+                  <td className="py-4 px-4 text-sm font-semibold" style={{ color: '#059669' }}>{r.budget || '—'}</td>
+                  <td className="py-4 px-4">
+                    <span className="text-xs px-2 py-1 rounded-full font-medium"
+                      style={{ background: statusConfig[r.status]?.bg, color: statusConfig[r.status]?.text }}>
+                      {r.status}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4">
+                    <select value={r.status} onChange={e => updateStatus(r.id, e.target.value)}
+                      className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 focus:outline-none">
+                      <option>Pending</option>
+                      <option>Responded</option>
+                      <option>Booked</option>
+                      <option>Cancelled</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
