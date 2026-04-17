@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1B4FD8;
+  --primary-dark: #1340B0;
+  --primary-light: #3B6FE8;
+  --primary-pale: #EEF2FF;
+  --gold: #F59E0B;
+  --dark: #0F172A;
+  --cream: #F8FAFF;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background-color: #F8FAFF;
+  color: #0F172A;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #1B4FD8; border-radius: 3px; }
+
+.nav-item-active {
+  background: linear-gradient(135deg, #1B4FD8, #3B6FE8);
+  color: white;
+}
+
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(27,79,216,0.12);
+}
+
+.sidebar-link { transition: all 0.2s ease; }
+.table-row:hover { background-color: #EEF2FF; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeInUp 0.4s ease forwards; }
+.fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+.badge-active { background: #DBEAFE; color: #1E40AF; }
+.badge-inactive { background: #FEE2E2; color: #991B1B; }
+.badge-pending { background: #FEF9C3; color: #854D0E; }
+
+.stat-number {
+  font-family: 'DM Sans', system-ui, sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p, span, div {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
