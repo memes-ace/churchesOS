@@ -31,7 +31,6 @@ import MemberPortalPage from './pages/MemberPortalPage'
 import VendorRegisterPage from './pages/VendorRegisterPage'
 import SuperVendorsPage from './pages/SuperVendorsPage'
 import QuoteRequestsPage from './pages/QuoteRequestsPage'
-import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 
 function Root() {
