@@ -10,6 +10,25 @@ const vendors = [
 ]
 const categories = ['All','Sound & AV Equipment','Printing Services','Photography & Videography','Canopy & Event Setup','Catering Services','Bookstores & Resources']
 export default function MarketplacePage() {
+  const getApprovedVendors = () => {
+    try {
+      const all = JSON.parse(localStorage.getItem('cos_vendor_applications') || '[]')
+      return all.filter(v => v.status === 'Approved').map(v => ({
+        id: v.id,
+        name: v.businessName,
+        category: v.category,
+        description: v.description,
+        phone: v.ownerPhone,
+        whatsapp: v.whatsapp || v.ownerPhone,
+        location: v.city,
+        services: v.servicesOffered,
+        priceRange: v.priceRange,
+        rating: 4.5,
+        verified: true,
+      }))
+    } catch(e) { return [] }
+  }
+  const approvedVendors = getApprovedVendors()
   const [cat, setCat] = useState('All')
   const filtered = cat === 'All' ? vendors : vendors.filter(v => v.category === cat)
   return (

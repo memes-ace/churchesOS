@@ -28,6 +28,8 @@ import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperRevenuePage from './pages/SuperRevenuePage'
 import MemberPortalPage from './pages/MemberPortalPage'
+import VendorRegisterPage from './pages/VendorRegisterPage'
+import SuperVendorsPage from './pages/SuperVendorsPage'
 
 function Root() {
   const { user } = useAuth()
@@ -47,6 +49,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/member-portal" element={<MemberPortalPage />} />
+          <Route path="/vendor-register" element={<VendorRegisterPage />} />
 
           <Route path="/church" element={<ChurchLayout />}>
             <Route path="dashboard" element={<ChurchDashboard />} />
@@ -75,6 +78,7 @@ export default function App() {
             <Route index element={<SuperAdminDashboard />} />
             <Route path="churches" element={<SuperChurchesPage />} />
             <Route path="revenue" element={<SuperRevenuePage />} />
+            <Route path="vendors" element={<SuperVendorsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
