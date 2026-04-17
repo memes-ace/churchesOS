@@ -29,6 +29,7 @@ const navItems = [
 ]
 
 export default function ChurchLayout() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()

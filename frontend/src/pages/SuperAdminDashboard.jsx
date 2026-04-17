@@ -3,10 +3,10 @@ import { Users, Church, DollarSign, TrendingUp, Eye, CheckCircle, XCircle, Clock
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
 const revenueData = [
-  { month: 'Oct', revenue: 1200 }, { month: 'Nov', revenue: 1850 },
-  { month: 'Dec', revenue: 2400 }, { month: 'Jan', revenue: 2100 },
-  { month: 'Feb', revenue: 2800 }, { month: 'Mar', revenue: 3200 },
-  { month: 'Apr', revenue: 3600 },
+  { month: 'Oct', revenue: 14400 }, { month: 'Nov', revenue: 22200 },
+  { month: 'Dec', revenue: 28800 }, { month: 'Jan', revenue: 25200 },
+  { month: 'Feb', revenue: 33600 }, { month: 'Mar', revenue: 38400 },
+  { month: 'Apr', revenue: 43200 },
 ]
 
 const planData = [
@@ -17,14 +17,14 @@ const planData = [
 ]
 
 const churches = [
-  { id: 1, name: 'Grace Chapel International', pastor: 'Rev. Samuel Mensah', location: 'Accra, Ghana', members: 1247, plan: 'Growth', status: 'Active', joined: '2024-01-15', revenue: 450, lastActive: '2025-04-17' },
-  { id: 2, name: 'Restoration Church', pastor: 'Ps. Kofi Asante', location: 'Kumasi, Ghana', members: 834, plan: 'Starter', status: 'Active', joined: '2024-02-20', revenue: 150, lastActive: '2025-04-16' },
-  { id: 3, name: 'Living Word Assembly', pastor: 'Bishop Emmanuel Owusu', location: 'Takoradi, Ghana', members: 2103, plan: 'Enterprise', status: 'Active', joined: '2023-11-05', revenue: 850, lastActive: '2025-04-17' },
+  { id: 1, name: 'Grace Chapel International', pastor: 'Rev. Samuel Mensah', location: 'Accra, Ghana', members: 1247, plan: 'Growth', status: 'Active', joined: '2024-01-15', revenue: 5400, lastActive: '2025-04-17' },
+  { id: 2, name: 'Restoration Church', pastor: 'Ps. Kofi Asante', location: 'Kumasi, Ghana', members: 834, plan: 'Starter', status: 'Active', joined: '2024-02-20', revenue: 1800, lastActive: '2025-04-16' },
+  { id: 3, name: 'Living Word Assembly', pastor: 'Bishop Emmanuel Owusu', location: 'Takoradi, Ghana', members: 2103, plan: 'Enterprise', status: 'Active', joined: '2023-11-05', revenue: 10200, lastActive: '2025-04-17' },
   { id: 4, name: 'New Life Church', pastor: 'Rev. Ama Boateng', location: 'Tema, Ghana', members: 456, plan: 'Free', status: 'Active', joined: '2024-03-10', revenue: 0, lastActive: '2025-04-15' },
-  { id: 5, name: 'Mount Zion Ministry', pastor: 'Ps. Yaw Frimpong', location: 'Cape Coast, Ghana', members: 312, plan: 'Starter', status: 'Suspended', joined: '2024-01-28', revenue: 150, lastActive: '2025-03-20' },
+  { id: 5, name: 'Mount Zion Ministry', pastor: 'Ps. Yaw Frimpong', location: 'Cape Coast, Ghana', members: 312, plan: 'Starter', status: 'Suspended', joined: '2024-01-28', revenue: 1800, lastActive: '2025-03-20' },
   { id: 6, name: 'Harvest Church', pastor: 'Rev. Adwoa Mensah', location: 'Sunyani, Ghana', members: 189, plan: 'Free', status: 'Pending', joined: '2025-04-10', revenue: 0, lastActive: '2025-04-10' },
-  { id: 7, name: 'Word of Life', pastor: 'Ps. Kwame Darko', location: 'Tamale, Ghana', members: 678, plan: 'Growth', status: 'Active', joined: '2024-05-15', revenue: 450, lastActive: '2025-04-14' },
-  { id: 8, name: 'Glory Temple', pastor: 'Bishop Abena Asare', location: 'Ho, Ghana', members: 923, plan: 'Growth', status: 'Active', joined: '2024-06-01', revenue: 450, lastActive: '2025-04-17' },
+  { id: 7, name: 'Word of Life', pastor: 'Ps. Kwame Darko', location: 'Tamale, Ghana', members: 678, plan: 'Growth', status: 'Active', joined: '2024-05-15', revenue: 5400, lastActive: '2025-04-14' },
+  { id: 8, name: 'Glory Temple', pastor: 'Bishop Abena Asare', location: 'Ho, Ghana', members: 923, plan: 'Growth', status: 'Active', joined: '2024-06-01', revenue: 5400, lastActive: '2025-04-17' },
 ]
 
 const planConfig = {
@@ -83,7 +83,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { label: 'Total Members', value: church.members.toLocaleString(), color: '#1B4FD8' },
-                  { label: 'Monthly Revenue', value: church.revenue === 0 ? 'Free' : '$' + church.revenue, color: '#059669' },
+                  { label: 'Monthly Revenue', value: church.revenue === 0 ? 'Free' : GH₵ + church.revenue, color: '#059669' },
                   { label: 'Days Active', value: Math.floor((Date.now() - new Date(church.joined)) / (1000*60*60*24)), color: '#7C3AED' },
                 ].map(s => (
                   <div key={s.label} className="text-center p-4 rounded-xl bg-gray-50">
@@ -139,7 +139,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
                   <div className="text-right">
                     <p className="text-xs text-gray-400">Monthly</p>
                     <p className="text-2xl font-bold" style={{ color: '#1B4FD8' }}>
-                      {church.revenue === 0 ? 'Free' : '$' + church.revenue}
+                      {church.revenue === 0 ? 'Free' : GH₵ + church.revenue}
                     </p>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
                   <div key={plan} className="p-4 rounded-xl border-2 transition cursor-pointer"
                     style={{ borderColor: church.plan === plan ? '#1B4FD8' : '#E5E7EB', background: church.plan === plan ? '#EEF2FF' : 'white' }}>
                     <p className="font-bold text-gray-800">{plan}</p>
-                    <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{cfg.price === 0 ? 'Free' : '$' + cfg.price + '/mo'}</p>
+                    <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{cfg.price === 0 ? 'Free' : GH₵ + cfg.price + '/mo'}</p>
                   </div>
                 ))}
               </div>
@@ -264,9 +264,9 @@ export default function SuperAdminDashboard() {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Total Churches', value: churchList.length, sub: `${activeChurches} active`, color: '#1B4FD8', icon: '⛪' },
+              { label: 'Total Churches', value: churchList.length, sub: `{activeChurches} active`, color: '#1B4FD8', icon: '⛪' },
               { label: 'Total Members', value: totalMembers.toLocaleString(), sub: 'Across all churches', color: '#7C3AED', icon: '👥' },
-              { label: 'Monthly Revenue', value: '$' + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
+              { label: 'Monthly Revenue', value: GH₵ + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
               { label: 'Pending Approval', value: pendingChurches, sub: 'Awaiting review', color: '#F59E0B', icon: '⏳' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 stat-card">
@@ -283,7 +283,7 @@ export default function SuperAdminDashboard() {
           {/* Revenue Chart */}
           <div className="bg-white rounded-2xl p-6 border border-gray-100">
             <h3 className="font-semibold text-gray-800 mb-1">Platform Revenue</h3>
-            <p className="text-xs text-gray-400 mb-5">Monthly subscription revenue (USD)</p>
+            <p className="text-xs text-gray-400 mb-5">Monthly subscription revenue (GHS)</p>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={revenueData}>
                 <defs>
@@ -294,8 +294,8 @@ export default function SuperAdminDashboard() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f4ff" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} tickLine={false} />
-                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => '$' + v} />
-                <Tooltip formatter={v => ['$' + v, 'Revenue']} contentStyle={{ borderRadius: 12, border: 'none' }} />
+                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => GH₵ + v} />
+                <Tooltip formatter={v => [GH₵ + v, 'Revenue']} contentStyle={{ borderRadius: 12, border: 'none' }} />
                 <Area type="monotone" dataKey="revenue" stroke="#1B4FD8" strokeWidth={2.5} fill="url(#revGrad)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -422,7 +422,7 @@ export default function SuperAdminDashboard() {
                       </span>
                     </td>
                     <td className="py-4 px-4 text-sm font-bold" style={{ color: '#059669' }}>
-                      {c.revenue === 0 ? '—' : '$' + c.revenue}
+                      {c.revenue === 0 ? '—' : GH₵ + c.revenue}
                     </td>
                     <td className="py-4 px-4">
                       <span className="text-xs px-2 py-1 rounded-full font-medium"
@@ -451,8 +451,8 @@ export default function SuperAdminDashboard() {
         <div className="space-y-6 fade-in">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Monthly Recurring', value: '$' + totalRevenue.toLocaleString(), color: '#059669' },
-              { label: 'Annual Run Rate', value: '$' + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
+              { label: 'Monthly Recurring', value: GH₵ + totalRevenue.toLocaleString(), color: '#059669' },
+              { label: 'Annual Run Rate', value: GH₵ + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
               { label: 'Paying Churches', value: churchList.filter(c => c.revenue > 0).length, color: '#7C3AED' },
               { label: 'Free Tier', value: churchList.filter(c => c.revenue === 0).length, color: '#6B7280' },
             ].map(s => (
@@ -474,7 +474,7 @@ export default function SuperAdminDashboard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <p className="text-sm font-medium text-gray-700 truncate">{c.name}</p>
-                      <p className="text-sm font-bold ml-2" style={{ color: '#059669' }}>${c.revenue}/mo</p>
+                      <p className="text-sm font-bold ml-2" style={{ color: '#059669' }}>{c.revenue}/mo</p>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-1.5">
                       <div className="h-1.5 rounded-full" style={{ width: (c.revenue / 850 * 100) + '%', background: '#1B4FD8' }}></div>
@@ -505,7 +505,7 @@ export default function SuperAdminDashboard() {
                 <div className="mb-4">
                   <p className="text-lg font-bold text-gray-800">{p.plan}</p>
                   <p className="text-2xl font-bold mt-1" style={{ color: p.color }}>
-                    {p.price === 0 ? 'Free' : '$' + p.price + '/mo'}
+                    {p.price === 0 ? 'Free' : GH₵ + p.price + '/mo'}
                   </p>
                   <p className="text-xs mt-1" style={{ color: p.color }}>{p.churches} churches</p>
                 </div>

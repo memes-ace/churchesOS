@@ -22,11 +22,13 @@ import EquipmentPage from './pages/EquipmentPage'
 import PurchasesPage from './pages/PurchasesPage'
 import RolesPage from './pages/RolesPage'
 import SuperAdminDashboard from './pages/SuperAdminDashboard'
+import MemberPortalPage from './pages/MemberPortalPage'
 import CellGroupsPage from './pages/CellGroupsPage'
 import CounsellingPage from './pages/CounsellingPage'
 import AnnouncementsPage from './pages/AnnouncementsPage'
 import VolunteersPage from './pages/VolunteersPage'
 import SuperAdminDashboard from './pages/SuperAdminDashboard'
+import MemberPortalPage from './pages/MemberPortalPage'
 import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperRevenuePage from './pages/SuperRevenuePage'
 
@@ -57,6 +59,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Root />} />
           <Route path="/login" element={<LoginPage />} />
+      <Route path="/member-portal" element={<MemberPortalPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
           <Route path="/church" element={<Guard roles={['church_admin','finance_officer','ministry_leader','media_team']}><ChurchLayout /></Guard>}>

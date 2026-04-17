@@ -96,3 +96,47 @@ table td, table th {
 .fade-in h1 {
   letter-spacing: -0.03em;
 }
+
+/* ─── Mobile Responsiveness ─────────────────────────────── */
+* { box-sizing: border-box; }
+
+/* Sidebar collapses on mobile */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; position: fixed; z-index: 50; height: 100vh; }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0 !important; }
+  
+  /* Tables scroll on mobile */
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  
+  /* Cards stack on mobile */
+  .grid { grid-template-columns: 1fr !important; }
+  .grid.sm\:grid-cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  
+  /* Modals full screen on mobile */
+  .modal-content { margin: 0 !important; border-radius: 16px 16px 0 0 !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; max-height: 95vh !important; width: 100% !important; max-width: 100% !important; }
+  
+  /* Smaller text on mobile */
+  h1 { font-size: 1.75rem !important; }
+  
+  /* Padding on mobile */
+  .p-6, .p-8, .lg\:p-8 { padding: 1rem !important; }
+  .mb-8 { margin-bottom: 1.25rem !important; }
+  
+  /* Hide non-essential table columns */
+  .hidden-mobile { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .grid.sm\:grid-cols-2 { grid-template-columns: 1fr !important; }
+}
+
+/* Smooth page transitions */
+.fade-in { animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Touch-friendly buttons */
+@media (max-width: 768px) {
+  button, a { min-height: 40px; }
+  input, select, textarea { font-size: 16px !important; } /* Prevents zoom on iOS */
+}
