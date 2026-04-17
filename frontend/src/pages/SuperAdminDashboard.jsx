@@ -83,7 +83,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { label: 'Total Members', value: church.members.toLocaleString(), color: '#1B4FD8' },
-                  { label: 'Monthly Revenue', value: church.revenue === 0 ? 'Free' : GH&#8373; + church.revenue, color: '#059669' },
+                  { label: 'Monthly Revenue', value: church.revenue === 0 ? 'Free' : GHC + church.revenue, color: '#059669' },
                   { label: 'Days Active', value: Math.floor((Date.now() - new Date(church.joined)) / (1000*60*60*24)), color: '#7C3AED' },
                 ].map(s => (
                   <div key={s.label} className="text-center p-4 rounded-xl bg-gray-50">
@@ -139,7 +139,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
                   <div className="text-right">
                     <p className="text-xs text-gray-400">Monthly</p>
                     <p className="text-2xl font-bold" style={{ color: '#1B4FD8' }}>
-                      {church.revenue === 0 ? 'Free' : GH&#8373; + church.revenue}
+                      {church.revenue === 0 ? 'Free' : GHC + church.revenue}
                     </p>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
                   <div key={plan} className="p-4 rounded-xl border-2 transition cursor-pointer"
                     style={{ borderColor: church.plan === plan ? '#1B4FD8' : '#E5E7EB', background: church.plan === plan ? '#EEF2FF' : 'white' }}>
                     <p className="font-bold text-gray-800">{plan}</p>
-                    <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{cfg.price === 0 ? 'Free' : GH&#8373; + cfg.price + '/mo'}</p>
+                    <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{cfg.price === 0 ? 'Free' : GHC + cfg.price + '/mo'}</p>
                   </div>
                 ))}
               </div>
@@ -266,7 +266,7 @@ export default function SuperAdminDashboard() {
             {[
               { label: 'Total Churches', value: churchList.length, sub: `{activeChurches} active`, color: '#1B4FD8', icon: '⛪' },
               { label: 'Total Members', value: totalMembers.toLocaleString(), sub: 'Across all churches', color: '#7C3AED', icon: '👥' },
-              { label: 'Monthly Revenue', value: GH&#8373; + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
+              { label: 'Monthly Revenue', value: GHC + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
               { label: 'Pending Approval', value: pendingChurches, sub: 'Awaiting review', color: '#F59E0B', icon: '⏳' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 stat-card">
@@ -294,8 +294,8 @@ export default function SuperAdminDashboard() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f4ff" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} tickLine={false} />
-                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => GH&#8373; + v} />
-                <Tooltip formatter={v => [GH&#8373; + v, 'Revenue']} contentStyle={{ borderRadius: 12, border: 'none' }} />
+                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={v => GHC + v} />
+                <Tooltip formatter={v => [GHC + v, 'Revenue']} contentStyle={{ borderRadius: 12, border: 'none' }} />
                 <Area type="monotone" dataKey="revenue" stroke="#1B4FD8" strokeWidth={2.5} fill="url(#revGrad)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -422,7 +422,7 @@ export default function SuperAdminDashboard() {
                       </span>
                     </td>
                     <td className="py-4 px-4 text-sm font-bold" style={{ color: '#059669' }}>
-                      {c.revenue === 0 ? '—' : GH&#8373; + c.revenue}
+                      {c.revenue === 0 ? '—' : GHC + c.revenue}
                     </td>
                     <td className="py-4 px-4">
                       <span className="text-xs px-2 py-1 rounded-full font-medium"
@@ -451,8 +451,8 @@ export default function SuperAdminDashboard() {
         <div className="space-y-6 fade-in">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Monthly Recurring', value: GH&#8373; + totalRevenue.toLocaleString(), color: '#059669' },
-              { label: 'Annual Run Rate', value: GH&#8373; + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
+              { label: 'Monthly Recurring', value: GHC + totalRevenue.toLocaleString(), color: '#059669' },
+              { label: 'Annual Run Rate', value: GHC + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
               { label: 'Paying Churches', value: churchList.filter(c => c.revenue > 0).length, color: '#7C3AED' },
               { label: 'Free Tier', value: churchList.filter(c => c.revenue === 0).length, color: '#6B7280' },
             ].map(s => (
@@ -505,7 +505,7 @@ export default function SuperAdminDashboard() {
                 <div className="mb-4">
                   <p className="text-lg font-bold text-gray-800">{p.plan}</p>
                   <p className="text-2xl font-bold mt-1" style={{ color: p.color }}>
-                    {p.price === 0 ? 'Free' : GH&#8373; + p.price + '/mo'}
+                    {p.price === 0 ? 'Free' : GHC + p.price + '/mo'}
                   </p>
                   <p className="text-xs mt-1" style={{ color: p.color }}>{p.churches} churches</p>
                 </div>

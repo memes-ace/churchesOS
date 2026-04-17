@@ -65,7 +65,7 @@ function PurchaseModal({ purchase, onClose, onSave, onDelete }) {
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Amount *</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-400">GH₵</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-400">GHC</span>
                 <input type="number" value={form.amount} onChange={e => update('amount', e.target.value)}
                   placeholder="0.00" className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
               </div>
@@ -201,7 +201,7 @@ export default function PurchasesPage() {
       <div className="flex items-center justify-between mb-8 fade-in">
         <div>
           <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Purchases & Receipts</h1>
-          <p className="text-gray-400 text-sm mt-1">{purchases.length} records • GH₵{totalSpent.toLocaleString()} total</p>
+          <p className="text-gray-400 text-sm mt-1">{purchases.length} records • GHC{totalSpent.toLocaleString()} total</p>
         </div>
         <button onClick={() => { setSelected(null); setShowAdd(true) }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#059669' }}>
@@ -211,8 +211,8 @@ export default function PurchasesPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 fade-in">
         {[
-          { label: 'Total Spent', value: 'GH₵' + totalSpent.toLocaleString(), color: '#1B4FD8', bg: '#EEF2FF' },
-          { label: 'Approved', value: 'GH₵' + approvedTotal.toLocaleString(), color: '#059669', bg: '#DCFCE7' },
+          { label: 'Total Spent', value: 'GHC' + totalSpent.toLocaleString(), color: '#1B4FD8', bg: '#EEF2FF' },
+          { label: 'Approved', value: 'GHC' + approvedTotal.toLocaleString(), color: '#059669', bg: '#DCFCE7' },
           { label: 'Pending Approval', value: purchases.filter(p => !p.approved).length, color: '#F59E0B', bg: '#FEF9C3' },
           { label: 'Departments', value: depts.length, color: '#7C3AED', bg: '#EDE9FE' },
         ].map(s => (
@@ -268,7 +268,7 @@ export default function PurchasesPage() {
                     {p.vendor && <p className="text-xs text-gray-400">{p.vendor}</p>}
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-600">{p.department || '—'}</td>
-                  <td className="py-4 px-4 text-sm font-bold" style={{ color: '#059669' }}>GH₵{Number(p.amount).toLocaleString()}</td>
+                  <td className="py-4 px-4 text-sm font-bold" style={{ color: '#059669' }}>GHC{Number(p.amount).toLocaleString()}</td>
                   <td className="py-4 px-4 text-sm text-gray-600">{p.purchasedBy || '—'}</td>
                   <td className="py-4 px-4 text-sm text-gray-500">{p.datePurchased ? new Date(p.datePurchased).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—'}</td>
                   <td className="py-4 px-4">

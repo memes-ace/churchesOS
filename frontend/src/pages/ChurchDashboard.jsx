@@ -72,7 +72,7 @@ export default function ChurchDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="fade-in fade-in-delay-1"><StatCard title="Total Members" value="1,247" subtitle="Active congregation" icon={Users} color="#1B4FD8" change="+12%" /></div>
         <div className="fade-in fade-in-delay-2"><StatCard title="This Sunday" value="256" subtitle="Attendance" icon={CheckSquare} color="#7C3AED" change="+8%" /></div>
-        <div className="fade-in fade-in-delay-3"><StatCard title="Monthly Giving" value="GH₵9,200" subtitle="March 2025" icon={DollarSign} color="#059669" change="+15%" /></div>
+        <div className="fade-in fade-in-delay-3"><StatCard title="Monthly Giving" value="GHC9,200" subtitle="March 2025" icon={DollarSign} color="#059669" change="+15%" /></div>
         <div className="fade-in fade-in-delay-4"><StatCard title="Upcoming Events" value="4" subtitle="Next 30 days" icon={Calendar} color="#F59E0B" /></div>
       </div>
 

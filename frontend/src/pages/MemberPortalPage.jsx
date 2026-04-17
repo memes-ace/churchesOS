@@ -100,7 +100,7 @@ export default function MemberPortalPage() {
                 </div>
                 <div className="w-px h-10 bg-white/20"></div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">GH₵{totalGiving.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">GHC{totalGiving.toLocaleString()}</p>
                   <p className="text-xs opacity-70">Total Giving</p>
                 </div>
                 <div className="w-px h-10 bg-white/20"></div>
@@ -241,21 +241,21 @@ export default function MemberPortalPage() {
             {/* Summary */}
             <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, #059669 0%, #0891B2 100%)' }}>
               <p className="text-sm opacity-80">Total Giving</p>
-              <p className="text-4xl font-bold mt-1" style={{ fontFamily: 'Cormorant Garamond' }}>GH₵{totalGiving.toLocaleString()}</p>
+              <p className="text-4xl font-bold mt-1" style={{ fontFamily: 'Cormorant Garamond' }}>GHC{totalGiving.toLocaleString()}</p>
               <p className="text-xs opacity-70 mt-1">All time contributions</p>
               <div className="flex gap-4 mt-4">
                 <div>
-                  <p className="text-lg font-bold">GH₵{myGiving.filter(g => g.type === 'Tithe').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
+                  <p className="text-lg font-bold">GHC{myGiving.filter(g => g.type === 'Tithe').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
                   <p className="text-xs opacity-70">Tithes</p>
                 </div>
                 <div className="w-px bg-white/20"></div>
                 <div>
-                  <p className="text-lg font-bold">GH₵{myGiving.filter(g => g.type === 'Offering').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
+                  <p className="text-lg font-bold">GHC{myGiving.filter(g => g.type === 'Offering').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
                   <p className="text-xs opacity-70">Offerings</p>
                 </div>
                 <div className="w-px bg-white/20"></div>
                 <div>
-                  <p className="text-lg font-bold">GH₵{myGiving.filter(g => g.type === 'Pledge').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
+                  <p className="text-lg font-bold">GHC{myGiving.filter(g => g.type === 'Pledge').reduce((s,g) => s+g.amount, 0).toLocaleString()}</p>
                   <p className="text-xs opacity-70">Pledges</p>
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function MemberPortalPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold" style={{ color: '#059669' }}>GH₵{g.amount.toLocaleString()}</p>
+                      <p className="text-sm font-bold" style={{ color: '#059669' }}>GHC{g.amount.toLocaleString()}</p>
                       <span className="text-xs text-gray-400">{g.status}</span>
                     </div>
                   </div>

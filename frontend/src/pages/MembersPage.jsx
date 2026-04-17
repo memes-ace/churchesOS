@@ -389,9 +389,9 @@ function MemberProfile({ member, onBack, onSave, onDelete }) {
           <div className="space-y-5">
             <div className="grid grid-cols-3 gap-4">
               {[
-                { label: 'Total Contributions', value: 'GH₵' + totalContributions.toLocaleString(), color: '#1B4FD8' },
-                { label: 'This Year', value: 'GH₵950', color: '#059669' },
-                { label: 'Last Month', value: 'GH₵250', color: '#7C3AED' },
+                { label: 'Total Contributions', value: 'GHC' + totalContributions.toLocaleString(), color: '#1B4FD8' },
+                { label: 'This Year', value: 'GHC950', color: '#059669' },
+                { label: 'Last Month', value: 'GHC250', color: '#7C3AED' },
               ].map(s => (
                 <div key={s.label} className="p-4 rounded-xl text-center bg-gray-50">
                   <p className="text-xl font-bold mb-1" style={{ color: s.color }}>{s.value}</p>
@@ -415,7 +415,7 @@ function MemberProfile({ member, onBack, onSave, onDelete }) {
                       <td className="py-3 px-4">
                         <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: '#EEF2FF', color: '#1B4FD8' }}>{c.type}</span>
                       </td>
-                      <td className="py-3 px-4 text-right text-sm font-bold" style={{ color: '#1B4FD8' }}>GH₵{c.amount.toLocaleString()}</td>
+                      <td className="py-3 px-4 text-right text-sm font-bold" style={{ color: '#1B4FD8' }}>GHC{c.amount.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
