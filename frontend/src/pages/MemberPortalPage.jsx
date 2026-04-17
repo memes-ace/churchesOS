@@ -64,7 +64,7 @@ export default function MemberPortalPage() {
     <div className="min-h-screen" style={{ background: '#F8FAFF' }}>
       {/* Top Header */}
       <div className="sticky top-0 z-40 border-b border-gray-100" style={{ background: 'white' }}>
-        <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
+        <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm" style={{ background: '#1B4FD8' }}>C</div>
             <div>
@@ -83,11 +83,11 @@ export default function MemberPortalPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-lg mx-auto px-4 pb-24 pt-4">
+      <div className="max-w-4xl mx-auto px-6 pb-24 pt-6">
 
         {/* Home Tab */}
         {tab === 'home' && (
-          <div className="space-y-5 fade-in">
+          <div className="space-y-5 fade-in max-w-4xl">
             {/* Welcome Card */}
             <div className="rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, #1B4FD8 0%, #7C3AED 100%)' }}>
               <p className="text-sm opacity-80">Welcome back 👋</p>
@@ -353,7 +353,7 @@ export default function MemberPortalPage() {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-100" style={{ background: 'white' }}>
-        <div className="flex items-center max-w-lg mx-auto">
+        <div className="flex items-center max-w-4xl mx-auto">
           {navItems.map(item => (
             <button key={item.id} onClick={() => setTab(item.id)}
               className="flex-1 flex flex-col items-center gap-1 py-3 transition">
