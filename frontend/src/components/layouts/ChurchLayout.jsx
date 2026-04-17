@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
-  LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare,
-  BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, Shield, LogOut, Menu, X,
-  CheckSquare, Settings, Home, Bell, Shield
+  LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, Shield, Handshake, LogOut, Menu, X, CheckSquare, Settings, Home, Bell
 } from 'lucide-react'
 
 const navItems = [
@@ -20,7 +18,7 @@ const navItems = [
   { label: 'Ministries', path: '/church/ministries', icon: Users },
   { label: 'Marketplace', path: '/church/marketplace', icon: ShoppingBag },
   { label: 'Cell Groups', path: '/church/cell-groups', icon: Home },
-  { label: 'Counselling', path: '/church/counselling', icon: Heart },
+  { label: 'Counselling', path: '/church/counselling', icon: Handshake },
   { label: 'Announcements', path: '/church/announcements', icon: Bell },
   { label: 'Volunteers', path: '/church/volunteers', icon: Shield },
   { label: 'Reports', path: '/church/reports', icon: BarChart3 },
