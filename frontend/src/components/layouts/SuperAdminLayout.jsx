@@ -14,7 +14,7 @@ const navItems = [
 
 export default function SuperAdminLayout() {
   const [open, setOpen] = useState(false)
-  const { logout, user } = useAuth()
+  const { logout } = useAuth()
   const navigate = useNavigate()
 
   const Nav = () => (
@@ -34,17 +34,6 @@ export default function SuperAdminLayout() {
         </div>
       </div>
 
-      <div className="px-4 py-3 border-b border-white/10">
-        <div className="flex items-center gap-2 px-2">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: '#1B4FD8' }}>
-            {user?.name?.split(' ').map(w => w[0]).slice(0,2).join('') || 'SA'}
-          </div>
-          <div>
-            <p className="text-white text-xs font-medium">{user?.name || 'Super Admin'}</p>
-            <p className="text-white/40 text-xs">{user?.email || 'admin@churchesos.com'}</p>
-          </div>
-        </div>
-      </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map(({ label, path, icon: Icon, exact }) => (
@@ -102,4 +91,3 @@ export default function SuperAdminLayout() {
     </div>
   )
 }
-// This file updated
