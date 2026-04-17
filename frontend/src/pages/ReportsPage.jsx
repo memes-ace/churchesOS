@@ -20,7 +20,7 @@ export default function ReportsPage() {
             <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: r.color + '15' }}>
               <r.icon size={19} style={{ color: r.color }} />
             </div>
-            <h3 className="font-bold text-gray-800 mb-1">{r.name}</h3>
+            <h3 className="font-bold text-gray-900 mb-1" style={{ fontSize: "16px", letterSpacing: "-0.02em" }}>{r.name}</h3>
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">{r.desc}</p>
             <p className="text-xs text-gray-400 mb-4">Last generated: {r.last}</p>
             <div className="flex gap-2">

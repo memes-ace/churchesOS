@@ -146,7 +146,7 @@ export default function FinancePage() {
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden fade-in">
         <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Transactions</h3>
+          <h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>Transactions</h3>
           <div className="flex gap-2">
             {['all','income','expense'].map(t => (
               <button key={t} onClick={() => setTab(t)} className="px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition"
@@ -173,15 +173,20 @@ export default function FinancePage() {
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: t.type === 'income' ? '#DBEAFE' : '#FEE2E2' }}>
                       {t.type === 'income' ? <ArrowUpRight size={14} style={{ color: '#1B4FD8' }} /> : <ArrowDownRight size={14} style={{ color: '#EF4444' }} />}
                     </div>
-                    <span className="text-sm font-medium text-gray-800">{t.category}</span>
+                    <span className="text-sm font-semibold text-gray-900">{t.category}</span>
                   </div>
                 </td>
                 <td className="py-4 px-4 text-sm text-gray-600 hidden md:table-cell">{t.member}</td>
                 <td className="py-4 px-4 text-sm text-gray-500">{new Date(t.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td>
                 <td className="py-4 px-6 text-right">
-                  <span className="text-sm font-semibold" style={{ color: t.type === 'income' ? '#1B4FD8' : '#EF4444' }}>
-                    {t.type === 'income' ? '+' : '-'}GH{t.amount.toLocaleString()}
-                  </span>
+                  <div className="flex items-center justify-end gap-2">
+                    <span className="text-sm font-semibold" style={{ color: t.type === 'income' ? '#1B4FD8' : '#EF4444' }}>
+                      {t.type === 'income' ? '+' : '-'}GH{t.amount.toLocaleString()}
+                    </span>
+                    <button className="p-1.5 hover:bg-gray-100 rounded-lg transition">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

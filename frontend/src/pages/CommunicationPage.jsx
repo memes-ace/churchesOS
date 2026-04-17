@@ -108,7 +108,7 @@ export default function CommunicationPage() {
         ))}
       </div>
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden fade-in">
-        <div className="p-6 border-b border-gray-100"><h3 className="font-semibold text-gray-800">Message History</h3></div>
+        <div className="p-6 border-b border-gray-100"><h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>Message History</h3></div>
         <div className="divide-y divide-gray-50">
           {sentMessages.map(msg => (
             <div key={msg.id} className="p-5 hover:bg-gray-50 transition">

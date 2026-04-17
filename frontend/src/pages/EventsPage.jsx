@@ -98,7 +98,7 @@ export default function EventsPage() {
                 <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: e.status === 'ongoing' ? '#DBEAFE' : '#FEF9C3', color: e.status === 'ongoing' ? '#1E40AF' : '#854D0E' }}>
                   {e.status === 'ongoing' ? '● Live Now' : 'Upcoming'}
                 </span>
-                <button className="text-xs font-medium" style={{ color: '#1B4FD8' }}>View Details →</button>
+                <button onClick={e => { e.stopPropagation(); setEditing(true) }} className="text-xs font-medium" style={{ color: '#1B4FD8' }}>Edit →</button>
               </div>
             </div>
           )

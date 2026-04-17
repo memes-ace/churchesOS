@@ -115,7 +115,7 @@ export default function ChurchDashboard() {
       <div className="grid lg:grid-cols-3 gap-6 mb-6">
         <div className="bg-white rounded-2xl p-6 border border-gray-100 fade-in">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-800">New Members</h3>
+            <h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>New Members</h3>
             <a href="/church/members" className="text-xs font-medium" style={{ color: '#1B4FD8' }}>View all</a>
           </div>
           <div className="space-y-3">
@@ -133,7 +133,7 @@ export default function ChurchDashboard() {
         </div>
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 fade-in">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-800">Upcoming Events</h3>
+            <h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>Upcoming Events</h3>
             <a href="/church/events" className="text-xs font-medium" style={{ color: '#1B4FD8' }}>Manage</a>
           </div>
           <div className="space-y-3">
@@ -143,7 +143,7 @@ export default function ChurchDashboard() {
                   <Calendar size={18} style={{ color: '#1B4FD8' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800">{e.name}</p>
+                  <p className="text-sm font-semibold text-gray-900">{e.name}</p>
                   <p className="text-xs text-gray-400">{e.date}</p>
                 </div>
                 <div className="text-right">

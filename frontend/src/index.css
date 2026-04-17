@@ -73,3 +73,26 @@ p, span, div {
 h1, h2, h3 {
   font-family: 'Cormorant Garamond', Georgia, serif;
 }
+
+/* Professional typography */
+.bg-white p, .bg-white span, .bg-white h3 {
+  -webkit-font-smoothing: antialiased;
+}
+
+table td, table th {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Card titles */
+.stat-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+/* Page headings */
+.fade-in h1 {
+  letter-spacing: -0.03em;
+}

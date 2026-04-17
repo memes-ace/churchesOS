@@ -16,6 +16,11 @@ import VisitorsPage from './pages/VisitorsPage'
 import PrayerPage from './pages/PrayerPage'
 import MarketplacePage from './pages/MarketplacePage'
 import ReportsPage from './pages/ReportsPage'
+import MinistriesPage from './pages/MinistriesPage'
+import CellGroupsPage from './pages/CellGroupsPage'
+import CounsellingPage from './pages/CounsellingPage'
+import AnnouncementsPage from './pages/AnnouncementsPage'
+import VolunteersPage from './pages/VolunteersPage'
 import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperRevenuePage from './pages/SuperRevenuePage'
@@ -61,6 +66,11 @@ export default function App() {
             <Route path="prayer" element={<PrayerPage />} />
             <Route path="marketplace" element={<MarketplacePage />} />
             <Route path="reports" element={<ReportsPage />} />
+            <Route path="ministries" element={<MinistriesPage />} />
+            <Route path="cell-groups" element={<CellGroupsPage />} />
+            <Route path="counselling" element={<CounsellingPage />} />
+            <Route path="announcements" element={<AnnouncementsPage />} />
+            <Route path="volunteers" element={<VolunteersPage />} />
           </Route>
 
           <Route path="/super-admin" element={<Guard roles={['super_admin']}><SuperAdminLayout /></Guard>}>

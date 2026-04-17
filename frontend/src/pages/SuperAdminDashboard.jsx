@@ -73,7 +73,7 @@ export default function SuperAdminDashboard() {
         </div>
       </div>
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden fade-in">
-        <div className="p-6 border-b border-gray-100"><h3 className="font-semibold text-gray-800">All Churches</h3></div>
+        <div className="p-6 border-b border-gray-100"><h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>All Churches</h3></div>
         <table className="w-full">
           <thead><tr className="border-b border-gray-50">
             <th className="text-left py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Church</th>
@@ -91,7 +91,7 @@ export default function SuperAdminDashboard() {
                       {c.name.split(' ').map(w => w[0]).slice(0,2).join('')}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{c.name}</p>
+                      <p className="text-sm font-semibold text-gray-900">{c.name}</p>
                       <p className="text-xs text-gray-400">{c.pastor} • {c.location}</p>
                     </div>
                   </div>

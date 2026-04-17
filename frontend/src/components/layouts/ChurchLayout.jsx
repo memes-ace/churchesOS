@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare,
   BookOpen, Eye, Heart, ShoppingBag, BarChart3, LogOut, Menu, X,
-  CheckSquare, Settings
+  CheckSquare, Settings, Home, Bell, Shield
 } from 'lucide-react'
 
 const navItems = [
@@ -17,7 +17,12 @@ const navItems = [
   { label: 'Sermons', path: '/church/sermons', icon: BookOpen },
   { label: 'Visitors', path: '/church/visitors', icon: Eye },
   { label: 'Prayer Requests', path: '/church/prayer', icon: Heart },
+  { label: 'Ministries', path: '/church/ministries', icon: Users },
   { label: 'Marketplace', path: '/church/marketplace', icon: ShoppingBag },
+  { label: 'Cell Groups', path: '/church/cell-groups', icon: Home },
+  { label: 'Counselling', path: '/church/counselling', icon: Heart },
+  { label: 'Announcements', path: '/church/announcements', icon: Bell },
+  { label: 'Volunteers', path: '/church/volunteers', icon: Shield },
   { label: 'Reports', path: '/church/reports', icon: BarChart3 },
 ]
 

@@ -37,7 +37,7 @@ export default function PrayerPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-800">{r.member}</p>
+                    <p className="text-sm font-semibold text-gray-900">{r.member}</p>
                     {r.confidential && <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: '#FEE2E2', color: '#991B1B' }}><Lock size={9} /> Confidential</span>}
                   </div>
                   <p className="text-xs text-gray-400">{new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>

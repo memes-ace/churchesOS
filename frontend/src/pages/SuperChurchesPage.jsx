@@ -38,7 +38,7 @@ export default function SuperChurchesPage() {
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: '#1B4FD8' }}>{c.name.split(' ').map(w => w[0]).slice(0,2).join('')}</div>
-                    <div><p className="text-sm font-medium text-gray-800">{c.name}</p><p className="text-xs text-gray-400">{c.pastor} • {c.location}</p></div>
+                    <div><p className="text-sm font-semibold text-gray-900">{c.name}</p><p className="text-xs text-gray-400">{c.pastor} • {c.location}</p></div>
                   </div>
                 </td>
                 <td className="py-4 px-4"><span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: planColors[c.plan]?.bg, color: planColors[c.plan]?.text }}>{c.plan}</span></td>

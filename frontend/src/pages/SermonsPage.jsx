@@ -60,7 +60,7 @@ export default function SermonsPage() {
                 <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: '#EEF2FF', color: '#1B4FD8' }}>{s.topic}</span>
                 <span className="text-xs text-gray-400">{s.duration}</span>
               </div>
-              <h3 className="font-bold text-gray-800 mb-1">{s.title}</h3>
+              <h3 className="font-bold text-gray-900 mb-1" style={{ fontSize: "16px", letterSpacing: "-0.02em" }}>{s.title}</h3>
               <p className="text-xs text-gray-500 mb-1">{s.preacher}</p>
               <p className="text-xs font-medium mb-3" style={{ color: '#1B4FD8' }}>{s.scripture}</p>
               <p className="text-xs text-gray-500 line-clamp-2 mb-4">{s.summary}</p>

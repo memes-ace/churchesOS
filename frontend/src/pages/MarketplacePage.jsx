@@ -34,7 +34,7 @@ export default function MarketplacePage() {
                 <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: '#EEF2FF', color: '#1B4FD8' }}>{v.category}</span>
                 {v.verified && <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: '#DBEAFE', color: '#1E40AF' }}>Verified</span>}
               </div>
-              <h3 className="font-bold text-gray-800 mb-1">{v.name}</h3>
+              <h3 className="font-bold text-gray-900 mb-1" style={{ fontSize: "16px", letterSpacing: "-0.02em" }}>{v.name}</h3>
               <div className="flex items-center gap-1 mb-2">
                 <Star size={11} fill="#F59E0B" stroke="none" />
                 <span className="text-xs font-medium text-gray-700">{v.rating}</span>
