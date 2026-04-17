@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare,
-  BookOpen, Eye, Heart, ShoppingBag, BarChart3, LogOut, Menu, X,
+  BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, LogOut, Menu, X,
   CheckSquare, Settings, Home, Bell, Shield
 } from 'lucide-react'
 
@@ -24,6 +24,9 @@ const navItems = [
   { label: 'Announcements', path: '/church/announcements', icon: Bell },
   { label: 'Volunteers', path: '/church/volunteers', icon: Shield },
   { label: 'Reports', path: '/church/reports', icon: BarChart3 },
+  { label: 'Song Library', path: '/church/songs', icon: Music },
+  { label: 'Equipment', path: '/church/equipment', icon: Wrench },
+  { label: 'Purchases', path: '/church/purchases', icon: Receipt },
 ]
 
 export default function ChurchLayout() {

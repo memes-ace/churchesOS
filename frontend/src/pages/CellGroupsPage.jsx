@@ -112,7 +112,7 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
   const storageKey = `cos_cell_${cell.id}`
 
   const getData = () => {
-    try { const s = sessionStorage.getItem(storageKey); return s ? JSON.parse(s) : { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
+    try { const s = localStorage.getItem(storageKey); return s ? JSON.parse(s) : { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
     catch(e) { return { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
   }
 
@@ -131,7 +131,7 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
 
   const save = (newData) => {
     setData(newData)
-    try { sessionStorage.setItem(storageKey, JSON.stringify(newData)) } catch(e) {}
+    try { localStorage.setItem(storageKey, JSON.stringify(newData)) } catch(e) {}
   }
 
   const addMember = () => {
@@ -673,7 +673,7 @@ export default function CellGroupsPage() {
   const mainKey = 'cos_cell_groups'
 
   const getCellGroups = () => {
-    try { const s = sessionStorage.getItem(mainKey); return s ? JSON.parse(s) : [] }
+    try { const s = localStorage.getItem(mainKey); return s ? JSON.parse(s) : [] }
     catch(e) { return [] }
   }
 
@@ -684,7 +684,7 @@ export default function CellGroupsPage() {
 
   const saveCellGroups = (list) => {
     setCellGroups(list)
-    try { sessionStorage.setItem(mainKey, JSON.stringify(list)) } catch(e) {}
+    try { localStorage.setItem(mainKey, JSON.stringify(list)) } catch(e) {}
   }
 
   const handleCreate = (form) => {
@@ -702,7 +702,7 @@ export default function CellGroupsPage() {
   }
 
   const getMemberCount = (cellId) => {
-    try { const s = sessionStorage.getItem(`cos_cell_${cellId}`); if (!s) return 0; const d = JSON.parse(s); return d.members?.length || 0 }
+    try { const s = localStorage.getItem(`cos_cell_${cellId}`); if (!s) return 0; const d = JSON.parse(s); return d.members?.length || 0 }
     catch(e) { return 0 }
   }
 

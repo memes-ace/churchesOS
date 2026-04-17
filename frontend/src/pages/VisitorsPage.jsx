@@ -388,7 +388,7 @@ export default function VisitorsPage() {
 
   const getVisitors = () => {
     try {
-      const saved = sessionStorage.getItem(storageKey)
+      const saved = localStorage.getItem(storageKey)
       return saved ? JSON.parse(saved) : []
     } catch(e) { return [] }
   }
@@ -400,7 +400,7 @@ export default function VisitorsPage() {
 
   const saveVisitors = (list) => {
     setVisitors(list)
-    try { sessionStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
+    try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
   }
 
   const handleSave = (form) => {

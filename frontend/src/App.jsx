@@ -17,6 +17,9 @@ import PrayerPage from './pages/PrayerPage'
 import MarketplacePage from './pages/MarketplacePage'
 import ReportsPage from './pages/ReportsPage'
 import MinistriesPage from './pages/MinistriesPage'
+import SongLibraryPage from './pages/SongLibraryPage'
+import EquipmentPage from './pages/EquipmentPage'
+import PurchasesPage from './pages/PurchasesPage'
 import CellGroupsPage from './pages/CellGroupsPage'
 import CounsellingPage from './pages/CounsellingPage'
 import AnnouncementsPage from './pages/AnnouncementsPage'
@@ -71,6 +74,9 @@ export default function App() {
             <Route path="counselling" element={<CounsellingPage />} />
             <Route path="announcements" element={<AnnouncementsPage />} />
             <Route path="volunteers" element={<VolunteersPage />} />
+            <Route path="songs" element={<SongLibraryPage />} />
+            <Route path="equipment" element={<EquipmentPage />} />
+            <Route path="purchases" element={<PurchasesPage />} />
           </Route>
 
           <Route path="/super-admin" element={<Guard roles={['super_admin']}><SuperAdminLayout /></Guard>}>
@@ -90,3 +96,4 @@ export default function App() {
     </AuthProvider>
   )
 }
+// New modules - add to imports at top manually

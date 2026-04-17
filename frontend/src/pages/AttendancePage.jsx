@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, Search, X, Save, Users, Calendar, TrendingUp, Eye, Edit, Trash2, QrCode, UserPlus, ChevronDown, BarChart3, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { attendanceAPI } from '../utils/api'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 const serviceTypes = ['Sunday Service', 'Midweek Service', 'Prayer Meeting', 'Youth Meeting', 'Cell Meeting', 'Special Program']
@@ -26,10 +27,10 @@ const ministryAttendance = [
   { name: 'Sunday School', present: 14, total: 18, color: '#DC2626' },
 ]
 
-// Load real members from sessionStorage
+// Load real members from localStorage
 const getRealMembers = () => {
   try {
-    const saved = sessionStorage.getItem('cos_members')
+    const saved = localStorage.getItem('cos_members')
     if (!saved) return []
     return JSON.parse(saved).map(m => ({
       id: m.id,
@@ -46,7 +47,7 @@ const mockMembers = getRealMembers()
 const storageKey = 'cos_attendance'
 
 const getHistory = () => {
-  try { const s = sessionStorage.getItem(storageKey); return s ? JSON.parse(s) : [] }
+  try { const s = localStorage.getItem('cos_attendance_db'); return s ? JSON.parse(s) : [] }
   catch(e) { return [] }
 }
 
@@ -373,12 +374,23 @@ export default function AttendancePage() {
 
   const saveHistory = (list) => {
     setHistory(list)
-    try { sessionStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
+    try { localStorage.setItem('cos_attendance_db', JSON.stringify(list)) } catch(e) {}
   }
 
-  const handleSave = (record) => {
+  const handleSave = async (record) => {
     saveHistory([record, ...history])
     setRecording(false)
+    try {
+      await attendanceAPI.create({
+        service_name: record.serviceName,
+        service_type: record.serviceType,
+        date: record.date,
+        present_count: record.present,
+        absent_count: record.absent,
+        visitor_count: record.visitorsCount,
+        total_count: record.total,
+      })
+    } catch(e) {}
   }
 
   const handleDelete = (id) => saveHistory(history.filter(r => r.id !== id))
@@ -433,7 +445,7 @@ export default function AttendancePage() {
               { label: 'Last Sunday', value: lastSunday?.present || 0, sub: lastSunday?.date ? new Date(lastSunday.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'No records', color: '#1B4FD8', icon: '⛪' },
               { label: 'Monthly Average', value: monthlyAvg, sub: 'This month', color: '#7C3AED', icon: '📅' },
               { label: 'Yearly Average', value: monthlyAvg, sub: '2025 so far', color: '#059669', icon: '📊' },
-              { label: 'Total Members', value: (() => { try { const s = sessionStorage.getItem('cos_members'); return s ? JSON.parse(s).length : 0 } catch(e) { return 0 } })(), sub: 'Registered', color: '#F59E0B', icon: '👥' },
+              { label: 'Total Members', value: (() => { try { const s = localStorage.getItem('cos_members'); return s ? JSON.parse(s).length : 0 } catch(e) { return 0 } })(), sub: 'Registered', color: '#F59E0B', icon: '👥' },
               { label: 'Services Recorded', value: history.length, sub: 'All time', color: '#0891B2', icon: '📋' },
               { label: 'Total Visitors', value: totalVisitors, sub: 'All services', color: '#EC4899', icon: '👋' },
             ].map(s => (
