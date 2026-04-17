@@ -37,9 +37,20 @@ function RequestQuoteModal({ vendor, onClose }) {
           <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Cormorant Garamond' }}>Quote Request Sent!</h3>
           <p className="text-sm text-gray-500 mb-2">Your request has been sent to <strong>{vendor.name}</strong> through ChurchesOS.</p>
           <p className="text-xs text-gray-400 mb-5">The vendor will respond within 24 hours. You will be notified here.</p>
-          <div className="p-3 rounded-xl mb-5" style={{ background: '#EEF2FF' }}>
-            <p className="text-xs" style={{ color: '#1B4FD8' }}>🔒 All communications are managed through ChurchesOS to ensure quality service and payment protection.</p>
-          </div>
+          {(() => {
+            const requests = JSON.parse(localStorage.getItem('cos_quote_requests') || '[]')
+            const myRequest = requests.find(r => r.vendorId === vendor.id && r.contactReleased)
+            return myRequest ? (
+              <div className="p-3 rounded-xl mb-5" style={{ background: '#DCFCE7' }}>
+                <p className="text-xs font-bold mb-1" style={{ color: '#166534' }}>✓ Payment Confirmed — Vendor Contact Released</p>
+                <p className="text-sm font-medium" style={{ color: '#166534' }}>You can now contact the vendor directly.</p>
+              </div>
+            ) : (
+              <div className="p-3 rounded-xl mb-5" style={{ background: '#EEF2FF' }}>
+                <p className="text-xs" style={{ color: '#1B4FD8' }}>🔒 Vendor contact details will be shared with you once payment is confirmed by ChurchesOS.</p>
+              </div>
+            )
+          })()}
           <button onClick={onClose} className="w-full py-3 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>Done</button>
         </div>
       </div>

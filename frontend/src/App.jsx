@@ -29,7 +29,8 @@ import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperRevenuePage from './pages/SuperRevenuePage'
 import MemberPortalPage from './pages/MemberPortalPage'
 import VendorRegisterPage from './pages/VendorRegisterPage'
-import SuperVendorsPage, { QuoteRequestsPage } from './pages/SuperVendorsPage'
+import SuperVendorsPage from './pages/SuperVendorsPage'
+import QuoteRequestsPage from './pages/QuoteRequestsPage'
 
 function Root() {
   const { user } = useAuth()
