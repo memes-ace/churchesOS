@@ -234,7 +234,7 @@ export default function SuperAdminDashboard() {
             {[
               { label: 'Total Churches', value: churchList.length, sub: activeChurches + ' active', color: '#1B4FD8', icon: '⛪' },
               { label: 'Total Members', value: totalMembers.toLocaleString(), sub: 'Across all churches', color: '#7C3AED', icon: '👥' },
-              { label: 'Monthly Revenue', value: GHC + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
+              { label: 'Monthly Revenue', value: 'GHC ' + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
               { label: 'Pending Approval', value: pendingChurches, sub: 'Awaiting review', color: '#F59E0B', icon: '⏳' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 stat-card">
@@ -389,7 +389,7 @@ export default function SuperAdminDashboard() {
         <div className="space-y-6 fade-in">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Monthly Recurring', value: GHC + totalRevenue.toLocaleString(), color: '#059669' },
+              { label: 'Monthly Recurring', value: 'GHC ' + totalRevenue.toLocaleString(), color: '#059669' },
               { label: 'Annual Run Rate', value: GHC + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
               { label: 'Paying Churches', value: churchList.filter(c => c.revenue > 0).length, color: '#7C3AED' },
               { label: 'Free Tier', value: churchList.filter(c => c.revenue === 0).length, color: '#6B7280' },

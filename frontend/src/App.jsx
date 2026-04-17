@@ -31,6 +31,8 @@ import MemberPortalPage from './pages/MemberPortalPage'
 import VendorRegisterPage from './pages/VendorRegisterPage'
 import SuperVendorsPage from './pages/SuperVendorsPage'
 import QuoteRequestsPage from './pages/QuoteRequestsPage'
+import SuperChurchesPage from './pages/SuperChurchesPage'
+import SuperSettingsPage from './pages/SuperSettingsPage'
 
 function Root() {
   const { user } = useAuth()
@@ -81,6 +83,7 @@ export default function App() {
             <Route path="revenue" element={<SuperRevenuePage />} />
             <Route path="vendors" element={<SuperVendorsPage />} />
             <Route path="quotes" element={<QuoteRequestsPage />} />
+            <Route path="settings" element={<SuperSettingsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
