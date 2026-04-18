@@ -3,16 +3,7 @@ import { useState } from 'react'
 import { Plus, Download, DollarSign, X, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 
-const transactions = [
-  { id: 1, type: 'income', category: 'Tithe', member: 'Abena Asante', amount: 500, date: '2025-03-30', method: 'MoMo' },
-  { id: 2, type: 'income', category: 'Sunday Offering', member: 'General', amount: 2300, date: '2025-03-30', method: 'Cash' },
-  { id: 3, type: 'expense', category: 'Electricity Bill', member: 'ECG Ghana', amount: 450, date: '2025-03-28', method: 'Bank' },
-  { id: 4, type: 'income', category: 'Tithe', member: 'Kwame Boateng', amount: 350, date: '2025-03-28', method: 'MoMo' },
-  { id: 5, type: 'income', category: 'Event Income', member: 'Youth Revival', amount: 1800, date: '2025-03-25', method: 'Mixed' },
-  { id: 6, type: 'expense', category: 'Equipment Repair', member: 'Sound Pros Ltd', amount: 780, date: '2025-03-24', method: 'Bank' },
-  { id: 7, type: 'income', category: 'Seed Offering', member: 'General', amount: 1250, date: '2025-03-23', method: 'Cash' },
-  { id: 8, type: 'expense', category: 'Staff Salary', member: 'Payroll', amount: 3200, date: '2025-03-22', method: 'Bank' },
-]
+const transactions = []
 const pieData = [
   { name: 'Tithe', value: 5100, color: '#1B4FD8' },
   { name: 'Sunday Offering', value: 2300, color: '#3B82F6' },

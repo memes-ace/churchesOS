@@ -1,22 +1,9 @@
 import { useState } from 'react'
 import { Plus, Shield, Clock, Check, X, MessageSquare, Star } from 'lucide-react'
 
-const teams = [
-  { id: 1, name: 'Ushering Team', coordinator: 'Kwame Boateng', members: 38, nextService: 'Sunday Apr 20', hoursThisMonth: 152, emoji: '🤝', color: '#1B4FD8' },
-  { id: 2, name: 'Parking Team', coordinator: 'Yaw Oppong', members: 12, nextService: 'Sunday Apr 20', hoursThisMonth: 48, emoji: '🚗', color: '#059669' },
-  { id: 3, name: 'Media & Tech Team', coordinator: 'Emmanuel Darko', members: 18, nextService: 'Sunday Apr 20', hoursThisMonth: 72, emoji: '🎥', color: '#7C3AED' },
-  { id: 4, name: 'Security Team', coordinator: 'Kofi Asumadu', members: 22, nextService: 'Sunday Apr 20', hoursThisMonth: 88, emoji: '🛡️', color: '#374151' },
-  { id: 5, name: 'Hospitality Team', coordinator: 'Ama Owusu', members: 29, nextService: 'Sunday Apr 20', hoursThisMonth: 116, emoji: '☕', color: '#D97706' },
-  { id: 6, name: 'Children Workers', coordinator: 'Adwoa Frimpong', members: 24, nextService: 'Sunday Apr 20', hoursThisMonth: 96, emoji: '👶', color: '#EC4899' },
-]
+const teams = []
 
-const schedule = [
-  { volunteer: 'Abena Asante', avatar: 'AA', team: 'Ushering Team', service: 'Sunday Apr 20', checkedIn: false, hours: 12 },
-  { volunteer: 'Kwame Boateng', avatar: 'KB', team: 'Ushering Team', service: 'Sunday Apr 20', checkedIn: true, hours: 18 },
-  { volunteer: 'Gifty Mensah', avatar: 'GM', team: 'Media & Tech Team', service: 'Sunday Apr 20', checkedIn: false, hours: 9 },
-  { volunteer: 'Emmanuel Darko', avatar: 'ED', team: 'Media & Tech Team', service: 'Sunday Apr 20', checkedIn: true, hours: 21 },
-  { volunteer: 'Adwoa Frimpong', avatar: 'AF', team: 'Children Workers', service: 'Sunday Apr 20', checkedIn: false, hours: 15 },
-]
+const schedule = []
 
 function TeamModal({ team, onClose }) {
   return (

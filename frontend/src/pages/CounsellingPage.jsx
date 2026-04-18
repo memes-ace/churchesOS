@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { Plus, Calendar, Clock, User, X, Check, Phone, Lock } from 'lucide-react'
 
-const appointments = [
-  { id: 1, member: 'Abena Asante', avatar: 'AA', phone: '+233 24 123 4567', date: '2025-04-18', time: '10:00 AM', type: 'Marriage Counselling', status: 'confirmed', notes: '' },
-  { id: 2, member: 'Kwame Boateng', avatar: 'KB', phone: '+233 20 987 6543', date: '2025-04-18', time: '11:30 AM', type: 'Career & Finance', status: 'confirmed', notes: '' },
-  { id: 3, member: 'Gifty Mensah', avatar: 'GM', phone: '+233 55 246 8135', date: '2025-04-19', time: '2:00 PM', type: 'Spiritual Guidance', status: 'pending', notes: '' },
-  { id: 4, member: 'Emmanuel Darko', avatar: 'ED', phone: '+233 24 369 2580', date: '2025-04-21', time: '9:00 AM', type: 'Family Issues', status: 'confirmed', notes: '' },
-  { id: 5, member: 'Adwoa Frimpong', avatar: 'AF', phone: '+233 27 159 7532', date: '2025-04-22', time: '3:00 PM', type: 'General Counselling', status: 'pending', notes: '' },
-]
+const appointments = []
 
 const timeSlots = ['9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM']
 

@@ -7,7 +7,7 @@ const attendanceData = [
   { week: 'Jan W1', attendance: 142 },{ week: 'Jan W2', attendance: 158 },
   { week: 'Feb W1', attendance: 165 },{ week: 'Feb W2', attendance: 189 },
   { week: 'Mar W1', attendance: 198 },{ week: 'Mar W2', attendance: 223 },
-  { week: 'Mar W3', attendance: 241 },{ week: 'Mar W4', attendance: 256 },
+  { week: 'Mar W3', attendance: 241 },{ week: 'Mar W4', attendance: 0 },
 ]
 const givingData = [
   { month: 'Nov', tithe: 4800, offering: 2100 },
@@ -70,9 +70,9 @@ export default function ChurchDashboard() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="fade-in fade-in-delay-1"><StatCard title="Total Members" value="1,247" subtitle="Active congregation" icon={Users} color="#1B4FD8" change="+12%" /></div>
-        <div className="fade-in fade-in-delay-2"><StatCard title="This Sunday" value="256" subtitle="Attendance" icon={CheckSquare} color="#7C3AED" change="+8%" /></div>
-        <div className="fade-in fade-in-delay-3"><StatCard title="Monthly Giving" value="GHC9,200" subtitle="March 2025" icon={DollarSign} color="#059669" change="+15%" /></div>
+        <div className="fade-in fade-in-delay-1"><StatCard title="Total Members" value="0" subtitle="Active congregation" icon={Users} color="#1B4FD8" change="+0%" /></div>
+        <div className="fade-in fade-in-delay-2"><StatCard title="This Sunday" value="0" subtitle="Attendance" icon={CheckSquare} color="#7C3AED" change="+0%" /></div>
+        <div className="fade-in fade-in-delay-3"><StatCard title="Monthly Giving" value="GHC 0" subtitle="This Month" icon={DollarSign} color="#059669" change="+0%" /></div>
         <div className="fade-in fade-in-delay-4"><StatCard title="Upcoming Events" value="4" subtitle="Next 30 days" icon={Calendar} color="#F59E0B" /></div>
       </div>
 

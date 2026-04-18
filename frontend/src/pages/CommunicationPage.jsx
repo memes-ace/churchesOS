@@ -1,134 +1,169 @@
 import { useState } from 'react'
-import { Send, Clock, Users, MessageSquare, CheckCircle, X } from 'lucide-react'
-const sentMessages = [
-  { id: 1, message: 'Dear church family, Sunday service starts at 9AM. Come prepared for a Spirit-filled worship!', recipients: 'All Members (1,247)', sent: '2025-04-13 07:00', type: 'Announcement', delivered: 1189, status: 'sent' },
-  { id: 2, message: 'Reminder: Youth Revival Night is THIS FRIDAY at 7PM. Bring a friend!', recipients: 'Youth Ministry (134)', sent: '2025-04-10 06:00', type: 'Event Reminder', delivered: 127, status: 'sent' },
-  { id: 3, message: 'Easter Crusade TOMORROW at Independence Square, 6PM. Buses depart from church at 5PM.', recipients: 'All Members (1,247)', sent: '2025-04-17 08:00', type: 'Event Reminder', delivered: null, status: 'scheduled' },
-]
+import { Plus, X, Save, Trash2, Send, MessageSquare, Clock, Users, Check } from 'lucide-react'
+
+const storageKey = 'cos_messages'
+const getMessages = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
+
 const templates = [
-  { name: 'Sunday Reminder', text: 'Dear church family, reminder that Sunday service starts at [TIME]. We look forward to worshipping with you. God bless you!' },
-  { name: 'Birthday Greeting', text: 'Happy Birthday [NAME]! Wishing you God\'s abundant blessings today and always. With love, Pastor & [CHURCH] family.' },
-  { name: 'Absentee Follow-up', text: 'Dear [NAME], we noticed you weren\'t at Sunday service and we miss you. Please let us know if you need anything. God loves you!' },
-  { name: 'Event Reminder', text: 'Reminder: [EVENT] is on [DATE] at [TIME], [LOCATION]. Don\'t miss this special program!' },
-  { name: 'New Convert Welcome', text: 'Welcome to [CHURCH], [NAME]! We are so glad you\'re part of our family. God bless you!' },
+  { label: 'Sunday Reminder', text: 'Dear church family, reminder that Sunday service is tomorrow. Service starts at 9AM. God bless you!' },
+  { label: 'Event Reminder', text: 'Dear church family, reminder about our upcoming event. Please plan to attend. God bless!' },
+  { label: 'Tithe Reminder', text: 'Dear church family, as you prepare for Sunday, remember to prepare your tithes and offerings. God loves a cheerful giver!' },
+  { label: 'Emergency Notice', text: 'URGENT: Please note the following important update from church leadership.' },
 ]
-function SendModal({ onClose }) {
-  const [message, setMessage] = useState('')
-  const [recipients, setRecipients] = useState('All Members (1,247)')
-  const [schedule, setSchedule] = useState(false)
-  const [selectedTemplate, setSelectedTemplate] = useState('')
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
-          <h2 className="text-xl font-bold" style={{  }}>Send SMS</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={18} /></button>
-        </div>
-        <div className="p-6 space-y-5">
-          <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">Quick Templates</p>
-            <div className="flex gap-2 flex-wrap">
-              {templates.map(t => (
-                <button key={t.name} onClick={() => { setMessage(t.text); setSelectedTemplate(t.name) }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium border transition"
-                  style={{ background: selectedTemplate === t.name ? '#1B4FD8' : 'white', color: selectedTemplate === t.name ? 'white' : '#4B5563', borderColor: selectedTemplate === t.name ? '#1B4FD8' : '#E5E7EB' }}>
-                  {t.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Send To</label>
-            <select value={recipients} onChange={e => setRecipients(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
-              {['All Members (1,247)','Active Members (1,102)','Workers Only (248)','Leaders Only (67)','Youth Ministry (134)','Choir (52)','Absentees Last Sunday (23)','New Members This Month (18)'].map(r => <option key={r}>{r}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-            <textarea value={message} onChange={e => setMessage(e.target.value)} rows={5}
-              placeholder="Type your message here... Use [NAME] for member name personalization."
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
-            <div className="flex justify-between mt-1">
-              <span className="text-xs text-gray-400">Use [NAME] for personalization</span>
-              <span className="text-xs text-gray-400">{message.length} chars</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSchedule(!schedule)}
-              className="w-10 h-6 rounded-full transition-all flex items-center"
-              style={{ background: schedule ? '#1B4FD8' : '#E5E7EB', padding: '2px' }}>
-              <div className="w-5 h-5 bg-white rounded-full shadow transition-all" style={{ transform: schedule ? 'translateX(16px)' : 'translateX(0)' }}></div>
-            </button>
-            <span className="text-sm font-medium text-gray-700">Schedule for later</span>
-          </div>
-          {schedule && (
-            <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Date</label><input type="date" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Time</label><input type="time" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" /></div>
-            </div>
-          )}
-          <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 py-3 rounded-xl text-white text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#1B4FD8' }}>
-              {schedule ? <><Clock size={15} /> Schedule SMS</> : <><Send size={15} /> Send Now</>}
-            </button>
-            <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-600">Cancel</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+
 export default function CommunicationPage() {
-  const [showSend, setShowSend] = useState(false)
+  const [messages, setMessages] = useState(getMessages)
+  const [showCompose, setShowCompose] = useState(false)
+  const [form, setForm] = useState({ recipient: 'All Members', message: '', scheduled: false, scheduleDate: '', scheduleTime: '' })
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+
+  const save = (list) => { setMessages(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
+
+  const handleSend = () => {
+    if (!form.message) return
+    setSending(true)
+    setTimeout(() => {
+      save([{
+        id: Date.now(),
+        ...form,
+        status: form.scheduled ? 'Scheduled' : 'Sent',
+        date: new Date().toISOString(),
+        deliveredCount: form.recipient === 'All Members' ? 0 : 0,
+      }, ...messages])
+      setSending(false)
+      setSent(true)
+      setTimeout(() => { setSent(false); setShowCompose(false); setForm({ recipient: 'All Members', message: '', scheduled: false, scheduleDate: '', scheduleTime: '' }) }, 2000)
+    }, 1500)
+  }
+
+  const deleteMessage = (id) => save(messages.filter(m => m.id !== id))
+
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8 fade-in">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: '#0F172A' }}>Communication</h1>
-          <p className="text-gray-400 text-sm mt-1">SMS, Email & Announcements</p>
+          <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Communication</h1>
+          <p className="text-gray-400 text-sm mt-1">{messages.length} messages sent</p>
         </div>
-        <button onClick={() => setShowSend(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
-          <Send size={15} /> Send SMS
+        <button onClick={() => setShowCompose(!showCompose)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
+          <MessageSquare size={15} /> Compose SMS
         </button>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 fade-in">
-        {[
-          { label: 'Messages Sent', value: '2,341', icon: MessageSquare, color: '#1B4FD8' },
-          { label: 'Delivery Rate', value: '96.8%', icon: CheckCircle, color: '#059669' },
-          { label: 'Scheduled', value: '3', icon: Clock, color: '#7C3AED' },
-          { label: 'SMS Credits', value: '4,820', icon: Users, color: '#F59E0B' },
-        ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 stat-card">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: s.color + '15' }}>
-              <s.icon size={16} style={{ color: s.color }} />
+
+      {showCompose && (
+        <div className="bg-white rounded-2xl border-2 border-blue-200 p-6 mb-6 fade-in">
+          <h3 className="font-bold text-gray-800 mb-5" style={{ fontFamily: 'Cormorant Garamond', fontSize: '18px' }}>New SMS Message</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Send To</label>
+              <select value={form.recipient} onChange={e => setForm(p => ({...p, recipient: e.target.value}))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
+                {['All Members', 'Active Members Only', 'Workers Only', 'Leaders Only', 'Youth Ministry', 'Choir', 'Prayer Team', 'Ushering'].map(r => (
+                  <option key={r}>{r}</option>
+                ))}
+              </select>
             </div>
-            <p className="text-2xl font-bold mb-1" style={{  }}>{s.value}</p>
-            <p className="text-xs font-medium text-gray-600">{s.label}</p>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Quick Templates</label>
+              <div className="flex gap-2 flex-wrap">
+                {templates.map(t => (
+                  <button key={t.label} onClick={() => setForm(p => ({...p, message: t.text}))}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Message *</label>
+              <textarea rows={5} value={form.message} onChange={e => setForm(p => ({...p, message: e.target.value}))}
+                placeholder="Type your SMS message..."
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
+              <p className="text-xs text-gray-400 mt-1 text-right">{form.message.length} characters</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button onClick={() => setForm(p => ({...p, scheduled: !p.scheduled}))}
+                className="w-10 h-6 rounded-full flex items-center transition"
+                style={{ background: form.scheduled ? '#1B4FD8' : '#E5E7EB', padding: '2px' }}>
+                <div className="w-5 h-5 bg-white rounded-full shadow transition" style={{ transform: form.scheduled ? 'translateX(16px)' : 'translateX(0)' }}></div>
+              </button>
+              <span className="text-sm text-gray-600">Schedule for later</span>
+            </div>
+
+            {form.scheduled && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Date</label>
+                  <input type="date" value={form.scheduleDate} onChange={e => setForm(p => ({...p, scheduleDate: e.target.value}))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Time</label>
+                  <input type="time" value={form.scheduleTime} onChange={e => setForm(p => ({...p, scheduleTime: e.target.value}))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={handleSend} disabled={!form.message || sending}
+                className="flex-1 py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: sent ? '#059669' : '#1B4FD8' }}>
+                {sent ? <><Check size={15} /> Sent!</> : sending ? 'Sending...' : <><Send size={15} /> {form.scheduled ? 'Schedule SMS' : 'Send SMS Now'}</>}
+              </button>
+              <button onClick={() => setShowCompose(false)}
+                className="px-5 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-600">
+                Cancel
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden fade-in">
-        <div className="p-6 border-b border-gray-100"><h3 className="font-semibold text-gray-900" style={{ fontSize: "15px" }}>Message History</h3></div>
-        <div className="divide-y divide-gray-50">
-          {sentMessages.map(msg => (
-            <div key={msg.id} className="p-5 hover:bg-gray-50 transition">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: msg.status === 'sent' ? '#DBEAFE' : '#FEF9C3', color: msg.status === 'sent' ? '#1E40AF' : '#854D0E' }}>
-                  {msg.status === 'sent' ? '✓ Sent' : 'Scheduled'}
-                </span>
-                <span className="text-xs text-gray-400">{msg.type}</span>
+        </div>
+      )}
+
+      {messages.length === 0 ? (
+        <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
+          <div className="text-6xl mb-4">💬</div>
+          <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Cormorant Garamond' }}>No messages sent yet</h3>
+          <p className="text-gray-400 text-sm mb-6">Send your first SMS to church members</p>
+          <button onClick={() => setShowCompose(true)}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium mx-auto" style={{ background: '#1B4FD8' }}>
+            <MessageSquare size={15} /> Compose First SMS
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3 fade-in">
+          {messages.map(m => (
+            <div key={m.id} className="bg-white rounded-2xl border border-gray-100 p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#EEF2FF' }}>
+                    <MessageSquare size={18} style={{ color: '#1B4FD8' }} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-gray-800">To: {m.recipient}</p>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                        style={{ background: m.status === 'Sent' ? '#DCFCE7' : '#FEF9C3', color: m.status === 'Sent' ? '#166534' : '#854D0E' }}>
+                        {m.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400">{new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                </div>
+                <button onClick={() => deleteMessage(m.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
+                  <Trash2 size={14} className="text-red-400" />
+                </button>
               </div>
-              <p className="text-sm text-gray-700 mb-2 line-clamp-2">{msg.message}</p>
-              <div className="flex items-center gap-4 text-xs text-gray-400">
-                <span><Users size={11} className="inline mr-1" />{msg.recipients}</span>
-                <span><Clock size={11} className="inline mr-1" />{msg.sent}</span>
-                {msg.delivered && <span><CheckCircle size={11} className="inline mr-1" style={{ color: '#1B4FD8' }} />{msg.delivered} delivered</span>}
-              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">{m.message}</p>
             </div>
           ))}
         </div>
-      </div>
-      {showSend && <SendModal onClose={() => setShowSend(false)} />}
+      )}
     </div>
   )
 }

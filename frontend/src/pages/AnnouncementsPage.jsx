@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { Plus, Bell, Calendar, Users, Clock, X, Repeat } from 'lucide-react'
 
-const announcements = [
-  { id: 1, title: 'Easter Crusade Reminder', message: 'Dear church family, our Easter Crusade begins this Friday at Independence Square. Buses depart from the church at 5PM. Come with family and friends!', audience: 'All Members', date: '2025-04-17', time: '08:00 AM', status: 'sent', recurring: false, views: 1189 },
-  { id: 2, title: 'Sunday Service Change', message: 'Please note that this Sunday service will begin at 8:00 AM instead of 9:00 AM due to the special Easter program. See you there!', audience: 'All Members', date: '2025-04-19', time: '07:00 AM', status: 'scheduled', recurring: false, views: 0 },
-  { id: 3, title: 'Weekly Tithes Reminder', message: 'As you prepare for Sunday service, remember to prepare your tithes and offerings. God bless your faithful giving!', audience: 'All Members', date: '2025-04-20', time: '06:00 AM', status: 'scheduled', recurring: true, views: 0 },
-  { id: 4, title: 'Youth Meeting This Saturday', message: 'Attention all youth! Our monthly meeting is this Saturday at 3PM. Topic: Walking in Purpose. Refreshments will be served. Do not miss it!', audience: 'Youth Ministry (134)', date: '2025-04-15', time: '09:00 AM', status: 'sent', recurring: false, views: 127 },
-  { id: 5, title: 'Choir Practice', message: 'All choir members are reminded of practice this Friday at 5PM. Please come with your song books. Attendance is compulsory.', audience: 'Choir (52)', date: '2025-04-16', time: '10:00 AM', status: 'sent', recurring: true, views: 49 },
-]
+const announcements = []
 
 function CreateModal({ onClose }) {
   const [form, setForm] = useState({ title: '', message: '', audience: 'All Members', date: '', time: '', recurring: false, recurringType: 'weekly' })

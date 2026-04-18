@@ -1,49 +1,37 @@
 import { useState } from 'react'
 import { Home, User, DollarSign, BookOpen, Bell, Heart, LogOut, Calendar, Phone, Mail, MapPin, ChevronRight, CheckCircle } from 'lucide-react'
 
-const memberData = {
-  name: 'Abena Asante',
-  memberId: 'GCI-001',
-  photo: null,
-  role: 'Member',
-  status: 'Active',
-  phone: '+233 24 123 4567',
-  email: 'abena@email.com',
-  location: 'Osu, Accra',
-  dateJoined: '2022-03-15',
-  ministry: 'Choir',
-  cellGroup: 'Grace Cell - East Legon',
-  attendance: 92,
-  baptismStatus: 'Baptised',
-}
+const memberData = (() => {
+  try {
+    const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+    const members = JSON.parse(localStorage.getItem('cos_members_db') || '[]')
+    const member = members.find(m => m.email === user.email) || {}
+    return {
+      name: member.fullName || user.name || 'Church Member',
+      memberId: member.memberId || 'GCI-000',
+      role: member.status || 'Member',
+      status: member.membership || 'Active',
+      phone: member.phone || '',
+      email: member.email || user.email || '',
+      location: member.location || '',
+      dateJoined: member.dateJoined || '',
+      ministry: member.ministry || '',
+      cellGroup: member.cellGroup || '',
+      attendance: member.attendance || 0,
+      baptismStatus: member.baptismStatus || '',
+    }
+  } catch(e) {
+    return { name: 'Church Member', memberId: '', role: 'Member', status: 'Active', phone: '', email: '', location: '', dateJoined: '', ministry: '', cellGroup: '', attendance: 0, baptismStatus: '' }
+  }
+})()
 
-const myGiving = [
-  { id: 1, date: '2025-04-13', type: 'Tithe', amount: 200, status: 'Confirmed' },
-  { id: 2, date: '2025-04-13', type: 'Offering', amount: 50, status: 'Confirmed' },
-  { id: 3, date: '2025-03-30', type: 'Tithe', amount: 200, status: 'Confirmed' },
-  { id: 4, date: '2025-03-16', type: 'Pledge', amount: 500, status: 'Confirmed' },
-  { id: 5, date: '2025-03-02', type: 'Tithe', amount: 200, status: 'Confirmed' },
-]
+const myGiving = []
 
-const announcements = [
-  { id: 1, title: 'Easter Crusade', message: 'Our Easter Crusade begins this Friday at Independence Square. Buses depart from church at 5PM.', date: '2025-04-17', urgent: true },
-  { id: 2, title: 'Sunday Service Change', message: 'This Sunday service will begin at 8AM instead of 9AM due to the special Easter program.', date: '2025-04-16', urgent: false },
-  { id: 3, title: 'Choir Practice', message: 'All choir members are reminded of practice this Friday at 5PM. Attendance is compulsory.', date: '2025-04-15', urgent: false },
-]
+const announcements = []
 
-const sermons = [
-  { id: 1, title: 'Walking in Purpose', pastor: 'Rev. Samuel Mensah', date: '2025-04-13', duration: '52 mins', series: 'Living by Faith' },
-  { id: 2, title: 'The Power of Prayer', pastor: 'Rev. Samuel Mensah', date: '2025-04-06', duration: '48 mins', series: 'Living by Faith' },
-  { id: 3, title: 'Grace and Mercy', pastor: 'Rev. Samuel Mensah', date: '2025-03-30', duration: '55 mins', series: 'God\'s Promises' },
-]
+const sermons = (() => { try { return JSON.parse(localStorage.getItem("cos_sermons") || "[]") } catch(e) { return [] } })()
 
-const attendanceHistory = [
-  { date: '2025-04-13', service: 'Sunday Service', status: 'Present' },
-  { date: '2025-04-09', service: 'Prayer Meeting', status: 'Present' },
-  { date: '2025-04-06', service: 'Sunday Service', status: 'Present' },
-  { date: '2025-04-02', service: 'Midweek Service', status: 'Absent' },
-  { date: '2025-03-30', service: 'Sunday Service', status: 'Present' },
-]
+const attendanceHistory = []
 
 export default function MemberPortalPage() {
   const [tab, setTab] = useState('home')
