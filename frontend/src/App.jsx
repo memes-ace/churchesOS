@@ -35,7 +35,12 @@ import QuoteRequestsPage from './pages/QuoteRequestsPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 
 function Root() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0F172A' }}>
+      <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+    </div>
+  )
   if (!user) return <Navigate to="/login" replace />
   if (user.role === 'super_admin' || user.email === 'admin@churchesos.com') {
     return <Navigate to="/super-admin" replace />
