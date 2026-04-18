@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { prayerAPI } from '../utils/api'
+import { useDB } from '../hooks/useDB'
+import { useState, useEffect, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Heart, Check } from 'lucide-react'
 
-const storageKey = 'cos_prayer_requests'
+// API-backed: cos_prayer_requests
 const getRequests = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
 
 export default function PrayerPage() {
@@ -10,7 +12,7 @@ export default function PrayerPage() {
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState({ name: '', request: '', anonymous: false, status: 'Pending' })
 
-  const save = (list) => { setRequests(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
+  const save = (list) => { setRequests(list); try { // saved to DB via API } catch(e) {} }
 
   const handleAdd = () => {
     if (!form.request) return

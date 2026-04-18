@@ -1,3 +1,5 @@
+import { equipmentAPI } from '../utils/api'
+import { useDB } from '../hooks/useDB'
 import { useState } from 'react'
 import { Plus, X, Save, Trash2, Upload, AlertTriangle, CheckCircle, Clock, Wrench, Eye } from 'lucide-react'
 

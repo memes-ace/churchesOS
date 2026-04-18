@@ -1,3 +1,4 @@
+import { cellGroupsAPI } from '../utils/api'
 import { useState } from 'react'
 import { Plus, X, Save, Trash2, ArrowLeft, Phone, MapPin, Calendar, Users, MessageSquare, Edit, CheckCircle, BarChart3 } from 'lucide-react'
 
@@ -672,12 +673,20 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
 export default function CellGroupsPage() {
   const mainKey = 'cos_cell_groups'
 
-  const getCellGroups = () => {
-    try { const s = localStorage.getItem(mainKey); return s ? JSON.parse(s) : [] }
-    catch(e) { return [] }
-  }
+  const [cellGroups, setCellGroups] = useState([])
 
-  const [cellGroups, setCellGroups] = useState(getCellGroups)
+  useEffect(() => {
+    cellGroupsAPI.getAll().then(data => {
+      if (Array.isArray(data)) setCellGroups(data.map(c => ({
+        id: c.id, name: c.name, cellGroupId: c.cell_group_id,
+        location: c.location, meetingAddress: c.meeting_address,
+        meetingDay: c.meeting_day, meetingTime: c.meeting_time,
+        leaderName: c.leader_name, leaderPhone: c.leader_phone,
+        leaderEmail: c.leader_email, assistantLeaderName: c.assistant_leader_name,
+        hostName: c.host_name, color: c.color || '#1B4FD8', dateCreated: c.date_created,
+      })))
+    }).catch(e => console.warn('Cell groups API error:', e.message))
+  }, [])
   const [activeCell, setActiveCell] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
   const [editCell, setEditCell] = useState(null)

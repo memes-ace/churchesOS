@@ -1,3 +1,4 @@
+import { ministriesAPI } from '../utils/api'
 import { useState } from 'react'
 import { Plus, Users, MessageSquare, X, Edit, Trash2, ArrowLeft, Upload, Save } from 'lucide-react'
 
@@ -648,7 +649,24 @@ function CreateMinistryModal({ onClose, onSave }) {
 }
 
 export default function MinistriesPage() {
-  const [ministries, setMinistries] = useState(initialMinistries)
+  const [ministries, setMinistries] = useState([])
+  const [loadingMinistries, setLoadingMinistries] = useState(true)
+
+  useEffect(() => {
+    ministriesAPI.getAll().then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setMinistries(data.map(m => ({
+          id: m.id, name: m.name, leader: m.leader || '', leaderPhone: m.leader_phone || '',
+          members: 0, meetingDay: m.meeting_day || '', color: m.color || '#1B4FD8',
+          emoji: m.emoji || '⛪', description: m.description || '',
+        })))
+      } else {
+        // Load initial ministries if none in DB
+        setMinistries(initialMinistries)
+      }
+    }).catch(() => setMinistries(initialMinistries))
+    .finally(() => setLoadingMinistries(false))
+  }, [])
   const [activeMinistry, setActiveMinistry] = useState(null)
   const [editMinistry, setEditMinistry] = useState(null)
   const [showCreate, setShowCreate] = useState(false)

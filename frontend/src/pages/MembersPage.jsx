@@ -684,58 +684,72 @@ function AddMemberModal({ onClose, onSave }) {
 export default function MembersPage() {
   const storageKey = 'cos_members'
 
-  const getMembers = () => {
-    try { const s = localStorage.getItem('cos_members_db'); return s ? JSON.parse(s) : [] }
-    catch(e) { return [] }
-  }
+  const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const [members, setMembers] = useState(getMembers)
-  const [loading, setLoading] = useState(false)
-
-  // Load from API on mount
-  useState(() => {
+  useEffect(() => {
     membersAPI.getAll().then(data => {
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         const mapped = data.map(m => ({
-          id: m.id, memberId: m.member_id || m.memberId || 'GCI-' + m.id?.slice(-4),
-          fullName: m.name || m.fullName, phone: m.phone,
-          email: m.email, ministry: m.ministry, cellGroup: m.cell_group || m.cellGroup,
-          status: m.status || 'Member', membership: m.membership_status || 'Active',
-          attendance: m.attendance_rate || 0, lastSeen: m.last_seen || m.lastSeen,
-          dateJoined: m.date_joined || m.dateJoined, location: m.location,
-          gender: m.gender, dateOfBirth: m.date_of_birth || m.dateOfBirth,
+          id: m.id,
+          memberId: m.member_id || 'GCI-' + String(m.id).slice(-4),
+          fullName: m.name,
+          phone: m.phone,
+          email: m.email,
+          ministry: m.ministry,
+          cellGroup: m.cell_group,
+          status: m.status || 'Member',
+          membership: m.membership || 'Active',
+          attendance: m.attendance_rate || 0,
+          lastSeen: m.last_seen,
+          dateJoined: m.created_at,
+          location: m.address,
+          gender: m.gender,
+          dateOfBirth: m.date_of_birth,
+          occupation: m.occupation,
+          maritalStatus: m.marital_status,
+          baptismStatus: m.baptism_date ? 'Baptised' : 'Not Baptised',
         }))
         setMembers(mapped)
-        try { localStorage.setItem('cos_members_db', JSON.stringify(mapped)) } catch(e) {}
       }
-    }).catch(() => {})
-  })
+    }).catch(e => console.warn('Members API:', e.message))
+    .finally(() => setLoading(false))
+  }, [])
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
   const [selectedMember, setSelectedMember] = useState(null)
   const [showAdd, setShowAdd] = useState(false)
 
-  const saveMembers = (list) => {
-    setMembers(list)
-    try { localStorage.setItem('cos_members_db', JSON.stringify(list)) } catch(e) {}
-  }
-
   const handleSave = async (updated) => {
-    saveMembers(members.map(m => m.id === updated.id ? updated : m))
-    try { await membersAPI.update(updated.id, { name: updated.fullName, phone: updated.phone, email: updated.email, ministry: updated.ministry, status: updated.status }) } catch(e) {}
+    try {
+      await membersAPI.update(updated.id, {
+        name: updated.fullName, phone: updated.phone, email: updated.email,
+        ministry: updated.ministry, status: updated.status, membership: updated.membership,
+        gender: updated.gender, address: updated.location, occupation: updated.occupation,
+      })
+      setMembers(prev => prev.map(m => m.id === updated.id ? updated : m))
+    } catch(e) {
+      setMembers(prev => prev.map(m => m.id === updated.id ? updated : m))
+    }
   }
 
   const handleDelete = async (id) => {
-    saveMembers(members.filter(m => m.id !== id))
     try { await membersAPI.delete(id) } catch(e) {}
+    setMembers(prev => prev.filter(m => m.id !== id))
   }
 
   const handleAdd = async (newM) => {
     try {
-      const saved = await membersAPI.create({ name: newM.fullName, phone: newM.phone, email: newM.email, ministry: newM.ministry, status: newM.status, date_joined: newM.dateJoined, location: newM.location })
-      if (saved?.id) { saveMembers([...members, { ...newM, id: saved.id }]); return }
-    } catch(e) {}
-    saveMembers([...members, newM])
+      const saved = await membersAPI.create({
+        name: newM.fullName, phone: newM.phone, email: newM.email,
+        ministry: newM.ministry, status: newM.status, membership: newM.membership,
+        gender: newM.gender, address: newM.location, date_of_birth: newM.dateOfBirth,
+        occupation: newM.occupation,
+      })
+      setMembers(prev => [...prev, { ...newM, id: saved.id }])
+    } catch(e) {
+      setMembers(prev => [...prev, { ...newM, id: Date.now().toString() }])
+    }
   }
 
   if (selectedMember) {

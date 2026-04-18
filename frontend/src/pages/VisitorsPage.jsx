@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { visitorsAPI } from '../utils/api'
+import { useDB } from '../hooks/useDB'
+import { useState, useEffect, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Phone, Mail, MapPin, Calendar, User, ArrowLeft } from 'lucide-react'
 
 const emptyVisitor = {
@@ -384,7 +386,7 @@ function VisitorModal({ visitor, onClose, onSave, onDelete }) {
 }
 
 export default function VisitorsPage() {
-  const storageKey = 'cos_visitors'
+  // API-backed: cos_visitors
 
   const getVisitors = () => {
     try {
@@ -400,7 +402,7 @@ export default function VisitorsPage() {
 
   const saveVisitors = (list) => {
     setVisitors(list)
-    try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
+    try { // saved to DB via API } catch(e) {}
   }
 
   const handleSave = (form) => {

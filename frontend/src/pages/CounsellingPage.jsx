@@ -1,3 +1,5 @@
+import { counsellingAPI } from '../utils/api'
+import { useDB } from '../hooks/useDB'
 import { useState } from 'react'
 import { Plus, Calendar, Clock, User, X, Check, Phone, Lock } from 'lucide-react'
 
