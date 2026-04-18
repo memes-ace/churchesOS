@@ -1,5 +1,5 @@
 import { ministriesAPI } from '../utils/api'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Users, MessageSquare, X, Edit, Trash2, ArrowLeft, Upload, Save } from 'lucide-react'
 
 const initialMinistries = []
@@ -650,8 +650,7 @@ export default function MinistriesPage() {
         // Load initial ministries if none in DB
         setMinistries(initialMinistries)
       }
-    }).catch(() => setMinistries(initialMinistries))
-    .finally(() => setLoadingMinistries(false))
+    }).catch(() => console.warn("Ministries API error"))
   }, [])
   const [activeMinistry, setActiveMinistry] = useState(null)
   const [editMinistry, setEditMinistry] = useState(null)

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Plus, Download, MoreVertical, X, Save, Trash2, ArrowLeft, Upload, Phone, Mail, MapPin, Calendar, Users, Edit, MessageSquare, Clock, DollarSign, FileText, Heart, Star } from 'lucide-react'
 import { membersAPI } from '../utils/api'
 
 const initialMembers = []
+
 
 const statusStyle = { Member: { bg: '#EEF2FF', text: '#1B4FD8' }, Worker: { bg: '#FEF9C3', text: '#854D0E' }, Leader: { bg: '#EDE9FE', text: '#5B21B6' } }
 const membershipStyle = { Active: { bg: '#DBEAFE', text: '#1E40AF' }, Inactive: { bg: '#FEE2E2', text: '#991B1B' } }
@@ -743,11 +744,15 @@ export default function MembersPage() {
       const saved = await membersAPI.create({
         name: newM.fullName, phone: newM.phone, email: newM.email,
         ministry: newM.ministry, status: newM.status, membership: newM.membership,
-        gender: newM.gender, address: newM.location, date_of_birth: newM.dateOfBirth,
-        occupation: newM.occupation,
+        gender: newM.gender, address: newM.homeAddress || newM.location,
+        date_of_birth: newM.dateOfBirth, occupation: newM.occupation,
+        marital_status: newM.maritalStatus, notes: newM.generalRemarks,
+        baptism_date: newM.baptismDate, cell_group: newM.cellGroup,
+        whatsapp: newM.whatsapp,
       })
       setMembers(prev => [...prev, { ...newM, id: saved.id }])
     } catch(e) {
+      console.warn('Add member error:', e)
       setMembers(prev => [...prev, { ...newM, id: Date.now().toString() }])
     }
   }
