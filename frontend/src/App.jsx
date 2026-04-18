@@ -28,6 +28,7 @@ import SuperAdminDashboard from './pages/SuperAdminDashboard'
 import SuperChurchesPage from './pages/SuperChurchesPage'
 import SuperRevenuePage from './pages/SuperRevenuePage'
 import MemberPortalPage from './pages/MemberPortalPage'
+import MemberLoginPage from './pages/MemberLoginPage'
 import VendorRegisterPage from './pages/VendorRegisterPage'
 import SuperVendorsPage from './pages/SuperVendorsPage'
 import QuoteRequestsPage from './pages/QuoteRequestsPage'
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/member-portal" element={<MemberPortalPage />} />
+          <Route path="/member-login" element={<MemberLoginPage />} />
           <Route path="/vendor-register" element={<VendorRegisterPage />} />
 
           <Route path="/church" element={<ChurchLayout />}>
