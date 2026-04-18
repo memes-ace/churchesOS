@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { adminAPI } from '../utils/api'
+import { useState, useEffect } } from 'react'
 import { Search, X, Shield, Bell, CheckCircle, XCircle, Clock, Eye, Wrench, AlertTriangle } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
@@ -176,7 +177,17 @@ export default function SuperAdminDashboard() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
   const [selected, setSelected] = useState(null)
-  const [churchList, setChurchList] = useState(churches)
+  const [churchList, setChurchList] = useState([])
+  const [platformStats, setPlatformStats] = useState({ totalChurches: 0, activeChurches: 0, totalMembers: 0, totalRevenue: 0, pendingChurches: 0 })
+
+  useEffect(() => {
+    adminAPI.getChurches()
+      .then(data => { if (Array.isArray(data)) setChurchList(data) })
+      .catch(e => console.warn('Admin churches error:', e))
+    adminAPI.getStats()
+      .then(data => { if (data) setPlatformStats(data) })
+      .catch(e => console.warn('Admin stats error:', e))
+  }, [])
   const [activeTab, setActiveTab] = useState('overview')
 
   const handleStatusChange = (id, status) => setChurchList(prev => prev.map(c => c.id === id ? { ...c, status } : c))

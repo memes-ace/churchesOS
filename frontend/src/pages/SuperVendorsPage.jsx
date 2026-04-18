@@ -1,3 +1,4 @@
+import { vendorsAPI } from '../utils/api'
 import { useState } from 'react'
 import { Search, Check, X, Eye, Store, Phone, Mail, MapPin, DollarSign } from 'lucide-react'
 
@@ -172,10 +173,15 @@ function VendorDetailModal({ vendor, onClose, onApprove, onReject, onSuspend }) 
 }
 
 export default function SuperVendorsPage() {
-  const [vendors, setVendors] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('cos_vendor_applications') || '[]') }
-    catch(e) { return [] }
-  })
+  const [vendors, setVendors] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    vendorsAPI.getAll()
+      .then(data => { if (Array.isArray(data)) setVendors(data) })
+      .catch(e => console.warn('Vendors load error:', e))
+      .finally(() => setLoading(false))
+  }, [])
   const [selected, setSelected] = useState(null)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')

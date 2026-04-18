@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { vendorsAPI } from '../utils/api'
+import { vendorsAPI } from '../utils/api' from 'react'
 import { Check, Upload, ChevronRight, Store } from 'lucide-react'
 
 const categories = [

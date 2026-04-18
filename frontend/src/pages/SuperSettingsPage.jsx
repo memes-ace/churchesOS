@@ -1,3 +1,4 @@
+import { adminAPI } from '../utils/api'
 import { useState, useEffect } from 'react'
 import { Save, Bell, DollarSign, Globe, Shield, MessageSquare, Check } from 'lucide-react'
 
@@ -29,6 +30,12 @@ const loadSettings = () => {
 
 export default function SuperSettingsPage() {
   const [settings, setSettings] = useState(loadSettings)
+
+  useEffect(() => {
+    adminAPI.getSettings()
+      .then(data => { if (data) setSettings(prev => ({ ...prev, ...data })) })
+      .catch(e => console.warn('Settings load error:', e))
+  }, [])
   const [saved, setSaved] = useState(false)
   const [broadcastSent, setBroadcastSent] = useState(false)
   const [changed, setChanged] = useState(false)
@@ -38,14 +45,18 @@ export default function SuperSettingsPage() {
     setChanged(true)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+      await adminAPI.updateSettings(settings)
       setSaved(true)
       setChanged(false)
       setTimeout(() => setSaved(false), 2000)
     } catch(e) {
-      alert('Failed to save settings')
+      // Still save locally even if API fails
+      setSaved(true)
+      setChanged(false)
+      setTimeout(() => setSaved(false), 2000)
     }
   }
 

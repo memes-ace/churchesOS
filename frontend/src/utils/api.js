@@ -155,3 +155,13 @@ export const vendorsAPI = {
 export const dashboardAPI = {
   getStats: () => api.get(`/churches/${cId()}/dashboard`),
 }
+
+export const adminAPI = {
+  getChurches: () => api.get('/admin/churches'),
+  getChurch: (id) => api.get(`/admin/churches/${id}`),
+  updateChurch: (id, d) => api.put(`/admin/churches/${id}`, d),
+  getStats: () => api.get('/admin/stats'),
+  getSettings: () => api.get('/admin/settings'),
+  updateSettings: (d) => api.put('/admin/settings', d),
+  getDashboard: () => api.get('/admin/dashboard'),
+}

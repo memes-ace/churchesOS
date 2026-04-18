@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { adminAPI } from '../utils/api'
+import { useState, useEffect, useEffect } from 'react'
 import { Search, Plus, X, Save, Check, XCircle, Clock, Eye } from 'lucide-react'
 
 const planConfig = {
@@ -70,16 +71,27 @@ function AddChurchModal({ onClose, onSave }) {
 }
 
 export default function SuperChurchesPage() {
-  const storageKey = 'cos_platform_churches'
-  const getChurches = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
-  const [churches, setChurches] = useState(getChurches)
+  const [churches, setChurches] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    adminAPI.getChurches()
+      .then(data => { if (Array.isArray(data)) setChurches(data) })
+      .catch(e => console.warn('Churches load error:', e))
+      .finally(() => setLoading(false))
+  }, [])
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
   const [showAdd, setShowAdd] = useState(false)
 
-  const save = (list) => { setChurches(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
-  const updateStatus = (id, status) => save(churches.map(c => c.id === id ? { ...c, status } : c))
-  const updatePlan = (id, plan) => save(churches.map(c => c.id === id ? { ...c, plan, revenue: planConfig[plan].price } : c))
+  const updateStatus = async (id, status) => {
+    try { await adminAPI.updateChurch(id, { status }) } catch(e) {}
+    setChurches(prev => prev.map(c => c.id === id ? { ...c, status } : c))
+  }
+  const updatePlan = async (id, plan) => {
+    try { await adminAPI.updateChurch(id, { plan }) } catch(e) {}
+    setChurches(prev => prev.map(c => c.id === id ? { ...c, plan } : c))
+  }
 
   const filtered = churches.filter(c => {
     const ms = c.name?.toLowerCase().includes(search.toLowerCase()) || c.pastor?.toLowerCase().includes(search.toLowerCase()) || c.location?.toLowerCase().includes(search.toLowerCase())

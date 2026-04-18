@@ -18,6 +18,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module'
 import { SongsModule } from './modules/songs/songs.module'
 import { CounsellingModule } from './modules/counselling/counselling.module'
 import { VendorsModule } from './modules/vendors/vendors.module'
+import { ChurchesModule } from './modules/churches/churches.module'
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { VendorsModule } from './modules/vendors/vendors.module'
     SongsModule,
     CounsellingModule,
     VendorsModule,
+    ChurchesModule,
   ],
 })
 export class AppModule {}

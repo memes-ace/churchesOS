@@ -12,7 +12,7 @@ import { User, Church } from '../../entities';
     TypeOrmModule.forFeature([User, Church]),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'churchesos-super-secret-2025',
+      secret: process.env.JWT_SECRET || 'churchesos-super-secret-key-2025',
       signOptions: { expiresIn: '7d' },
     }),
   ],
