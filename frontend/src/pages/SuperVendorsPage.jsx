@@ -1,5 +1,5 @@
 import { vendorsAPI } from '../utils/api'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Check, X, Eye, Store, Phone, Mail, MapPin, DollarSign } from 'lucide-react'
 
 const categoryLabels = {

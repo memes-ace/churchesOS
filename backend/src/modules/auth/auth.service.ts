@@ -19,12 +19,12 @@ export class AuthService implements OnModuleInit {
 
   async seedDemoData() {
     try {
-      const adminExists = await this.userRepo.findOne({ where: { email: 'admin@churchesos.com' } });
+      const adminExists = await this.userRepo.findOne({ where: { email: 'churchesos97@gmail.com' } });
       if (!adminExists) {
-        const hashed = await bcrypt.hash('admin123', 10);
+        const hashed = await bcrypt.hash('Arielle@2025', 10);
         await this.userRepo.save(this.userRepo.create({
           name: 'Super Admin',
-          email: 'admin@churchesos.com',
+          email: 'churchesos97@gmail.com',
           password: hashed,
           role: 'super_admin',
         }));

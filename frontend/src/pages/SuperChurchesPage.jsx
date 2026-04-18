@@ -1,5 +1,5 @@
 import { adminAPI } from '../utils/api'
-import { useState, useEffect, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Plus, X, Save, Check, XCircle, Clock, Eye } from 'lucide-react'
 
 const planConfig = {

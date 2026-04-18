@@ -42,7 +42,7 @@ function Root() {
     </div>
   )
   if (!user) return <Navigate to="/login" replace />
-  if (user.role === 'super_admin' || user.email === 'admin@churchesos.com') {
+  if (user.role === 'super_admin' || user.email === 'admin@churchesos.com' || user.email === 'churchesos97@gmail.com') {
     return <Navigate to="/super-admin" replace />
   }
   return <Navigate to="/church/dashboard" replace />

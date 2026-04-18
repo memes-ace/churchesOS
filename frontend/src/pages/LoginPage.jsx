@@ -30,7 +30,7 @@ export default function LoginPage() {
 
       if (data.access_token && data.user) {
         // Fix super admin role
-        if (data.user.email === 'admin@churchesos.com') {
+        if (data.user.email === 'churchesos97@gmail.com' || data.user.email === 'admin@churchesos.com') {
           data.user.role = 'super_admin'
         }
         // Save via AuthContext
