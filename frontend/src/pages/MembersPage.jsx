@@ -600,7 +600,7 @@ function AddMemberModal({ onClose, onSave }) {
             <>
               {[
                 { label: 'Full Name *', field: 'fullName', type: 'text', ph: 'Member full name', col: 2 },
-                { label: 'Member ID', field: 'memberId', type: 'text', ph: 'e.g. GCI-001' },
+                { label: 'Member ID', field: 'memberId', type: 'text', ph: 'e.g. GCI-001 (auto-generated)' },
                 { label: 'Gender', field: 'gender', type: 'select', options: ['Male', 'Female'] },
                 { label: 'Date of Birth', field: 'dateOfBirth', type: 'date' },
                 { label: 'Occupation', field: 'occupation', type: 'text', ph: 'Job title' },

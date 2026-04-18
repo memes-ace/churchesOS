@@ -1,195 +1,205 @@
+import { useState, useEffect } from 'react'
+import { Plus, X, Trash2, Edit, Heart, Clock } from 'lucide-react'
 import { counsellingAPI } from '../utils/api'
-import { useDB } from '../hooks/useDB'
-import { useState } from 'react'
-import { Plus, Calendar, Clock, User, X, Check, Phone, Lock } from 'lucide-react'
 
-const appointments = []
+const counsellingTypes = ['Pre-Marital', 'Marital', 'Grief', 'Family', 'Personal', 'Financial', 'Career', 'Youth', 'Other']
+const statusOptions = ['Pending', 'Confirmed', 'Completed', 'Cancelled', 'No Show']
 
-const timeSlots = ['9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM']
+function CounsellingModal({ item, onClose, onSave, onDelete }) {
+  const [form, setForm] = useState(item ? { ...item } : { member_name: '', member_phone: '', date: '', time: '', type: 'Personal', status: 'Pending', notes: '' })
+  const [showDelete, setShowDelete] = useState(false)
+  const update = (f, v) => setForm(p => ({ ...p, [f]: v }))
 
-const counsellingTypes = ['Marriage Counselling', 'Family Issues', 'Spiritual Guidance', 'Career & Finance', 'Grief & Loss', 'Youth Issues', 'General Counselling', 'Pre-marital Counselling']
-
-function AppointmentModal({ appt, onClose }) {
-  const [notes, setNotes] = useState(appt.notes)
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>Appointment Details</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={18} /></button>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl flex flex-col" style={{ maxHeight: '92vh' }}>
+        <div className="p-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+          <h2 className="font-bold text-gray-900" style={{ fontFamily: 'Cormorant Garamond', fontSize: '20px' }}>
+            {item ? 'Edit Appointment' : 'Book Appointment'}
+          </h2>
+          <div className="flex gap-2">
+            {item && <button onClick={() => setShowDelete(true)} className="p-2 hover:bg-red-50 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>}
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={18} /></button>
+          </div>
         </div>
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-5 p-4 rounded-xl" style={{ background: '#EEF2FF' }}>
-            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{ background: '#1B4FD8' }}>{appt.avatar}</div>
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          {[
+            { label: 'Member Name *', field: 'member_name', ph: 'Full name' },
+            { label: 'Phone Number', field: 'member_phone', ph: '+233 24 000 0000' },
+          ].map(f => (
+            <div key={f.field}>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">{f.label}</label>
+              <input type="text" value={form[f.field] || ''} onChange={e => update(f.field, e.target.value)}
+                placeholder={f.ph} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+            </div>
+          ))}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="font-semibold text-gray-900" style={{ fontSize: "16px", fontWeight: "700", fontFamily: "DM Sans, system-ui, sans-serif", color: "#0F172A", letterSpacing: "-0.02em" }}>{appt.member}</p>
-              <p className="text-xs text-gray-500 flex items-center gap-1"><Phone size={10} /> {appt.phone}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-5">
-            {[
-              { label: 'Date', value: new Date(appt.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long' }) },
-              { label: 'Time', value: appt.time },
-              { label: 'Type', value: appt.type },
-              { label: 'Status', value: appt.status },
-            ].map(({ label, value }) => (
-              <div key={label} className="p-3 rounded-xl bg-gray-50">
-                <p className="text-xs text-gray-400 mb-1">{label}</p>
-                <p className="text-sm font-semibold text-gray-800 capitalize">{value}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mb-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Lock size={13} className="text-gray-400" />
-              <label className="text-sm font-medium text-gray-700">Private Pastor Notes</label>
-            </div>
-            <textarea rows={4} value={notes} onChange={e => setNotes(e.target.value)}
-              placeholder="Add private notes after session (only visible to you)..."
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
-          </div>
-          <div className="mb-4 space-y-3">
-            <p className="text-sm font-semibold text-gray-700">Edit Appointment</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Date</label>
-                <input type="date" defaultValue={appt.date} className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:outline-none text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Time</label>
-                <input type="time" className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:outline-none text-sm" />
-              </div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Date *</label>
+              <input type="date" value={form.date || ''} onChange={e => update('date', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Counselling Type</label>
-              <select className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:outline-none text-sm" defaultValue={appt.type}>
-                {['Marriage Counselling','Family Issues','Spiritual Guidance','Career & Finance','Grief & Loss','General Counselling'].map(t => <option key={t}>{t}</option>)}
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Time *</label>
+              <input type="time" value={form.time || ''} onChange={e => update('time', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Type</label>
+              <select value={form.type || 'Personal'} onChange={e => update('type', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
+                {counsellingTypes.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Status</label>
+              <select value={form.status || 'Pending'} onChange={e => update('status', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
+                {statusOptions.map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
           </div>
-          <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>Save Changes</button>
-            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600">
-              Send Reminder SMS
-            </button>
+          <div>
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Notes (Confidential)</label>
+            <textarea rows={4} value={form.notes || ''} onChange={e => update('notes', e.target.value)}
+              placeholder="Session notes (confidential)..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-function SetAvailabilityModal({ onClose }) {
-  const [selected, setSelected] = useState(['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM'])
-  const toggle = (slot) => setSelected(prev => prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot])
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>Set Available Time Slots</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={18} /></button>
-        </div>
-        <div className="p-6">
-          <p className="text-sm text-gray-500 mb-4">Select times when you are available for counselling appointments</p>
-          <div className="grid grid-cols-3 gap-2 mb-5">
-            {timeSlots.map(slot => (
-              <button key={slot} onClick={() => toggle(slot)}
-                className="py-2 rounded-xl text-xs font-medium transition"
-                style={{
-                  background: selected.includes(slot) ? '#1B4FD8' : '#F3F4F6',
-                  color: selected.includes(slot) ? 'white' : '#6B7280'
-                }}>
-                {slot}
-              </button>
-            ))}
-          </div>
-          <button onClick={onClose} className="w-full py-3 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
-            Save Availability ({selected.length} slots)
+        <div className="p-5 border-t border-gray-100 flex gap-3 flex-shrink-0">
+          <button onClick={() => { if(form.member_name && form.date && form.time) { onSave(form); onClose() } }}
+            disabled={!form.member_name || !form.date || !form.time}
+            className="flex-1 py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50"
+            style={{ background: '#1B4FD8' }}>
+            {item ? 'Save Changes' : 'Book Appointment'}
           </button>
+          <button onClick={onClose} className="px-5 py-3 rounded-xl border border-gray-200 text-sm text-gray-600">Cancel</button>
         </div>
+        {showDelete && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl p-6">
+            <div className="bg-white rounded-2xl p-6 text-center w-full max-w-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Delete Appointment?</h3>
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => { onDelete(item.id); onClose() }} className="flex-1 py-2.5 rounded-xl text-white text-sm" style={{ background: '#DC2626' }}>Delete</button>
+                <button onClick={() => setShowDelete(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export default function CounsellingPage() {
+  const [appointments, setAppointments] = useState([])
+  const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
-  const [showAvailability, setShowAvailability] = useState(false)
-  const [filter, setFilter] = useState('all')
+  const [showAdd, setShowAdd] = useState(false)
+  const [filter, setFilter] = useState('All')
 
-  const filtered = filter === 'all' ? appointments : appointments.filter(a => a.status === filter)
-  const todayAppts = appointments.filter(a => a.date === '2025-04-18').length
+  useEffect(() => {
+    counsellingAPI.getAll()
+      .then(data => { if (Array.isArray(data)) setAppointments(data) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleSave = async (form) => {
+    try {
+      if (selected) {
+        await counsellingAPI.update(selected.id, form)
+        setAppointments(prev => prev.map(a => a.id === selected.id ? { ...a, ...form } : a))
+      } else {
+        const saved = await counsellingAPI.create(form)
+        setAppointments(prev => [saved, ...prev])
+      }
+    } catch(e) {
+      if (selected) setAppointments(prev => prev.map(a => a.id === selected.id ? { ...a, ...form } : a))
+      else setAppointments(prev => [{ ...form, id: Date.now() }, ...prev])
+    }
+    setSelected(null); setShowAdd(false)
+  }
+
+  const handleDelete = async (id) => {
+    try { await counsellingAPI.delete(id) } catch(e) {}
+    setAppointments(prev => prev.filter(a => a.id !== id))
+    setSelected(null)
+  }
+
+  const statusColors = { Pending: { bg: '#FEF9C3', text: '#854D0E' }, Confirmed: { bg: '#DBEAFE', text: '#1E40AF' }, Completed: { bg: '#DCFCE7', text: '#166534' }, Cancelled: { bg: '#FEE2E2', text: '#991B1B' }, 'No Show': { bg: '#F3F4F6', text: '#6B7280' } }
+  const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter)
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8 fade-in">
         <div>
-          <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Counselling & Appointments</h1>
-          <p className="text-gray-400 text-sm mt-1">{appointments.length} appointments • {todayAppts} today</p>
+          <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Counselling</h1>
+          <p className="text-gray-400 text-sm mt-1">{appointments.length} appointments • {appointments.filter(a => a.status === 'Pending').length} pending</p>
         </div>
-        <button onClick={() => setShowAvailability(true)}
+        <button onClick={() => { setSelected(null); setShowAdd(true) }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
-          <Clock size={15} /> Set Availability
+          <Plus size={15} /> Book Appointment
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8 fade-in">
-        {[
-          { label: 'Today', value: todayAppts, color: '#1B4FD8' },
-          { label: 'This Week', value: appointments.length, color: '#7C3AED' },
-          { label: 'Pending Confirm', value: appointments.filter(a => a.status === 'pending').length, color: '#F59E0B' },
-        ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 text-center stat-card">
-            <p className="text-3xl font-bold mb-1" style={{ color: s.color }}>{s.value}</p>
-            <p className="text-sm font-medium text-gray-600">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex gap-2 mb-5 fade-in">
-        {['all', 'confirmed', 'pending'].map(f => (
+      <div className="flex gap-2 mb-5 flex-wrap fade-in">
+        {['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled'].map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            className="px-3 py-2 rounded-lg text-xs font-medium capitalize transition"
+            className="px-3 py-2 rounded-lg text-xs font-medium transition"
             style={{ background: filter === f ? '#1B4FD8' : 'white', color: filter === f ? 'white' : '#6B7280', border: '1px solid ' + (filter === f ? '#1B4FD8' : '#E5E7EB') }}>
             {f}
           </button>
         ))}
       </div>
 
-      <div className="space-y-3 fade-in">
-        {filtered.map(a => (
-          <div key={a.id} onClick={() => setSelected(a)}
-            className="bg-white rounded-2xl border border-gray-100 p-5 cursor-pointer hover:border-blue-200 transition stat-card">
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style={{ background: '#1B4FD8' }}>{a.avatar}</div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-semibold text-gray-900">{a.member}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={{ background: a.status === 'confirmed' ? '#DBEAFE' : '#FEF9C3', color: a.status === 'confirmed' ? '#1E40AF' : '#854D0E' }}>
-                    {a.status}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500">{a.type}</p>
-                <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-2">
-                  <Calendar size={10} /> {new Date(a.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
-                  <Clock size={10} /> {a.time}
-                </p>
+      {loading ? (
+        <div className="text-center py-20"><div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div></div>
+      ) : appointments.length === 0 ? (
+        <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
+          <div className="text-6xl mb-4">💬</div>
+          <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Cormorant Garamond' }}>No appointments yet</h3>
+          <p className="text-gray-400 text-sm mb-6">Book your first counselling appointment</p>
+          <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium mx-auto" style={{ background: '#1B4FD8' }}>
+            <Plus size={15} /> Book First Appointment
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3 fade-in">
+          {filtered.map(a => (
+            <div key={a.id} className="bg-white rounded-2xl border border-gray-100 p-5 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#EDE9FE' }}>
+                <Heart size={18} style={{ color: '#7C3AED' }} />
               </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <button onClick={e => { e.stopPropagation(); setSelected(a) }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-white" style={{ background: '#1B4FD8' }}>
-                  View
-                </button>
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{a.member_name}</h3>
+                    <p className="text-xs text-gray-400">{a.type} • {a.member_phone || ''}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded-full font-medium"
+                      style={{ background: statusColors[a.status]?.bg || '#F3F4F6', color: statusColors[a.status]?.text || '#374151' }}>
+                      {a.status}
+                    </span>
+                    <button onClick={() => setSelected(a)} className="p-1.5 hover:bg-gray-100 rounded-lg">
+                      <Edit size={13} className="text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-2">
+                  <p className="text-xs text-gray-500 flex items-center gap-1"><Clock size={10} /> {a.date} {a.time ? '• ' + a.time : ''}</p>
+                </div>
+                {a.notes && <p className="text-xs text-gray-400 mt-1 italic">Note: {a.notes.substring(0, 80)}{a.notes.length > 80 ? '...' : ''}</p>}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {selected && <AppointmentModal appt={selected} onClose={() => setSelected(null)} />}
-      {showAvailability && <SetAvailabilityModal onClose={() => setShowAvailability(false)} />}
+      {(selected || showAdd) && (
+        <CounsellingModal item={selected} onClose={() => { setSelected(null); setShowAdd(false) }} onSave={handleSave} onDelete={handleDelete} />
+      )}
     </div>
   )
 }

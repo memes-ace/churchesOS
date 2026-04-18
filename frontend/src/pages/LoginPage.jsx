@@ -135,7 +135,7 @@ export default function LoginPage() {
           <div className="mt-8 p-4 rounded-xl border" style={{ background: '#EEF2FF', borderColor: '#C7D2FE' }}>
             <p className="text-xs font-semibold mb-2" style={{ color: '#1B4FD8' }}>Demo Accounts</p>
             <p className="text-xs text-gray-600">Super Admin: churchesos97@gmail.com / Arielle@2025</p>
-            <p className="text-xs text-gray-600">Church Admin: pastor@gracechapel.com / pastor123</p>
+            <p className="text-xs text-gray-600">Church Admin: use credentials provided by your admin</p>
           </div>
         </div>
       </div>

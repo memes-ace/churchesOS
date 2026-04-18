@@ -18,7 +18,7 @@ function RequestQuoteModal({ vendor, onClose }) {
       id: Date.now(),
       vendorId: vendor.id,
       vendorName: vendor.name,
-      churchName: 'Grace Chapel International',
+      churchName: JSON.parse(localStorage.getItem('cos_user') || '{}').church_name || 'My Church',
       ...form,
       status: 'Pending',
       date: new Date().toISOString(),

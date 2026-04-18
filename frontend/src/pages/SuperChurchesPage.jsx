@@ -30,7 +30,7 @@ function AddChurchModal({ onClose, onSave }) {
         </div>
         <div className="p-6 space-y-4">
           {[
-            { label: 'Church Name *', field: 'name', ph: 'e.g. Grace Chapel International' },
+            { label: 'Church Name *', field: 'name', ph: 'Church name' },
             { label: 'Senior Pastor *', field: 'pastor', ph: 'Rev. / Ps. Full Name' },
             { label: 'Location', field: 'location', ph: 'City, Region' },
             { label: 'Phone Number', field: 'phone', ph: '+233 24 000 0000' },

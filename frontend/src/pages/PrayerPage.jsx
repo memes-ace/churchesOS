@@ -1,36 +1,63 @@
-import { prayerAPI } from '../utils/api'
-import { useDB } from '../hooks/useDB'
-import { useState, useEffect, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Heart, Check } from 'lucide-react'
+import { prayerAPI } from '../utils/api'
 
-// API-backed: cos_prayer_requests
-const getRequests = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
+const storageKey = 'cos_prayer_requests'
 
 export default function PrayerPage() {
-  const [requests, setRequests] = useState(getRequests)
+  const [requests, setRequests] = useState([])
   const [filter, setFilter] = useState('All')
   const [showAdd, setShowAdd] = useState(false)
-  const [form, setForm] = useState({ name: '', request: '', anonymous: false, status: 'Pending' })
+  const [form, setForm] = useState({ name: '', request: '', anonymous: false })
+  const [loading, setLoading] = useState(true)
 
-  const save = (list) => { setRequests(list); try { // saved to DB via API } catch(e) {} }
+  useEffect(() => {
+    prayerAPI.getAll()
+      .then(data => {
+        if (Array.isArray(data)) setRequests(data)
+      })
+      .catch(() => {
+        try {
+          const cached = localStorage.getItem(storageKey)
+          if (cached) setRequests(JSON.parse(cached))
+        } catch(e) {}
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
-  const handleAdd = () => {
+  const save = (list) => {
+    setRequests(list)
+    try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
+  }
+
+  const handleAdd = async () => {
     if (!form.request) return
-    save([...requests, {
-      id: Date.now(),
-      name: form.anonymous ? 'Anonymous' : form.name || 'Anonymous',
+    const newRequest = {
+      name: form.anonymous ? 'Anonymous' : (form.name || 'Anonymous'),
       request: form.request,
       anonymous: form.anonymous,
       status: 'Pending',
       date: new Date().toISOString(),
-    }])
-    setForm({ name: '', request: '', anonymous: false, status: 'Pending' })
+    }
+    try {
+      const saved = await prayerAPI.create(newRequest)
+      save([saved, ...requests])
+    } catch(e) {
+      save([{ ...newRequest, id: Date.now() }, ...requests])
+    }
+    setForm({ name: '', request: '', anonymous: false })
     setShowAdd(false)
   }
 
-  const markPrayed = (id) => save(requests.map(r => r.id === id ? { ...r, status: 'Prayed' } : r))
-  const markAnswered = (id) => save(requests.map(r => r.id === id ? { ...r, status: 'Answered' } : r))
-  const deleteRequest = (id) => save(requests.filter(r => r.id !== id))
+  const updateStatus = async (id, status) => {
+    try { await prayerAPI.update(id, { status }) } catch(e) {}
+    save(requests.map(r => r.id === id ? { ...r, status } : r))
+  }
+
+  const deleteRequest = async (id) => {
+    try { await prayerAPI.delete(id) } catch(e) {}
+    save(requests.filter(r => r.id !== id))
+  }
 
   const filtered = filter === 'All' ? requests : requests.filter(r => r.status === filter)
 
@@ -48,7 +75,8 @@ export default function PrayerPage() {
           <p className="text-gray-400 text-sm mt-1">{requests.filter(r => r.status === 'Pending').length} awaiting prayer</p>
         </div>
         <button onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium"
+          style={{ background: '#1B4FD8' }}>
           <Plus size={15} /> Add Request
         </button>
       </div>
@@ -71,21 +99,23 @@ export default function PrayerPage() {
               <button onClick={() => setForm(p => ({ ...p, anonymous: !p.anonymous }))}
                 className="w-9 h-5 rounded-full flex items-center transition"
                 style={{ background: form.anonymous ? '#1B4FD8' : '#E5E7EB', padding: '2px' }}>
-                <div className="w-4 h-4 bg-white rounded-full shadow transition" style={{ transform: form.anonymous ? 'translateX(16px)' : 'translateX(0)' }}></div>
+                <div className="w-4 h-4 bg-white rounded-full shadow transition"
+                  style={{ transform: form.anonymous ? 'translateX(16px)' : 'translateX(0)' }}></div>
               </button>
               <span className="text-sm text-gray-600">Submit anonymously</span>
             </div>
             {!form.anonymous && (
-              <input type="text" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))}
+              <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                 placeholder="Your name"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
             )}
-            <textarea rows={4} value={form.request} onChange={e => setForm(p => ({...p, request: e.target.value}))}
+            <textarea rows={4} value={form.request} onChange={e => setForm(p => ({ ...p, request: e.target.value }))}
               placeholder="Share your prayer request..."
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
             <div className="flex gap-3">
               <button onClick={handleAdd} disabled={!form.request}
-                className="flex-1 py-3 rounded-xl text-white text-sm font-medium disabled:opacity-50" style={{ background: '#1B4FD8' }}>
+                className="flex-1 py-3 rounded-xl text-white text-sm font-medium disabled:opacity-50"
+                style={{ background: '#1B4FD8' }}>
                 Submit Request
               </button>
               <button onClick={() => setShowAdd(false)}
@@ -97,13 +127,19 @@ export default function PrayerPage() {
         </div>
       )}
 
-      {requests.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-20">
+          <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-gray-400 text-sm">Loading prayer requests...</p>
+        </div>
+      ) : requests.length === 0 ? (
         <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
           <div className="text-6xl mb-4">🙏</div>
           <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Cormorant Garamond' }}>No prayer requests yet</h3>
           <p className="text-gray-400 text-sm mb-6">Be the first to submit a prayer request</p>
           <button onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium mx-auto" style={{ background: '#1B4FD8' }}>
+            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium mx-auto"
+            style={{ background: '#1B4FD8' }}>
             <Plus size={15} /> Add First Request
           </button>
         </div>
@@ -115,11 +151,13 @@ export default function PrayerPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
                     style={{ background: '#1B4FD8' }}>
-                    {r.anonymous ? '?' : r.name?.split(' ').map(w => w[0]).slice(0,2).join('')}
+                    {r.anonymous ? '?' : (r.name?.split(' ').map(w => w[0]).slice(0,2).join('') || '?')}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-800">{r.name}</p>
-                    <p className="text-xs text-gray-400">{new Date(r.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                    <p className="text-sm font-semibold text-gray-800">{r.name || 'Anonymous'}</p>
+                    <p className="text-xs text-gray-400">
+                      {r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -135,18 +173,19 @@ export default function PrayerPage() {
               <p className="text-sm text-gray-700 leading-relaxed mb-4">{r.request}</p>
               {r.status === 'Pending' && (
                 <div className="flex gap-2">
-                  <button onClick={() => markPrayed(r.id)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-white" style={{ background: '#1B4FD8' }}>
+                  <button onClick={() => updateStatus(r.id, 'Prayed')}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-white"
+                    style={{ background: '#1B4FD8' }}>
                     <Heart size={12} /> Mark as Prayed
                   </button>
-                  <button onClick={() => markAnswered(r.id)}
+                  <button onClick={() => updateStatus(r.id, 'Answered')}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border border-gray-200 text-gray-600">
                     <Check size={12} /> Mark as Answered
                   </button>
                 </div>
               )}
               {r.status === 'Prayed' && (
-                <button onClick={() => markAnswered(r.id)}
+                <button onClick={() => updateStatus(r.id, 'Answered')}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border border-gray-200 text-gray-600">
                   <Check size={12} /> Mark as Answered
                 </button>

@@ -77,7 +77,7 @@ export default function RegisterPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold mb-5" style={{ fontFamily: 'Cormorant Garamond' }}>Tell us about your church</h2>
               {[
-                { label: 'Church Name', field: 'churchName', placeholder: 'e.g. Grace Chapel International', type: 'text' },
+                { label: 'Church Name', field: 'churchName', placeholder: 'Your church name', type: 'text' },
                 { label: 'City / Location', field: 'location', placeholder: 'e.g. Accra, Ghana', type: 'text' },
                 { label: 'Phone Number', field: 'phone', placeholder: '+233 24 000 0000', type: 'tel' },
                 { label: 'Service Time', field: 'serviceTime', placeholder: 'e.g. Sundays 9AM and 11AM', type: 'text' },
@@ -107,7 +107,7 @@ export default function RegisterPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold mb-5" style={{ fontFamily: 'Cormorant Garamond' }}>Your account details</h2>
               {[
-                { label: 'Your Full Name', field: 'name', placeholder: 'Rev. Samuel Mensah', type: 'text' },
+                { label: 'Your Full Name', field: 'name', placeholder: '', type: 'text' },
                 { label: 'Your Title', field: 'title', placeholder: 'e.g. Pastor, Reverend, Bishop', type: 'text' },
                 { label: 'Email Address', field: 'email', placeholder: 'pastor@church.org', type: 'email' },
                 { label: 'Password', field: 'password', placeholder: 'Min. 8 characters', type: 'password' },

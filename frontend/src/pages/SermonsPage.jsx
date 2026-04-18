@@ -1,6 +1,6 @@
 import { sermonsAPI } from '../utils/api'
 import { useDB } from '../hooks/useDB'
-import { useState, useEffect, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Upload, Play, Download, Edit } from 'lucide-react'
 
 // API-backed: cos_sermons
@@ -81,7 +81,7 @@ export default function SermonsPage() {
   const [showAdd, setShowAdd] = useState(false)
   const [search, setSearch] = useState('')
 
-  const save = (list) => { setSermons(list); try { // saved to DB via API } catch(e) {} }
+  const save = (list) => { setSermons(list);  }
   const handleSave = (form) => {
     if (selected) save(sermons.map(s => s.id === selected.id ? { ...s, ...form } : s))
     else save([...sermons, { id: Date.now(), ...form, uploadedDate: new Date().toISOString() }])

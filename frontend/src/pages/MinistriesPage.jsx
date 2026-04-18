@@ -2,21 +2,7 @@ import { ministriesAPI } from '../utils/api'
 import { useState } from 'react'
 import { Plus, Users, MessageSquare, X, Edit, Trash2, ArrowLeft, Upload, Save } from 'lucide-react'
 
-const initialMinistries = [
-  { id: 1, name: 'Instrumentalists', leader: '', leaderPhone: '', members: 0, meetingDay: 'Fridays 4PM', color: '#0891B2', emoji: '🎸', description: 'Keyboard, drums, bass and lead guitars' },
-  { id: 2, name: 'Choir', leader: '', leaderPhone: '', members: 0, meetingDay: 'Fridays 5PM', color: '#7C3AED', emoji: '🎵', description: 'Worship and music ministry' },
-  { id: 3, name: 'Ushering', leader: '', leaderPhone: '', members: 0, meetingDay: 'Sundays 7AM', color: '#1B4FD8', emoji: '🤝', description: 'Reception and hospitality team' },
-  { id: 4, name: 'Youth Ministry', leader: '', leaderPhone: '', members: 0, meetingDay: 'Saturdays 3PM', color: '#F59E0B', emoji: '🔥', description: 'Youth and young adults ministry' },
-  { id: 5, name: 'Prayer Team', leader: '', leaderPhone: '', members: 0, meetingDay: 'Wednesdays 6AM', color: '#059669', emoji: '🙏', description: 'Intercession and prayer warriors' },
-  { id: 6, name: 'Media Team', leader: '', leaderPhone: '', members: 0, meetingDay: 'Sundays 7:30AM', color: '#0891B2', emoji: '📹', description: 'Audio, video and social media' },
-  { id: 7, name: 'Sunday School', leader: '', leaderPhone: '', members: 0, meetingDay: 'Sundays 8AM', color: '#DC2626', emoji: '📚', description: 'Children and junior church' },
-  { id: 8, name: 'Welfare', leader: '', leaderPhone: '', members: 0, meetingDay: 'First Saturdays', color: '#D97706', emoji: '❤️', description: 'Member care and support' },
-  { id: 9, name: 'Evangelism', leader: '', leaderPhone: '', members: 0, meetingDay: 'Saturdays 8AM', color: '#7C3AED', emoji: '📢', description: 'Outreach and soul winning' },
-  { id: 10, name: 'Cell Groups', leader: '', leaderPhone: '', members: 0, meetingDay: 'Weekly', color: '#059669', emoji: '🏠', description: 'Home fellowship groups' },
-  { id: 11, name: 'Women Ministry', leader: '', leaderPhone: '', members: 0, meetingDay: 'Last Saturdays', color: '#EC4899', emoji: '👑', description: 'Women of purpose ministry' },
-  { id: 12, name: 'Men Fellowship', leader: '', leaderPhone: '', members: 0, meetingDay: 'Second Saturdays', color: '#1B4FD8', emoji: '💪', description: 'Men of valour fellowship' },
-  { id: 13, name: 'Security Team', leader: '', leaderPhone: '', members: 0, meetingDay: 'Sundays 7AM', color: '#374151', emoji: '🛡️', description: 'Church security and parking' },
-]
+const initialMinistries = []
 
 const emptyProfile = {
   photo: null, photoPreview: null, fullName: '', gender: '', dateOfBirth: '',
@@ -127,7 +113,7 @@ function MemberProfileModal({ member, ministry, onClose, onSave, onDelete }) {
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Full Name *</label>
                   <input type="text" value={form.fullName} onChange={e => update('fullName', e.target.value)}
-                    placeholder="e.g. Abena Asante"
+                    placeholder="Leader name"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm" />
                 </div>
                 <div>
