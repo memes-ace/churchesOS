@@ -338,3 +338,17 @@ export class Song {
   @Column({ nullable: true }) notes: string;
   @CreateDateColumn() created_at: Date;
 }
+
+@Entity('payment_requests')
+export class PaymentRequest {
+  @PrimaryGeneratedColumn('uuid') id: string;
+  @Column() church_id: string;
+  @Column() church_name: string;
+  @Column() plan_requested: string;
+  @Column({ nullable: true }) amount: string;
+  @Column({ nullable: true }) payment_method: string;
+  @Column({ nullable: true }) reference: string;
+  @Column({ nullable: true }) proof_description: string;
+  @Column({ default: 'pending' }) status: string;
+  @CreateDateColumn() created_at: Date;
+}

@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ChurchesService } from './churches.service';
 
@@ -24,4 +24,16 @@ export class ChurchesController {
 
   @Put('settings')
   updateSettings(@Body() body: any) { return this.svc.updateSettings(body); }
+
+  @Get('payments')
+  getPayments() { return this.svc.getPayments(); }
+
+  @Post('payments')
+  submitPayment(@Body() body: any) { return this.svc.submitPayment(body); }
+
+  @Put('payments/:id/approve')
+  approvePayment(@Param('id') id: string) { return this.svc.approvePayment(id); }
+
+  @Put('payments/:id/reject')
+  rejectPayment(@Param('id') id: string) { return this.svc.rejectPayment(id); }
 }

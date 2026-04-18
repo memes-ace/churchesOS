@@ -64,9 +64,20 @@ export class AuthService implements OnModuleInit {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid email or password');
     const payload = { sub: user.id, email: user.email, role: user.role, church_id: user.church_id };
+    // Get church details if church admin
+    let churchData = null
+    if (user.church_id) {
+      churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
+    }
     return {
       access_token: this.jwtService.sign(payload),
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, church_id: user.church_id },
+      user: {
+        id: user.id, name: user.name, email: user.email,
+        role: user.role, church_id: user.church_id,
+        church_name: churchData?.name || '',
+        church_plan: churchData?.plan || 'trial',
+        church_status: churchData?.status || 'trial',
+      },
     };
   }
 
@@ -94,9 +105,20 @@ export class AuthService implements OnModuleInit {
       title: data.title || '',
     }));
     const payload = { sub: user.id, email: user.email, role: user.role, church_id: user.church_id };
+    // Get church details if church admin
+    let churchData = null
+    if (user.church_id) {
+      churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
+    }
     return {
       access_token: this.jwtService.sign(payload),
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, church_id: user.church_id },
+      user: {
+        id: user.id, name: user.name, email: user.email,
+        role: user.role, church_id: user.church_id,
+        church_name: churchData?.name || '',
+        church_plan: churchData?.plan || 'trial',
+        church_status: churchData?.status || 'trial',
+      },
     };
   }
 }

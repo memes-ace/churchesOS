@@ -32,6 +32,7 @@ const navItems = [
 
 export default function ChurchLayout() {
   const [open, setOpen] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const initials = user?.name?.split(' ').map(w => w[0]).slice(0,2).join('') || 'PA'
@@ -103,6 +104,24 @@ export default function ChurchLayout() {
             <p className="text-white/40 text-xs truncate">{user?.email || ''}</p>
           </div>
         </div>
+        {/* Plan Badge + Upgrade */}
+        {user?.church_plan && (
+          <div className="mb-2 px-1">
+            <div className="flex items-center justify-between px-2 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              <div>
+                <p className="text-white/40 text-xs">Current Plan</p>
+                <p className="text-white text-xs font-bold capitalize">{user.church_plan}</p>
+              </div>
+              {user.church_plan !== 'enterprise' && (
+                <button onClick={() => setShowUpgrade(true)}
+                  className="text-xs px-2 py-1 rounded-lg font-medium"
+                  style={{ background: '#1B4FD8', color: 'white' }}>
+                  Upgrade
+                </button>
+              )}
+            </div>
+          </div>
+        )}
         <button onClick={() => { logout(); navigate('/login') }}
           className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs text-white/40 hover:bg-white/10 hover:text-white transition">
           <LogOut size={14} /><span>Sign Out</span>

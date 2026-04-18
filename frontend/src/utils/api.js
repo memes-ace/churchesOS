@@ -165,3 +165,10 @@ export const adminAPI = {
   updateSettings: (d) => api.put('/admin/settings', d),
   getDashboard: () => api.get('/admin/dashboard'),
 }
+
+export const paymentsAPI = {
+  submit: (d) => api.post('/admin/payments', d),
+  getAll: () => api.get('/admin/payments'),
+  approve: (id) => api.put(`/admin/payments/${id}/approve`, {}),
+  reject: (id) => api.put(`/admin/payments/${id}/reject`, {}),
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Church, Member, Transaction, AttendanceRecord } from '../../entities';
+import { Church, Member, Transaction, AttendanceRecord, PaymentRequest } from '../../entities';
 
 @Injectable()
 export class ChurchesService {
@@ -10,6 +10,7 @@ export class ChurchesService {
     @InjectRepository(Member) private memberRepo: Repository<Member>,
     @InjectRepository(Transaction) private transRepo: Repository<Transaction>,
     @InjectRepository(AttendanceRecord) private attendRepo: Repository<AttendanceRecord>,
+    @InjectRepository(PaymentRequest) private paymentRepo: Repository<PaymentRequest>,
   ) {}
 
   async findAll() {
@@ -59,6 +60,36 @@ export class ChurchesService {
       planCounts,
       pendingChurches: churches.filter(c => c.status === 'pending' || c.status === 'Pending').length,
     };
+  }
+
+  async submitPayment(data: any) {
+    return this.paymentRepo.save(this.paymentRepo.create({
+      church_id: data.church_id,
+      church_name: data.church_name,
+      plan_requested: data.plan_requested,
+      amount: data.amount,
+      payment_method: data.payment_method,
+      reference: data.reference,
+      proof_description: data.proof_description,
+      status: 'pending',
+    }))
+  }
+
+  async getPayments() {
+    return this.paymentRepo.find({ order: { created_at: 'DESC' } })
+  }
+
+  async approvePayment(id: string) {
+    const payment = await this.paymentRepo.findOne({ where: { id } })
+    if (!payment) return { error: 'Not found' }
+    await this.paymentRepo.update(id, { status: 'approved' })
+    await this.churchRepo.update(payment.church_id, { plan: payment.plan_requested, status: 'active' })
+    return { success: true }
+  }
+
+  async rejectPayment(id: string) {
+    await this.paymentRepo.update(id, { status: 'rejected' })
+    return { success: true }
   }
 
   private platformSettings: any = {
