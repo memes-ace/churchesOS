@@ -1,6 +1,13 @@
 import { adminAPI } from '../utils/api'
 import { useState, useEffect } from 'react'
-import { Save, Bell, DollarSign, Globe, Shield, MessageSquare, Check } from 'lucide-react'
+import { Save, Bell, DollarSign, Globe, Shield, MessageSquare, Check, List } from 'lucide-react'
+
+const ALL_FEATURES = [
+  'Members', 'Attendance', 'Finance', 'Events', 'Communication',
+  'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups',
+  'Counselling', 'Announcements', 'Volunteers', 'Marketplace',
+  'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'
+]
 
 const defaultSettings = {
   platformName: 'ChurchesOS',
@@ -16,6 +23,10 @@ const defaultSettings = {
   emailNotifications: true,
   smsNotifications: false,
   broadcastMessage: '',
+  freePlanFeatures: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
+  starterPlanFeatures: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication'],
+  growthPlanFeatures: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports'],
+  enterprisePlanFeatures: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'],
 }
 
 const SETTINGS_KEY = 'cos_platform_settings'
@@ -33,7 +44,13 @@ export default function SuperSettingsPage() {
 
   useEffect(() => {
     adminAPI.getSettings()
-      .then(data => { if (data) setSettings(prev => ({ ...prev, ...data })) })
+      .then(data => {
+        if (data) {
+          const merged = { ...loadSettings(), ...data }
+          setSettings(merged)
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged))
+        }
+      })
       .catch(e => console.warn('Settings load error:', e))
   }, [])
   const [saved, setSaved] = useState(false)
@@ -220,6 +237,66 @@ export default function SuperSettingsPage() {
                   <div className="w-5 h-5 bg-white rounded-full shadow transition-all"
                     style={{ transform: settings[s.field] ? 'translateX(24px)' : 'translateX(0)' }}></div>
                 </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Plan Feature Control */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 fade-in">
+          <div className="flex items-center gap-2 mb-5">
+            <DollarSign size={18} style={{ color: '#7C3AED' }} />
+            <h3 className="font-bold text-gray-800">Plan Feature Control</h3>
+          </div>
+          <p className="text-xs text-gray-400 mb-5">Set which features are available for each subscription plan. Churches on a plan will only see the features you enable for that plan.</p>
+          <div className="space-y-6">
+            {[
+              { key: 'freePlanFeatures', label: 'Free Plan', color: '#6B7280', bg: '#F3F4F6' },
+              { key: 'starterPlanFeatures', label: 'Starter Plan', color: '#1B4FD8', bg: '#EEF2FF' },
+              { key: 'growthPlanFeatures', label: 'Growth Plan', color: '#7C3AED', bg: '#EDE9FE' },
+              { key: 'enterprisePlanFeatures', label: 'Enterprise Plan', color: '#F59E0B', bg: '#FEF9C3' },
+            ].map(plan => (
+              <div key={plan.key} className="border border-gray-100 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold px-3 py-1 rounded-full" style={{ background: plan.bg, color: plan.color }}>
+                    {plan.label}
+                  </span>
+                  <div className="flex gap-2">
+                    <button onClick={() => update(plan.key, [...ALL_FEATURES])}
+                      className="text-xs px-2 py-1 rounded-lg" style={{ background: '#DCFCE7', color: '#166534' }}>
+                      All
+                    </button>
+                    <button onClick={() => update(plan.key, [])}
+                      className="text-xs px-2 py-1 rounded-lg" style={{ background: '#FEE2E2', color: '#991B1B' }}>
+                      None
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_FEATURES.map(feat => {
+                    const enabled = (settings[plan.key] || []).includes(feat)
+                    return (
+                      <button key={feat} onClick={() => {
+                        const current = settings[plan.key] || []
+                        const updated = current.includes(feat)
+                          ? current.filter(f => f !== feat)
+                          : [...current, feat]
+                        update(plan.key, updated)
+                      }}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-left transition"
+                        style={{ background: enabled ? plan.bg : '#F9FAFB', color: enabled ? plan.color : '#9CA3AF', border: '1px solid ' + (enabled ? plan.color + '40' : '#F3F4F6') }}>
+                        <div className="w-3 h-3 rounded flex items-center justify-center flex-shrink-0"
+                          style={{ background: enabled ? plan.color : '#E5E7EB' }}>
+                          {enabled && <Check size={8} className="text-white" />}
+                        </div>
+                        {feat}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  {(settings[plan.key] || []).length} of {ALL_FEATURES.length} features enabled
+                </p>
               </div>
             ))}
           </div>

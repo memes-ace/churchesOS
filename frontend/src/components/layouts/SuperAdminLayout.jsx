@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { LayoutDashboard, Building, DollarSign, LogOut, Menu, X, Shield, Store, FileText, Settings, TrendingUp } from 'lucide-react'
+import { LayoutDashboard, Building, DollarSign, LogOut, Menu, X, Shield, Store, FileText, Settings, TrendingUp, CreditCard } from 'lucide-react'
 
 const navItems = [
   { label: 'Overview', path: '/super-admin', icon: LayoutDashboard, exact: true },
@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Vendors', path: '/super-admin/vendors', icon: Store },
   { label: 'Quote Requests', path: '/super-admin/quotes', icon: FileText },
   { label: 'Revenue', path: '/super-admin/revenue', icon: TrendingUp },
+  { label: 'Plans', path: '/super-admin/plans', icon: CreditCard },
   { label: 'Settings', path: '/super-admin/settings', icon: Settings },
 ]
 

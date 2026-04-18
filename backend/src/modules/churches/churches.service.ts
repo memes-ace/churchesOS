@@ -30,8 +30,14 @@ export class ChurchesService {
   }
 
   async update(id: string, data: any) {
-    await this.churchRepo.update(id, data);
-    return this.findOne(id);
+    const updateData: any = {}
+    if (data.status !== undefined) updateData.status = data.status
+    if (data.plan !== undefined) updateData.plan = data.plan
+    if (data.features !== undefined) updateData.features = data.features
+    if (data.name !== undefined) updateData.name = data.name
+    if (data.pastor_name !== undefined) updateData.pastor_name = data.pastor_name
+    await this.churchRepo.update(id, updateData)
+    return this.findOne(id)
   }
 
   async getPlatformStats() {
@@ -55,24 +61,25 @@ export class ChurchesService {
     };
   }
 
+  private platformSettings: any = {
+    platformName: 'ChurchesOS',
+    commissionRate: '3',
+    starterPrice: '1800',
+    growthPrice: '5400',
+    enterprisePrice: '10200',
+    freePlanLimit: '100',
+    supportEmail: 'support@churchesos.com',
+    supportPhone: '+233 24 000 0000',
+    maintenanceMode: false,
+    newRegistrations: true,
+  };
+
   async getSettings() {
-    // Return platform settings - stored as a special church record or env
-    return {
-      platformName: 'ChurchesOS',
-      commissionRate: '3',
-      starterPrice: '1800',
-      growthPrice: '5400',
-      enterprisePrice: '10200',
-      freePlanLimit: '100',
-      supportEmail: 'support@churchesos.com',
-      supportPhone: '+233 24 000 0000',
-      maintenanceMode: false,
-      newRegistrations: true,
-    };
+    return this.platformSettings;
   }
 
   async updateSettings(data: any) {
-    // In production this would be stored in a settings table
-    return { success: true, settings: data };
+    this.platformSettings = { ...this.platformSettings, ...data };
+    return { success: true, settings: this.platformSettings };
   }
 }

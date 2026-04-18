@@ -5,6 +5,13 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const GHC = 'GHC'
 
+const getSettings = () => {
+  try {
+    const saved = localStorage.getItem('cos_platform_settings')
+    return saved ? JSON.parse(saved) : {}
+  } catch(e) { return {} }
+}
+
 const revenueData = [
   { month: 'Oct', revenue: 14400 }, { month: 'Nov', revenue: 22200 },
   { month: 'Dec', revenue: 28800 }, { month: 'Jan', revenue: 25200 },
@@ -23,9 +30,9 @@ const churches = []
 
 const planConfig = {
   Free: { bg: '#F3F4F6', text: '#6B7280', price: 0 },
-  Starter: { bg: '#DBEAFE', text: '#1E40AF', price: 1800 },
-  Growth: { bg: '#EDE9FE', text: '#5B21B6', price: 5400 },
-  Enterprise: { bg: '#FEF9C3', text: '#854D0E', price: 10200 },
+  Starter: { bg: '#DBEAFE', text: '#1E40AF', price: () => Number(getSettings().starterPrice || 1800) },
+  Growth: { bg: '#EDE9FE', text: '#5B21B6', price: () => Number(getSettings().growthPrice || 5400) },
+  Enterprise: { bg: '#FEF9C3', text: '#854D0E', price: () => Number(getSettings().enterprisePrice || 10200) },
 }
 
 const statusConfig = {
@@ -132,7 +139,7 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
                     style={{ borderColor: church.plan === plan ? '#1B4FD8' : '#E5E7EB', background: church.plan === plan ? '#EEF2FF' : 'white' }}>
                     <p className="font-bold text-gray-800">{plan}</p>
                     <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>
-                      {cfg.price === 0 ? 'Free' : GHC + cfg.price.toLocaleString() + '/mo'}
+                      {cfg.price === 0 ? 'Free' : GHC + Number(cfg.price).toLocaleString() + '/mo'}
                     </p>
                   </div>
                 ))}
@@ -182,7 +189,17 @@ export default function SuperAdminDashboard() {
 
   useEffect(() => {
     adminAPI.getChurches()
-      .then(data => { if (Array.isArray(data)) setChurchList(data) })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setChurchList(data.map(c => ({
+            ...c,
+            members: c.member_count || 0,
+            revenue: c.monthly_revenue || 0,
+            status: c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1).toLowerCase() : 'Trial',
+            plan: c.plan ? c.plan.charAt(0).toUpperCase() + c.plan.slice(1).toLowerCase() : 'Trial',
+          })))
+        }
+      })
       .catch(e => console.warn('Admin churches error:', e))
     adminAPI.getStats()
       .then(data => { if (data) setPlatformStats(data) })
@@ -244,9 +261,9 @@ export default function SuperAdminDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: 'Total Churches', value: churchList.length, sub: activeChurches + ' active', color: '#1B4FD8', icon: '⛪' },
-              { label: 'Total Members', value: totalMembers.toLocaleString(), sub: 'Across all churches', color: '#7C3AED', icon: '👥' },
-              { label: 'Monthly Revenue', value: 'GHC ' + totalRevenue.toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
-              { label: 'Pending Approval', value: pendingChurches, sub: 'Awaiting review', color: '#F59E0B', icon: '⏳' },
+              { label: 'Total Members', value: (platformStats.totalMembers || 0).toLocaleString(), sub: 'Across all churches', color: '#7C3AED', icon: '👥' },
+              { label: 'Monthly Revenue', value: 'GHC ' + (platformStats.totalRevenue || 0).toLocaleString(), sub: 'All subscriptions', color: '#059669', icon: '💰' },
+              { label: 'Pending Approval', value: (platformStats.pendingChurches || 0), sub: 'Awaiting review', color: '#F59E0B', icon: '⏳' },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 stat-card">
                 <span className="text-2xl">{s.icon}</span>
@@ -400,7 +417,7 @@ export default function SuperAdminDashboard() {
         <div className="space-y-6 fade-in">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Monthly Recurring', value: 'GHC ' + totalRevenue.toLocaleString(), color: '#059669' },
+              { label: 'Monthly Recurring', value: 'GHC ' + (platformStats.totalRevenue || 0).toLocaleString(), color: '#059669' },
               { label: 'Annual Run Rate', value: GHC + (totalRevenue * 12).toLocaleString(), color: '#1B4FD8' },
               { label: 'Paying Churches', value: churchList.filter(c => c.revenue > 0).length, color: '#7C3AED' },
               { label: 'Free Tier', value: churchList.filter(c => c.revenue === 0).length, color: '#6B7280' },
@@ -438,12 +455,27 @@ export default function SuperAdminDashboard() {
 
       {activeTab === 'plans' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 fade-in">
-          {[
-            { plan: 'Free', price: 0, features: ['Up to 100 members', 'Basic attendance', 'Member profiles', 'Prayer requests'], color: '#6B7280', bg: '#F3F4F6' },
-            { plan: 'Starter', price: 1800, features: ['Up to 500 members', 'All Free features', 'Finance tracking', 'Events module', 'SMS 100/mo'], color: '#1B4FD8', bg: '#EEF2FF' },
-            { plan: 'Growth', price: 5400, features: ['Up to 2000 members', 'All Starter features', 'Ministries and Cell Groups', 'Song Library', 'SMS 500/mo', 'Reports'], color: '#7C3AED', bg: '#EDE9FE' },
-            { plan: 'Enterprise', price: 10200, features: ['Unlimited members', 'All Growth features', 'Custom branding', 'Priority support', 'Unlimited SMS', 'API access', 'Multi-branch'], color: '#F59E0B', bg: '#FEF9C3' },
-          ].map(p => (
+          {(() => {
+            const s = getSettings()
+            return [
+              { plan: 'Free', price: 0,
+                memberLimit: (s.freePlan?.memberLimit || 100),
+                features: s.freePlan?.features || s.freePlanFeatures || ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
+                color: '#6B7280', bg: '#F3F4F6' },
+              { plan: 'Starter', price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+                memberLimit: (s.starterPlan?.memberLimit || 500),
+                features: s.starterPlan?.features || s.starterPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'],
+                color: '#1B4FD8', bg: '#EEF2FF' },
+              { plan: 'Growth', price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+                memberLimit: (s.growthPlan?.memberLimit || 2000),
+                features: s.growthPlan?.features || s.growthPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'],
+                color: '#7C3AED', bg: '#EDE9FE' },
+              { plan: 'Enterprise', price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+                memberLimit: (s.enterprisePlan?.memberLimit || 999999),
+                features: s.enterprisePlan?.features || s.enterprisePlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'],
+                color: '#F59E0B', bg: '#FEF9C3' },
+            ]
+          })().map(p => (
             <div key={p.plan} className="bg-white rounded-2xl border-2 p-5" style={{ borderColor: p.color + '40' }}>
               <p className="text-lg font-bold text-gray-800">{p.plan}</p>
               <p className="text-2xl font-bold mt-1 mb-1" style={{ color: p.color }}>

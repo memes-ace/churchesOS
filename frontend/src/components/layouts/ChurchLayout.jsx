@@ -35,6 +35,24 @@ export default function ChurchLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const initials = user?.name?.split(' ').map(w => w[0]).slice(0,2).join('') || 'PA'
+
+  // Get enabled features for this church from localStorage (set by super admin)
+  const getEnabledFeatures = () => {
+    try {
+      const churchData = JSON.parse(localStorage.getItem('cos_church_features') || 'null')
+      return churchData || null // null means all features enabled
+    } catch(e) { return null }
+  }
+
+  const enabledFeatures = getEnabledFeatures()
+
+  const filteredNav = enabledFeatures
+    ? navItems.filter(item => {
+        const key = item.path.replace('/church/', '')
+        if (key === 'dashboard') return true // always show dashboard
+        return enabledFeatures.includes(key)
+      })
+    : navItems
   const navRef = useRef(null)
 
   const handleNavClick = () => {
@@ -62,7 +80,7 @@ export default function ChurchLayout() {
       </div>
 
       <nav ref={navRef} className="flex-1 px-2 py-3 overflow-y-auto" style={{ scrollbarWidth: 'none', overflowAnchor: 'none' }}>
-        {navItems.map(({ label, path, icon: Icon }) => (
+        {filteredNav.map(({ label, path, icon: Icon }) => (
           <NavLink key={path} to={path} onClick={handleNavClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium mb-0.5 transition ${

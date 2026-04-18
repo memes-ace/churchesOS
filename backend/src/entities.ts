@@ -15,6 +15,7 @@ export class Church {
   @Column({ nullable: true }) primary_color: string;
   @Column({ default: 'starter' }) plan: string;
   @Column({ default: 'trial' }) status: string;
+  @Column({ nullable: true, type: 'text' }) features: string;
   @CreateDateColumn() created_at: Date;
 }
 
