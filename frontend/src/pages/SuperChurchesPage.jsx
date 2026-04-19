@@ -218,11 +218,19 @@ export default function SuperChurchesPage() {
                       <select value={c.plan || "trial"} onChange={e => updatePlan(c.id, e.target.value)}
                         className="text-xs px-2 py-1.5 rounded-lg font-medium border-0 cursor-pointer focus:outline-none"
                         style={{ background: plan.bg, color: plan.text }}>
-                        <option value="trial">Trial</option>
-                        <option value="free">Free</option>
-                        <option value="starter">Starter — GHC {(getSettings().starterPlan?.price || getSettings().starterPrice || 1800).toLocaleString()}/mo</option>
-                        <option value="growth">Growth — GHC {(getSettings().growthPlan?.price || getSettings().growthPrice || 5400).toLocaleString()}/mo</option>
-                        <option value="enterprise">Enterprise — GHC {(getSettings().enterprisePlan?.price || getSettings().enterprisePrice || 10200).toLocaleString()}/mo</option>
+                        {(() => {
+                          const s = getSettings()
+                          const sp = Number(s.starterPlan?.price || s.starterPrice || 1800).toLocaleString()
+                          const gp = Number(s.growthPlan?.price || s.growthPrice || 5400).toLocaleString()
+                          const ep = Number(s.enterprisePlan?.price || s.enterprisePrice || 10200).toLocaleString()
+                          return <>
+                            <option value="trial">Trial</option>
+                            <option value="free">Free</option>
+                            <option value="starter">Starter — GHC {sp}/mo</option>
+                            <option value="growth">Growth — GHC {gp}/mo</option>
+                            <option value="enterprise">Enterprise — GHC {ep}/mo</option>
+                          </>
+                        })()}
                       </select>
                     </td>
                     <td className="py-4 px-4">
