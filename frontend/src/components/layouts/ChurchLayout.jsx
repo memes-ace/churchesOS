@@ -42,9 +42,15 @@ export default function ChurchLayout() {
       })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data?.plan) {
-          const updated = { ...user, church_plan: data.plan, church_status: data.status, sender_id: data.sender_id || 'Tabscrow' }
+        if (data) {
+          const updated = { 
+            ...user, 
+            church_plan: data.plan || user.church_plan, 
+            church_status: data.status || user.church_status,
+            sender_id: data.sender_id || user.sender_id || 'Tabscrow'
+          }
           localStorage.setItem('cos_user', JSON.stringify(updated))
+          console.log('Stored sender_id:', updated.sender_id)
         }
       })
       .catch(() => {})
