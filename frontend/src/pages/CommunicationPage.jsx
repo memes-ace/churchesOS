@@ -3,8 +3,12 @@ import { Send, Users, MessageSquare, Phone, Mail } from 'lucide-react'
 import { membersAPI, smsAPI } from '../utils/api'
 
 export default function CommunicationPage() {
-  const user = (() => { try { return JSON.parse(localStorage.getItem('cos_user') || '{}') } catch(e) { return {} } })()
-  const churchSenderId = user.sender_id || 'Tabscrow'
+  const getChurchSenderId = () => {
+    try { 
+      const u = JSON.parse(localStorage.getItem('cos_user') || '{}')
+      return u.sender_id || 'Tabscrow'
+    } catch(e) { return 'Tabscrow' }
+  }
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -53,7 +57,7 @@ export default function CommunicationPage() {
         result = await smsAPI.send({
           recipients: phones,
           message: form.message,
-          senderId: churchSenderId
+          senderId: getChurchSenderId()
         })
       }
 
@@ -170,11 +174,7 @@ export default function CommunicationPage() {
             </div>
 
             {/* Note about SMS */}
-            {form.channel === 'sms' && (
-              <div className="p-3 rounded-xl text-xs" style={{ background: '#DCFCE7', color: '#166534' }}>
-                ✅ SMS powered by NALO Solutions • Sender ID: Tabscrow
-              </div>
-            )}
+
 
             <button onClick={handleSend} disabled={!form.message || sending}
               className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
