@@ -129,6 +129,11 @@ export default function SuperChurchesPage() {
     setChurches(prev => prev.map(c => c.id === id ? { ...c, features } : c))
   }
 
+  const updateSenderId = async (id, sender_id) => {
+    try { await adminAPI.updateChurch(id, { sender_id }) } catch(e) {}
+    setChurches(prev => prev.map(c => c.id === id ? { ...c, sender_id } : c))
+  }
+
   const filtered = churches.filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.pastor_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -185,7 +190,7 @@ export default function SuperChurchesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100">
-                {["Church", "Plan", "Status", "Members", "Features", "Actions"].map(h => (
+                {["Church", "Plan", "Status", "Sender ID", "Members", "Features", "Actions"].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -214,6 +219,16 @@ export default function SuperChurchesPage() {
                         <option value="growth">Growth — GHC 5,400/mo</option>
                         <option value="enterprise">Enterprise — GHC 10,200/mo</option>
                       </select>
+                    </td>
+                    <td className="py-4 px-4">
+                      <input
+                        type="text"
+                        value={c.sender_id || ''}
+                        onChange={e => setChurches(prev => prev.map(ch => ch.id === c.id ? { ...ch, sender_id: e.target.value } : ch))}
+                        onBlur={e => updateSenderId(c.id, e.target.value)}
+                        placeholder="e.g. Tabscrow"
+                        className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 focus:outline-none w-28"
+                      />
                     </td>
                     <td className="py-4 px-4">
                       <select value={c.status || "trial"} onChange={e => updateStatus(c.id, e.target.value)}

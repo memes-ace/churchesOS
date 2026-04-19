@@ -43,7 +43,7 @@ export default function ChurchLayout() {
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data?.plan) {
-          const updated = { ...user, church_plan: data.plan, church_status: data.status }
+          const updated = { ...user, church_plan: data.plan, church_status: data.status, sender_id: data.sender_id || 'Tabscrow' }
           localStorage.setItem('cos_user', JSON.stringify(updated))
         }
       })

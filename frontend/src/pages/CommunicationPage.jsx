@@ -3,6 +3,8 @@ import { Send, Users, MessageSquare, Phone, Mail } from 'lucide-react'
 import { membersAPI, smsAPI } from '../utils/api'
 
 export default function CommunicationPage() {
+  const user = (() => { try { return JSON.parse(localStorage.getItem('cos_user') || '{}') } catch(e) { return {} } })()
+  const churchSenderId = user.sender_id || 'Tabscrow'
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -51,7 +53,7 @@ export default function CommunicationPage() {
         result = await smsAPI.send({
           recipients: phones,
           message: form.message,
-          senderId: 'Tabscrow'
+          senderId: churchSenderId
         })
       }
 

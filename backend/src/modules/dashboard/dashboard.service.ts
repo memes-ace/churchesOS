@@ -28,6 +28,7 @@ export class DashboardService {
       plan: church?.plan || 'trial',
       status: church?.status || 'trial',
       church_name: church?.name || '',
+      sender_id: church?.sender_id || 'Tabscrow',
     };
   }
   async getPlatformStats() {
