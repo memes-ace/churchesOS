@@ -1,19 +1,70 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Check, CreditCard, Phone, Building } from 'lucide-react'
-import { paymentsAPI } from '../../utils/api'
+import { paymentsAPI } from '../utils/api'
 
-const PLANS = [
-  { key: 'starter', label: 'Starter', price: 1800, color: '#1B4FD8', bg: '#EEF2FF',
-    features: ['Up to 500 members', 'Finance & Events', 'Sermons & Visitors', 'Prayer & Announcements'] },
-  { key: 'growth', label: 'Growth', price: 5400, color: '#7C3AED', bg: '#EDE9FE',
-    features: ['Up to 2000 members', 'All Starter features', 'Ministries & Cell Groups', 'Song Library & Reports'] },
-  { key: 'enterprise', label: 'Enterprise', price: 10200, color: '#F59E0B', bg: '#FEF9C3',
-    features: ['Unlimited members', 'All features', 'Custom branding', 'Priority support'] },
-]
+const SETTINGS_KEY = 'cos_platform_settings'
+
+const getPlans = () => {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')
+    return [
+      { key: 'starter', label: 'Starter',
+        price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+        memberLimit: s.starterPlan?.memberLimit || 500,
+        color: '#1B4FD8', bg: '#EEF2FF',
+        features: s.starterPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'] },
+      { key: 'growth', label: 'Growth',
+        price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+        memberLimit: s.growthPlan?.memberLimit || 2000,
+        color: '#7C3AED', bg: '#EDE9FE',
+        features: s.growthPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'] },
+      { key: 'enterprise', label: 'Enterprise',
+        price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+        memberLimit: s.enterprisePlan?.memberLimit || 999999,
+        color: '#F59E0B', bg: '#FEF9C3',
+        features: s.enterprisePlan?.features || ['All features included'] },
+    ]
+  } catch(e) {
+    return [
+      { key: 'starter', label: 'Starter', price: 1800, memberLimit: 500, color: '#1B4FD8', bg: '#EEF2FF', features: ['Up to 500 members', 'Finance & Events'] },
+      { key: 'growth', label: 'Growth', price: 5400, memberLimit: 2000, color: '#7C3AED', bg: '#EDE9FE', features: ['Up to 2000 members', 'All Starter features'] },
+      { key: 'enterprise', label: 'Enterprise', price: 10200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Unlimited members', 'All features'] },
+    ]
+  }
+}
 
 export default function UpgradeModal({ user, onClose }) {
   const [step, setStep] = useState(1)
   const [selectedPlan, setSelectedPlan] = useState(null)
+  const [PLANS, setPLANS] = useState(getPlans())
+
+  useEffect(() => {
+    // Load latest plans from API so church sees super admin's settings
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then(s => {
+        if (s && (s.starterPlan || s.starterPrice)) {
+          setPLANS([
+            { key: 'starter', label: 'Starter',
+              price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+              memberLimit: s.starterPlan?.memberLimit || 500,
+              color: '#1B4FD8', bg: '#EEF2FF',
+              features: s.starterPlan?.features || [] },
+            { key: 'growth', label: 'Growth',
+              price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+              memberLimit: s.growthPlan?.memberLimit || 2000,
+              color: '#7C3AED', bg: '#EDE9FE',
+              features: s.growthPlan?.features || [] },
+            { key: 'enterprise', label: 'Enterprise',
+              price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+              memberLimit: s.enterprisePlan?.memberLimit || 999999,
+              color: '#F59E0B', bg: '#FEF9C3',
+              features: s.enterprisePlan?.features || [] },
+          ])
+        }
+      })
+      .catch(e => console.warn('Plan load error:', e))
+  }, [])
   const [form, setForm] = useState({ method: 'Mobile Money', reference: '', proof: '' })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -80,7 +131,7 @@ export default function UpgradeModal({ user, onClose }) {
           ) : step === 1 ? (
             <div className="space-y-3">
               <p className="text-sm text-gray-500 mb-4">Select the plan you want to upgrade to:</p>
-              {PLANS.filter(p => p.key !== user?.church_plan).map(p => (
+              {PLANS.filter(p => p.key !== (user?.church_plan || 'trial').toLowerCase()).map(p => (
                 <button key={p.key} onClick={() => setSelectedPlan(p)}
                   className="w-full p-4 rounded-xl border-2 text-left transition"
                   style={{ borderColor: selectedPlan?.key === p.key ? p.color : '#E5E7EB', background: selectedPlan?.key === p.key ? p.bg : 'white' }}>
@@ -89,11 +140,17 @@ export default function UpgradeModal({ user, onClose }) {
                     <span className="font-bold text-lg" style={{ color: p.color }}>GHC {p.price.toLocaleString()}/mo</span>
                   </div>
                   <div className="space-y-1">
-                    {p.features.map(f => (
+                    {(p.features || []).slice(0, 5).map(f => (
                       <p key={f} className="text-xs text-gray-500 flex items-center gap-1">
                         <Check size={10} style={{ color: p.color }} /> {f}
                       </p>
                     ))}
+                    {p.memberLimit && (
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <Check size={10} style={{ color: p.color }} />
+                        {p.memberLimit === 999999 ? 'Unlimited members' : 'Up to ' + p.memberLimit.toLocaleString() + ' members'}
+                      </p>
+                    )}
                   </div>
                 </button>
               ))}

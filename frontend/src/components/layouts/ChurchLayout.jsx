@@ -1,11 +1,8 @@
 import { useState, useRef } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import {
-  LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen,
-  Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck,
-  Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog
-} from 'lucide-react'
+import { LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck, Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog } from 'lucide-react'
+import UpgradeModal from '../UpgradeModal'
 
 const navItems = [
   { label: 'Dashboard', path: '/church/dashboard', icon: LayoutDashboard },
@@ -105,14 +102,14 @@ export default function ChurchLayout() {
           </div>
         </div>
         {/* Plan Badge + Upgrade */}
-        {user?.church_plan && (
+        {user && (
           <div className="mb-2 px-1">
             <div className="flex items-center justify-between px-2 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
               <div>
                 <p className="text-white/40 text-xs">Current Plan</p>
-                <p className="text-white text-xs font-bold capitalize">{user.church_plan}</p>
+                <p className="text-white text-xs font-bold capitalize">{user.church_plan || 'trial'}</p>
               </div>
-              {user.church_plan !== 'enterprise' && (
+              {(user.church_plan || 'trial') !== 'enterprise' && (
                 <button onClick={() => setShowUpgrade(true)}
                   className="text-xs px-2 py-1 rounded-lg font-medium"
                   style={{ background: '#1B4FD8', color: 'white' }}>
@@ -147,6 +144,8 @@ export default function ChurchLayout() {
           </aside>
         </div>
       )}
+
+      {showUpgrade && <UpgradeModal user={user} onClose={() => setShowUpgrade(false)} />}
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 flex-shrink-0">

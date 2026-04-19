@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { adminAPI } from '../utils/api'
 import { Save, Check, Users, DollarSign } from 'lucide-react'
 
 const ALL_FEATURES = [
@@ -49,10 +50,8 @@ export default function PlansPage() {
     })
   }
 
-  const handleSave = () => {
-    const existing = loadSettings()
-    const merged = {
-      ...existing,
+  const handleSave = async () => {
+    const planData = {
       freePlan: plans.free,
       starterPlan: plans.starter,
       growthPlan: plans.growth,
@@ -65,7 +64,16 @@ export default function PlansPage() {
       growthPlanFeatures: plans.growth.features,
       enterprisePlanFeatures: plans.enterprise.features,
     }
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged))
+    // Save to localStorage for admin side
+    const existing = loadSettings()
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...existing, ...planData }))
+    // Save to API so churches can read it
+    try {
+      await adminAPI.updateSettings(planData)
+      console.log('Plan settings saved to API')
+    } catch(e) {
+      console.warn('API save error:', e)
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
