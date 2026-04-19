@@ -64,7 +64,8 @@ export class ChurchesService {
 
   async sendSMS(data: any) {
     const { recipients, message, senderId } = data
-    const authKey = process.env.NALO_AUTH_KEY || '7pG3zZuqHVhG1YfyF2QbP5PpXaL07o0evJsI9Uge57PRr9U6l6zh10mNr7UZXaRt'
+    const username = process.env.NALO_USERNAME || ''
+    const password = process.env.NALO_PASSWORD || ''
     const sender = senderId || process.env.NALO_SENDER_ID || 'Tabscrow'
 
     const results = []
@@ -72,8 +73,17 @@ export class ChurchesService {
 
     for (const phone of recipients) {
       try {
-        const url = `https://sms.nalosolutions.com/smsapi/Nal0/send-message?key=${authKey}&type=0&destination=${phone}&dlr=1&source=${sender}&message=${encodeURIComponent(message)}`
-        const response = await fetch(url)
+        const response = await fetch('https://sms.nalosolutions.com/smsbackend/Resl_Nalo/send-message/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username,
+            password,
+            msisdn: phone,
+            message,
+            sender_id: sender,
+          })
+        })
         const text = await response.text()
         results.push({ phone, status: 'sent', response: text })
       } catch(e) {
