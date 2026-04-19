@@ -734,21 +734,24 @@ export default function MembersPage() {
     }
   }
 
-  const handleDelete = async (id) => {
-    try { await membersAPI.delete(id) } catch(e) {}
-    setMembers(prev => prev.filter(m => m.id !== id))
-  }
-
   const handleAdd = async (newM) => {
     try {
       const saved = await membersAPI.create({
-        name: newM.fullName, phone: newM.phone, email: newM.email,
-        ministry: newM.ministry, status: newM.status, membership: newM.membership,
-        gender: newM.gender, address: newM.homeAddress || newM.location,
-        date_of_birth: newM.dateOfBirth, occupation: newM.occupation,
-        marital_status: newM.maritalStatus, notes: newM.generalRemarks,
-        baptism_date: newM.baptismDate, cell_group: newM.cellGroup,
+        name: newM.fullName,
+        phone: newM.phone,
         whatsapp: newM.whatsapp,
+        email: newM.email,
+        gender: newM.gender,
+        date_of_birth: newM.dateOfBirth,
+        address: newM.homeAddress || newM.location,
+        ministry: newM.ministry,
+        cell_group: newM.cellGroup,
+        status: newM.status || 'Member',
+        membership: newM.membership || 'Active',
+        occupation: newM.occupation,
+        marital_status: newM.maritalStatus,
+        baptism_date: newM.baptismDate,
+        notes: newM.generalRemarks,
       })
       setMembers(prev => [...prev, { ...newM, id: saved.id }])
     } catch(e) {
@@ -756,6 +759,13 @@ export default function MembersPage() {
       setMembers(prev => [...prev, { ...newM, id: Date.now().toString() }])
     }
   }
+
+  const handleDelete = async (id) => {
+    try { await membersAPI.delete(id) } catch(e) {}
+    setMembers(prev => prev.filter(m => m.id !== id))
+  }
+
+  
 
   if (selectedMember) {
     return (
