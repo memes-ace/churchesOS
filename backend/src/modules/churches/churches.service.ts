@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Church, Member, Transaction, AttendanceRecord, PaymentRequest } from '../../entities';
+import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings } from '../../entities';
 
 @Injectable()
 export class ChurchesService {
@@ -11,6 +11,7 @@ export class ChurchesService {
     @InjectRepository(Transaction) private transRepo: Repository<Transaction>,
     @InjectRepository(AttendanceRecord) private attendRepo: Repository<AttendanceRecord>,
     @InjectRepository(PaymentRequest) private paymentRepo: Repository<PaymentRequest>,
+    @InjectRepository(PlatformSettings) private settingsRepo: Repository<PlatformSettings>,
   ) {}
 
   async findAll() {
@@ -131,7 +132,7 @@ export class ChurchesService {
     return { success: true }
   }
 
-  private platformSettings: any = {
+  private defaultSettings: any = {
     platformName: 'ChurchesOS',
     commissionRate: '3',
     starterPrice: '1800',
@@ -149,11 +150,28 @@ export class ChurchesService {
   };
 
   async getSettings() {
-    return this.platformSettings;
+    try {
+      const row = await this.settingsRepo.findOne({ where: { key: 'platform_settings' } })
+      if (row) return { ...this.defaultSettings, ...JSON.parse(row.value) }
+      return this.defaultSettings
+    } catch(e) {
+      return this.defaultSettings
+    }
   }
 
   async updateSettings(data: any) {
-    this.platformSettings = { ...this.platformSettings, ...data };
-    return { success: true, settings: this.platformSettings };
+    try {
+      const current = await this.getSettings()
+      const merged = { ...current, ...data }
+      const existing = await this.settingsRepo.findOne({ where: { key: 'platform_settings' } })
+      if (existing) {
+        await this.settingsRepo.update(existing.id, { value: JSON.stringify(merged) })
+      } else {
+        await this.settingsRepo.save(this.settingsRepo.create({ key: 'platform_settings', value: JSON.stringify(merged) }))
+      }
+      return { success: true, settings: merged }
+    } catch(e) {
+      return { success: false, error: (e as any).message }
+    }
   }
 }

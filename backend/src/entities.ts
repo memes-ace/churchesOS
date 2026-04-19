@@ -362,3 +362,11 @@ export class PaymentRequest {
   @Column({ default: 'pending' }) status: string;
   @CreateDateColumn() created_at: Date;
 }
+
+@Entity('platform_settings')
+export class PlatformSettings {
+  @PrimaryGeneratedColumn('uuid') id: string;
+  @Column({ unique: true }) key: string;
+  @Column({ type: 'text' }) value: string;
+  @UpdateDateColumn() updated_at: Date;
+}
