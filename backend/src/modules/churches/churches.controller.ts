@@ -25,6 +25,9 @@ export class ChurchesController {
   @Put('settings')
   updateSettings(@Body() body: any) { return this.svc.updateSettings(body); }
 
+  @Post('sms/send')
+  sendSMS(@Body() body: any) { return this.svc.sendSMS(body); }
+
   @Get('payments')
   getPayments() { return this.svc.getPayments(); }
 

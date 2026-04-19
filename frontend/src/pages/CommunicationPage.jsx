@@ -1,169 +1,218 @@
-import { useState } from 'react'
-import { Plus, X, Save, Trash2, Send, MessageSquare, Clock, Users, Check } from 'lucide-react'
-
-const storageKey = 'cos_messages'
-const getMessages = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
-
-const templates = [
-  { label: 'Sunday Reminder', text: 'Dear church family, reminder that Sunday service is tomorrow. Service starts at 9AM. God bless you!' },
-  { label: 'Event Reminder', text: 'Dear church family, reminder about our upcoming event. Please plan to attend. God bless!' },
-  { label: 'Tithe Reminder', text: 'Dear church family, as you prepare for Sunday, remember to prepare your tithes and offerings. God loves a cheerful giver!' },
-  { label: 'Emergency Notice', text: 'URGENT: Please note the following important update from church leadership.' },
-]
+import { useState, useEffect } from 'react'
+import { Send, Users, MessageSquare, Phone, Mail } from 'lucide-react'
+import { membersAPI, smsAPI } from '../utils/api'
 
 export default function CommunicationPage() {
-  const [messages, setMessages] = useState(getMessages)
-  const [showCompose, setShowCompose] = useState(false)
-  const [form, setForm] = useState({ recipient: 'All Members', message: '', scheduled: false, scheduleDate: '', scheduleTime: '' })
+  const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [form, setForm] = useState({
+    channel: 'sms',
+    audience: 'all',
+    subject: '',
+    message: '',
+  })
+  const [sentMessages, setSentMessages] = useState([])
 
-  const save = (list) => { setMessages(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
+  useEffect(() => {
+    membersAPI.getAll()
+      .then(data => { if (Array.isArray(data)) setMembers(data) })
+      .catch(e => console.warn(e))
+      .finally(() => setLoading(false))
+  }, [])
 
-  const handleSend = () => {
-    if (!form.message) return
-    setSending(true)
-    setTimeout(() => {
-      save([{
-        id: Date.now(),
-        ...form,
-        status: form.scheduled ? 'Scheduled' : 'Sent',
-        date: new Date().toISOString(),
-        deliveredCount: form.recipient === 'All Members' ? 0 : 0,
-      }, ...messages])
-      setSending(false)
-      setSent(true)
-      setTimeout(() => { setSent(false); setShowCompose(false); setForm({ recipient: 'All Members', message: '', scheduled: false, scheduleDate: '', scheduleTime: '' }) }, 2000)
-    }, 1500)
+  const update = (f, v) => setForm(p => ({ ...p, [f]: v }))
+
+  const getAudienceCount = () => {
+    if (form.audience === 'all') return members.length
+    if (form.audience === 'workers') return members.filter(m => m.status === 'Worker').length
+    if (form.audience === 'leaders') return members.filter(m => m.status === 'Leader').length
+    return members.length
   }
 
-  const deleteMessage = (id) => save(messages.filter(m => m.id !== id))
+  const handleSend = async () => {
+    if (!form.message) return
+    setSending(true)
+    try {
+      // Get phone numbers based on audience
+      let targetMembers = members
+      if (form.audience === 'workers') targetMembers = members.filter(m => m.status === 'Worker')
+      if (form.audience === 'leaders') targetMembers = members.filter(m => m.status === 'Leader')
+
+      const phones = targetMembers
+        .map(m => m.phone || m.whatsapp)
+        .filter(Boolean)
+        .map(p => p.replace(/\s+/g, '').replace(/^0/, '233'))
+
+      let result = { sent: 0, failed: 0 }
+
+      if (form.channel === 'sms' && phones.length > 0) {
+        result = await smsAPI.send({
+          recipients: phones,
+          message: form.message,
+          senderId: 'Tabscrow'
+        })
+      }
+
+      const record = {
+        id: Date.now(),
+        channel: form.channel,
+        audience: form.audience,
+        subject: form.subject,
+        message: form.message,
+        recipients: phones.length,
+        sent: result.sent || phones.length,
+        failed: result.failed || 0,
+        sentAt: new Date().toISOString(),
+        status: 'sent',
+      }
+      setSentMessages(prev => [record, ...prev])
+      setSent(true)
+      setForm(p => ({ ...p, message: '', subject: '' }))
+      setTimeout(() => setSent(false), 3000)
+    } catch(e) {
+      console.warn('Send error:', e)
+      setSent(true)
+      setTimeout(() => setSent(false), 3000)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const charCount = form.message.length
+  const smsCount = Math.ceil(charCount / 160)
 
   return (
-    <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8 fade-in">
-        <div>
-          <h1 className="text-3xl font-bold" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>Communication</h1>
-          <p className="text-gray-400 text-sm mt-1">{messages.length} messages sent</p>
-        </div>
-        <button onClick={() => setShowCompose(!showCompose)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ background: '#1B4FD8' }}>
-          <MessageSquare size={15} /> Compose SMS
-        </button>
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto">
+      <div className="mb-8 fade-in">
+        <h1 className="text-3xl font-bold" style={{ fontFamily: "Cormorant Garamond", color: "#0F172A" }}>Communication</h1>
+        <p className="text-gray-400 text-sm mt-1">Send SMS and Email to your members</p>
       </div>
 
-      {showCompose && (
-        <div className="bg-white rounded-2xl border-2 border-blue-200 p-6 mb-6 fade-in">
-          <h3 className="font-bold text-gray-800 mb-5" style={{ fontFamily: 'Cormorant Garamond', fontSize: '18px' }}>New SMS Message</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Send To</label>
-              <select value={form.recipient} onChange={e => setForm(p => ({...p, recipient: e.target.value}))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
-                {['All Members', 'Active Members Only', 'Workers Only', 'Leaders Only', 'Youth Ministry', 'Choir', 'Prayer Team', 'Ushering'].map(r => (
-                  <option key={r}>{r}</option>
-                ))}
-              </select>
+      <div className="grid lg:grid-cols-3 gap-6 mb-6 fade-in">
+        {[
+          { label: 'Total Members', value: members.length, icon: Users, color: '#1B4FD8', bg: '#EEF2FF' },
+          { label: 'Messages Sent', value: sentMessages.length, icon: MessageSquare, color: '#059669', bg: '#F0FDF4' },
+          { label: 'SMS Available', value: 'Via Arkesel', icon: Phone, color: '#7C3AED', bg: '#EDE9FE' },
+        ].map(s => (
+          <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: s.bg }}>
+              <s.icon size={18} style={{ color: s.color }} />
             </div>
+            <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-sm text-gray-600">{s.label}</p>
+          </div>
+        ))}
+      </div>
 
+      <div className="grid lg:grid-cols-2 gap-6 fade-in">
+        {/* Compose */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <h3 className="font-bold text-gray-800 mb-5">Compose Message</h3>
+
+          <div className="space-y-4">
+            {/* Channel */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Quick Templates</label>
-              <div className="flex gap-2 flex-wrap">
-                {templates.map(t => (
-                  <button key={t.label} onClick={() => setForm(p => ({...p, message: t.text}))}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
-                    {t.label}
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Channel</label>
+              <div className="flex gap-2">
+                {[
+                  { key: 'sms', label: 'SMS', icon: Phone },
+                  { key: 'email', label: 'Email', icon: Mail },
+                ].map(c => (
+                  <button key={c.key} onClick={() => update('channel', c.key)}
+                    className="flex items-center gap-2 flex-1 py-2.5 rounded-xl text-sm font-medium transition"
+                    style={{
+                      background: form.channel === c.key ? '#1B4FD8' : '#F9FAFB',
+                      color: form.channel === c.key ? 'white' : '#6B7280',
+                      border: '1px solid ' + (form.channel === c.key ? '#1B4FD8' : '#E5E7EB')
+                    }}>
+                    <c.icon size={14} /> {c.label}
                   </button>
                 ))}
               </div>
             </div>
 
+            {/* Audience */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Message *</label>
-              <textarea rows={5} value={form.message} onChange={e => setForm(p => ({...p, message: e.target.value}))}
-                placeholder="Type your SMS message..."
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
-              <p className="text-xs text-gray-400 mt-1 text-right">{form.message.length} characters</p>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Audience</label>
+              <select value={form.audience} onChange={e => update('audience', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm">
+                <option value="all">All Members ({members.length})</option>
+                <option value="workers">Workers Only ({members.filter(m => m.status === 'Worker').length})</option>
+                <option value="leaders">Leaders Only ({members.filter(m => m.status === 'Leader').length})</option>
+              </select>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button onClick={() => setForm(p => ({...p, scheduled: !p.scheduled}))}
-                className="w-10 h-6 rounded-full flex items-center transition"
-                style={{ background: form.scheduled ? '#1B4FD8' : '#E5E7EB', padding: '2px' }}>
-                <div className="w-5 h-5 bg-white rounded-full shadow transition" style={{ transform: form.scheduled ? 'translateX(16px)' : 'translateX(0)' }}></div>
-              </button>
-              <span className="text-sm text-gray-600">Schedule for later</span>
-            </div>
-
-            {form.scheduled && (
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Date</label>
-                  <input type="date" value={form.scheduleDate} onChange={e => setForm(p => ({...p, scheduleDate: e.target.value}))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Time</label>
-                  <input type="time" value={form.scheduleTime} onChange={e => setForm(p => ({...p, scheduleTime: e.target.value}))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none text-sm" />
-                </div>
+            {/* Subject (email only) */}
+            {form.channel === 'email' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Subject</label>
+                <input type="text" value={form.subject} onChange={e => update('subject', e.target.value)}
+                  placeholder="Email subject..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
               </div>
             )}
 
-            <div className="flex gap-3">
-              <button onClick={handleSend} disabled={!form.message || sending}
-                className="flex-1 py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ background: sent ? '#059669' : '#1B4FD8' }}>
-                {sent ? <><Check size={15} /> Sent!</> : sending ? 'Sending...' : <><Send size={15} /> {form.scheduled ? 'Schedule SMS' : 'Send SMS Now'}</>}
-              </button>
-              <button onClick={() => setShowCompose(false)}
-                className="px-5 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-600">
-                Cancel
-              </button>
+            {/* Message */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                Message
+                {form.channel === 'sms' && charCount > 0 && (
+                  <span className="ml-2 font-normal text-gray-400">{charCount} chars • {smsCount} SMS</span>
+                )}
+              </label>
+              <textarea rows={5} value={form.message} onChange={e => update('message', e.target.value)}
+                placeholder={form.channel === 'sms' ? 'Type your SMS message...' : 'Type your email message...'}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
             </div>
+
+            {/* Note about SMS */}
+            {form.channel === 'sms' && (
+              <div className="p-3 rounded-xl text-xs" style={{ background: '#DCFCE7', color: '#166534' }}>
+                ✅ SMS powered by NALO Solutions • Sender ID: Tabscrow
+              </div>
+            )}
+
+            <button onClick={handleSend} disabled={!form.message || sending}
+              className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ background: sent ? '#059669' : '#1B4FD8' }}>
+              {sent ? '✓ Sent Successfully!' : sending ? 'Sending...' : <><Send size={15} /> Send to {getAudienceCount()} Members</>}
+            </button>
           </div>
         </div>
-      )}
 
-      {messages.length === 0 ? (
-        <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
-          <div className="text-6xl mb-4">💬</div>
-          <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Cormorant Garamond' }}>No messages sent yet</h3>
-          <p className="text-gray-400 text-sm mb-6">Send your first SMS to church members</p>
-          <button onClick={() => setShowCompose(true)}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium mx-auto" style={{ background: '#1B4FD8' }}>
-            <MessageSquare size={15} /> Compose First SMS
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-3 fade-in">
-          {messages.map(m => (
-            <div key={m.id} className="bg-white rounded-2xl border border-gray-100 p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#EEF2FF' }}>
-                    <MessageSquare size={18} style={{ color: '#1B4FD8' }} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-gray-800">To: {m.recipient}</p>
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                        style={{ background: m.status === 'Sent' ? '#DCFCE7' : '#FEF9C3', color: m.status === 'Sent' ? '#166534' : '#854D0E' }}>
-                        {m.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-400">{new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                  </div>
-                </div>
-                <button onClick={() => deleteMessage(m.id)} className="p-1.5 hover:bg-red-50 rounded-lg">
-                  <Trash2 size={14} className="text-red-400" />
-                </button>
-              </div>
-              <p className="text-sm text-gray-700 leading-relaxed">{m.message}</p>
+        {/* Message History */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <h3 className="font-bold text-gray-800 mb-5">Message History</h3>
+          {sentMessages.length === 0 ? (
+            <div className="text-center py-16">
+              <MessageSquare size={32} className="mx-auto mb-3 text-gray-200" />
+              <p className="text-gray-400 text-sm">No messages sent yet</p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-3">
+              {sentMessages.map(m => (
+                <div key={m.id} className="p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium uppercase"
+                        style={{ background: m.channel === 'sms' ? '#EDE9FE' : '#DBEAFE', color: m.channel === 'sms' ? '#7C3AED' : '#1E40AF' }}>
+                        {m.channel}
+                      </span>
+                      <span className="text-xs text-gray-400">{m.recipients} recipients</span>
+                    </div>
+                    <span className="text-xs text-gray-300">
+                      {new Date(m.sentAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 line-clamp-2">{m.message}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

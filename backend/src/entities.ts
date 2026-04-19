@@ -28,6 +28,8 @@ export class User {
   @Column({ default: 'church_admin' }) role: string;
   @Column({ nullable: true }) church_id: string;
   @Column({ nullable: true }) title: string;
+  @Column({ nullable: true }) reset_code: string;
+  @Column({ nullable: true, type: 'timestamp' }) reset_code_expires: Date;
   @ManyToOne(() => Church, { nullable: true })
   @JoinColumn({ name: 'church_id' })
   church: Church;

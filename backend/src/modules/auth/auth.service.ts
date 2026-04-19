@@ -81,6 +81,34 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async forgotPassword(email: string) {
+    const user = await this.userRepo.findOne({ where: { email } })
+    if (!user) return { message: 'If this email exists, a reset code has been sent' }
+    // Generate 6-digit reset code
+    const code = Math.floor(100000 + Math.random() * 900000).toString()
+    const expires = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+    await this.userRepo.update(user.id, { 
+      reset_code: code, 
+      reset_code_expires: expires 
+    })
+    console.log(`Password reset code for ${email}: ${code}`) // In production send via SMS/email
+    return { message: 'Reset code sent', code } // Remove code in production
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string) {
+    const user = await this.userRepo.findOne({ where: { email } })
+    if (!user) throw new Error('Invalid request')
+    if (user.reset_code !== code) throw new Error('Invalid reset code')
+    if (new Date() > new Date(user.reset_code_expires)) throw new Error('Reset code expired')
+    const hashed = await bcrypt.hash(newPassword, 10)
+    await this.userRepo.update(user.id, { 
+      password: hashed, 
+      reset_code: null, 
+      reset_code_expires: null 
+    })
+    return { message: 'Password reset successful' }
+  }
+
   async register(data: any) {
     const exists = await this.userRepo.findOne({ where: { email: data.email } });
     if (exists) throw new ConflictException('Email already registered');

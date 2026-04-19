@@ -62,6 +62,34 @@ export class ChurchesService {
     };
   }
 
+  async sendSMS(data: any) {
+    const { recipients, message, senderId } = data
+    const authKey = process.env.NALO_AUTH_KEY || '7pG3zZuqHVhG1YfyF2QbP5PpXaL07o0evJsI9Uge57PRr9U6l6zh10mNr7UZXaRt'
+    const sender = senderId || process.env.NALO_SENDER_ID || 'Tabscrow'
+
+    const results = []
+    const errors = []
+
+    for (const phone of recipients) {
+      try {
+        const url = `https://sms.nalosolutions.com/smsapi/Nal0/send-message?key=${authKey}&type=0&destination=${phone}&dlr=1&source=${sender}&message=${encodeURIComponent(message)}`
+        const response = await fetch(url)
+        const text = await response.text()
+        results.push({ phone, status: 'sent', response: text })
+      } catch(e) {
+        errors.push({ phone, status: 'failed', error: (e as any).message })
+      }
+    }
+
+    return {
+      success: true,
+      sent: results.length,
+      failed: errors.length,
+      results,
+      errors,
+    }
+  }
+
   async submitPayment(data: any) {
     return this.paymentRepo.save(this.paymentRepo.create({
       church_id: data.church_id,

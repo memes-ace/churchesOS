@@ -129,7 +129,9 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            New church? <a href="/register" className="font-medium" style={{ color: '#1B4FD8' }}>Register your church</a>
+            Forgot password? <a href="/forgot-password" style={{ color: '#1B4FD8' }}>Reset it</a>
+              </p>
+              <p className="text-sm text-gray-500">New church? <a href="/register" className="font-medium" style={{ color: '#1B4FD8' }}>Register your church</a>
           </p>
 
           <div className="mt-8 p-4 rounded-xl border" style={{ background: '#EEF2FF', borderColor: '#C7D2FE' }}>

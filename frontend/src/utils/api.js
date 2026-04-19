@@ -172,3 +172,7 @@ export const paymentsAPI = {
   approve: (id) => api.put(`/admin/payments/${id}/approve`, {}),
   reject: (id) => api.put(`/admin/payments/${id}/reject`, {}),
 }
+
+export const smsAPI = {
+  send: (d) => api.post('/admin/sms/send', d),
+}

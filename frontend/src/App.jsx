@@ -35,6 +35,7 @@ import QuoteRequestsPage from './pages/QuoteRequestsPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 import PlansPage from './pages/PlansPage'
 import SuperLoginPage from './pages/SuperLoginPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
 
 function Root() {
   const { user, loading } = useAuth()
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/member-login" element={<MemberLoginPage />} />
           <Route path="/vendor-register" element={<VendorRegisterPage />} />
           <Route path="/admin-login" element={<SuperLoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           <Route path="/church" element={<ChurchLayout />}>
             <Route path="dashboard" element={<ChurchDashboard />} />
