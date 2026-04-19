@@ -38,6 +38,21 @@ export default function PlansPage() {
   const [saved, setSaved] = useState(false)
   const [activeEdit, setActiveEdit] = useState('free')
 
+  useEffect(() => {
+    adminAPI.getSettings()
+      .then(s => {
+        if (s) {
+          setPlans({
+            free:       { ...defaultPlans.free,       ...(s.freePlan || {}) },
+            starter:    { ...defaultPlans.starter,    ...(s.starterPlan || {}), price: Number(s.starterPlan?.price || s.starterPrice || 1800) },
+            growth:     { ...defaultPlans.growth,     ...(s.growthPlan || {}), price: Number(s.growthPlan?.price || s.growthPrice || 5400) },
+            enterprise: { ...defaultPlans.enterprise, ...(s.enterprisePlan || {}), price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200) },
+          })
+        }
+      })
+      .catch(e => console.warn('Settings load error:', e))
+  }, [])
+
   const updatePlan = (planKey, field, value) => {
     setPlans(prev => ({ ...prev, [planKey]: { ...prev[planKey], [field]: value } }))
   }
