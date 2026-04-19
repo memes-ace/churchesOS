@@ -60,17 +60,35 @@ export default function ChurchLayout() {
   const [enabledFeatures, setEnabledFeatures] = useState(null)
 
   useEffect(() => {
-    // Load plan features from API settings
-    fetch('/api/admin/settings')
+    const token = localStorage.getItem('cos_token') || ''
+    const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+    const plan = (user.church_plan || 'trial').toLowerCase()
+
+    fetch('/api/admin/settings', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(r => r.json())
       .then(s => {
-        const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
-        const plan = (user.church_plan || 'trial').toLowerCase()
+        if (plan === 'trial') {
+          // trial gets only basic features
+          setEnabledFeatures(['Members', 'Attendance', 'Prayer Requests', 'Announcements'])
+          return
+        }
         const planKey = plan + 'Plan'
         const features = s[planKey]?.features || s[plan + 'PlanFeatures'] || null
         setEnabledFeatures(features)
       })
-      .catch(() => setEnabledFeatures(null))
+      .catch(() => {
+        // fallback based on plan name
+        const defaults = {
+          trial: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
+          free: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
+          starter: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication'],
+          growth: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports'],
+          enterprise: null, // all features
+        }
+        setEnabledFeatures(defaults[plan] || null)
+      })
   }, [])
 
   const filteredNav = navItems.map(item => {
