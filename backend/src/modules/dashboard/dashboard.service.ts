@@ -19,7 +19,16 @@ export class DashboardService {
       this.eventRepo.find({ where: { church_id: churchId, status: 'upcoming' } }),
     ]);
     const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    return { totalMembers, lastAttendance: recentAttendance[0]?.count || 0, monthlyGiving: income, upcomingEvents: upcomingEvents.length };
+    const church = await this.churchRepo.findOne({ where: { id: churchId } });
+    return { 
+      totalMembers, 
+      lastAttendance: recentAttendance[0]?.count || 0, 
+      monthlyGiving: income, 
+      upcomingEvents: upcomingEvents.length,
+      plan: church?.plan || 'trial',
+      status: church?.status || 'trial',
+      church_name: church?.name || '',
+    };
   }
   async getPlatformStats() {
     const churches = await this.churchRepo.find();

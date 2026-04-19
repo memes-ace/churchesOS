@@ -736,7 +736,7 @@ export default function MembersPage() {
 
   const handleAdd = async (newM) => {
     try {
-      const saved = await membersAPI.create({
+      await membersAPI.create({
         name: newM.fullName,
         phone: newM.phone,
         whatsapp: newM.whatsapp,
@@ -753,10 +753,33 @@ export default function MembersPage() {
         baptism_date: newM.baptismDate,
         notes: newM.generalRemarks,
       })
-      setMembers(prev => [...prev, { ...newM, id: saved.id }])
+      // Reload all members from DB after adding
+      const updated = await membersAPI.getAll()
+      if (Array.isArray(updated)) {
+        setMembers(updated.map(m => ({
+          id: m.id,
+          memberId: m.member_id || '',
+          fullName: m.name || '',
+          phone: m.phone || '',
+          whatsapp: m.whatsapp || '',
+          email: m.email || '',
+          gender: m.gender || '',
+          dateOfBirth: m.date_of_birth || '',
+          homeAddress: m.address || '',
+          location: m.address || '',
+          status: m.status || 'Member',
+          membership: m.membership || 'Active',
+          ministry: m.ministry || '',
+          cellGroup: m.cell_group || '',
+          occupation: m.occupation || '',
+          maritalStatus: m.marital_status || '',
+          notes: m.notes || '',
+          dateJoined: m.created_at || '',
+          attendance: 0,
+        })))
+      }
     } catch(e) {
       console.warn('Add member error:', e)
-      setMembers(prev => [...prev, { ...newM, id: Date.now().toString() }])
     }
   }
 

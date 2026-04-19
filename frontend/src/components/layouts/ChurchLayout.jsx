@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck, Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog } from 'lucide-react'
@@ -33,6 +33,23 @@ export default function ChurchLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const initials = user?.name?.split(' ').map(w => w[0]).slice(0,2).join('') || 'PA'
+
+  // Fetch latest church plan from API on load
+  useEffect(() => {
+    if (user?.church_id) {
+      fetch(`/api/churches/${user.church_id}/dashboard`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('cos_token')}` }
+      })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.plan) {
+          const updated = { ...user, church_plan: data.plan, church_status: data.status }
+          localStorage.setItem('cos_user', JSON.stringify(updated))
+        }
+      })
+      .catch(() => {})
+    }
+  }, [])
 
   // Get enabled features for this church from localStorage (set by super admin)
   const getEnabledFeatures = () => {

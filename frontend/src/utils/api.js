@@ -34,114 +34,114 @@ const api = {
   },
 }
 
-const cId = () => churchId()
+const churchId_old = () => churchId()
 
 export const membersAPI = {
-  getAll: () => api.get(`/churches/${cId()}/members`),
-  create: (d) => api.post(`/churches/${cId()}/members`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/members/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/members/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/members`),
+  create: (d) => api.post(`/churches/${churchId()}/members`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/members/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/members/${id}`),
 }
 
 export const attendanceAPI = {
-  getAll: () => api.get(`/churches/${cId()}/attendance`),
-  create: (d) => api.post(`/churches/${cId()}/attendance`, d),
-  getStats: () => api.get(`/churches/${cId()}/attendance/stats`),
+  getAll: () => api.get(`/churches/${churchId()}/attendance`),
+  create: (d) => api.post(`/churches/${churchId()}/attendance`, d),
+  getStats: () => api.get(`/churches/${churchId()}/attendance/stats`),
 }
 
 export const financeAPI = {
-  getAll: () => api.get(`/churches/${cId()}/finance/transactions`),
-  create: (d) => api.post(`/churches/${cId()}/finance/transactions`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/finance/transactions/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/finance/transactions/${id}`),
-  getSummary: () => api.get(`/churches/${cId()}/finance/summary`),
+  getAll: () => api.get(`/churches/${churchId()}/finance/transactions`),
+  create: (d) => api.post(`/churches/${churchId()}/finance/transactions`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/finance/transactions/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/finance/transactions/${id}`),
+  getSummary: () => api.get(`/churches/${churchId()}/finance/summary`),
 }
 
 export const eventsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/events`),
-  create: (d) => api.post(`/churches/${cId()}/events`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/events/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/events/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/events`),
+  create: (d) => api.post(`/churches/${churchId()}/events`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/events/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/events/${id}`),
 }
 
 export const visitorsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/visitors`),
-  create: (d) => api.post(`/churches/${cId()}/visitors`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/visitors/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/visitors/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/visitors`),
+  create: (d) => api.post(`/churches/${churchId()}/visitors`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/visitors/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/visitors/${id}`),
 }
 
 export const prayerAPI = {
-  getAll: () => api.get(`/churches/${cId()}/prayer`),
-  create: (d) => api.post(`/churches/${cId()}/prayer`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/prayer/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/prayer/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/prayer`),
+  create: (d) => api.post(`/churches/${churchId()}/prayer`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/prayer/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/prayer/${id}`),
 }
 
 export const sermonsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/sermons`),
-  create: (d) => api.post(`/churches/${cId()}/sermons`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/sermons/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/sermons/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/sermons`),
+  create: (d) => api.post(`/churches/${churchId()}/sermons`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/sermons/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/sermons/${id}`),
 }
 
 export const announcementsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/announcements`),
-  create: (d) => api.post(`/churches/${cId()}/announcements`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/announcements/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/announcements/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/announcements`),
+  create: (d) => api.post(`/churches/${churchId()}/announcements`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/announcements/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/announcements/${id}`),
 }
 
 export const ministriesAPI = {
-  getAll: () => api.get(`/churches/${cId()}/ministries`),
-  create: (d) => api.post(`/churches/${cId()}/ministries`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/ministries/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/ministries/${id}`),
-  getMembers: (ministryId) => api.get(`/churches/${cId()}/ministries/${ministryId}/members`),
-  addMember: (ministryId, d) => api.post(`/churches/${cId()}/ministries/${ministryId}/members`, d),
-  updateMember: (ministryId, memberId, d) => api.put(`/churches/${cId()}/ministries/${ministryId}/members/${memberId}`, d),
-  deleteMember: (ministryId, memberId) => api.delete(`/churches/${cId()}/ministries/${ministryId}/members/${memberId}`),
+  getAll: () => api.get(`/churches/${churchId()}/ministries`),
+  create: (d) => api.post(`/churches/${churchId()}/ministries`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/ministries/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/ministries/${id}`),
+  getMembers: (ministryId) => api.get(`/churches/${churchId()}/ministries/${ministryId}/members`),
+  addMember: (ministryId, d) => api.post(`/churches/${churchId()}/ministries/${ministryId}/members`, d),
+  updateMember: (ministryId, memberId, d) => api.put(`/churches/${churchId()}/ministries/${ministryId}/members/${memberId}`, d),
+  deleteMember: (ministryId, memberId) => api.delete(`/churches/${churchId()}/ministries/${ministryId}/members/${memberId}`),
 }
 
 export const cellGroupsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/cell-groups`),
-  create: (d) => api.post(`/churches/${cId()}/cell-groups`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/cell-groups/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/cell-groups/${id}`),
-  getMembers: (cellId) => api.get(`/churches/${cId()}/cell-groups/${cellId}/members`),
-  addMember: (cellId, d) => api.post(`/churches/${cId()}/cell-groups/${cellId}/members`, d),
-  updateMember: (cellId, memberId, d) => api.put(`/churches/${cId()}/cell-groups/${cellId}/members/${memberId}`, d),
-  deleteMember: (cellId, memberId) => api.delete(`/churches/${cId()}/cell-groups/${cellId}/members/${memberId}`),
-  getAttendance: (cellId) => api.get(`/churches/${cId()}/cell-groups/${cellId}/attendance`),
-  addAttendance: (cellId, d) => api.post(`/churches/${cId()}/cell-groups/${cellId}/attendance`, d),
+  getAll: () => api.get(`/churches/${churchId()}/cell-groups`),
+  create: (d) => api.post(`/churches/${churchId()}/cell-groups`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/cell-groups/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/cell-groups/${id}`),
+  getMembers: (cellId) => api.get(`/churches/${churchId()}/cell-groups/${cellId}/members`),
+  addMember: (cellId, d) => api.post(`/churches/${churchId()}/cell-groups/${cellId}/members`, d),
+  updateMember: (cellId, memberId, d) => api.put(`/churches/${churchId()}/cell-groups/${cellId}/members/${memberId}`, d),
+  deleteMember: (cellId, memberId) => api.delete(`/churches/${churchId()}/cell-groups/${cellId}/members/${memberId}`),
+  getAttendance: (cellId) => api.get(`/churches/${churchId()}/cell-groups/${cellId}/attendance`),
+  addAttendance: (cellId, d) => api.post(`/churches/${churchId()}/cell-groups/${cellId}/attendance`, d),
 }
 
 export const equipmentAPI = {
-  getAll: () => api.get(`/churches/${cId()}/equipment`),
-  create: (d) => api.post(`/churches/${cId()}/equipment`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/equipment/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/equipment/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/equipment`),
+  create: (d) => api.post(`/churches/${churchId()}/equipment`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/equipment/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/equipment/${id}`),
 }
 
 export const purchasesAPI = {
-  getAll: () => api.get(`/churches/${cId()}/purchases`),
-  create: (d) => api.post(`/churches/${cId()}/purchases`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/purchases/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/purchases/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/purchases`),
+  create: (d) => api.post(`/churches/${churchId()}/purchases`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/purchases/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/purchases/${id}`),
 }
 
 export const songsAPI = {
-  getAll: () => api.get(`/churches/${cId()}/songs`),
-  create: (d) => api.post(`/churches/${cId()}/songs`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/songs/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/songs/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/songs`),
+  create: (d) => api.post(`/churches/${churchId()}/songs`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/songs/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/songs/${id}`),
 }
 
 export const counsellingAPI = {
-  getAll: () => api.get(`/churches/${cId()}/counselling`),
-  create: (d) => api.post(`/churches/${cId()}/counselling`, d),
-  update: (id, d) => api.put(`/churches/${cId()}/counselling/${id}`, d),
-  delete: (id) => api.delete(`/churches/${cId()}/counselling/${id}`),
+  getAll: () => api.get(`/churches/${churchId()}/counselling`),
+  create: (d) => api.post(`/churches/${churchId()}/counselling`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/counselling/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/counselling/${id}`),
 }
 
 export const vendorsAPI = {
@@ -153,7 +153,7 @@ export const vendorsAPI = {
 }
 
 export const dashboardAPI = {
-  getStats: () => api.get(`/churches/${cId()}/dashboard`),
+  getStats: () => api.get(`/churches/${churchId()}/dashboard`),
 }
 
 export const adminAPI = {
