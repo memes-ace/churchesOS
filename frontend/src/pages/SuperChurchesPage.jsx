@@ -24,6 +24,11 @@ const ALL_FEATURES = [
   { key: 'roles', label: 'Roles & Access' },
 ]
 
+const getSettings = () => {
+  try { return JSON.parse(localStorage.getItem('cos_platform_settings') || '{}') }
+  catch(e) { return {} }
+}
+
 const planConfig = {
   free:       { label: 'Free',       bg: '#F3F4F6', text: '#6B7280',  price: 0 },
   starter:    { label: 'Starter',    bg: '#DBEAFE', text: '#1E40AF',  price: 1800 },
@@ -215,9 +220,9 @@ export default function SuperChurchesPage() {
                         style={{ background: plan.bg, color: plan.text }}>
                         <option value="trial">Trial</option>
                         <option value="free">Free</option>
-                        <option value="starter">Starter — GHC 1,800/mo</option>
-                        <option value="growth">Growth — GHC 5,400/mo</option>
-                        <option value="enterprise">Enterprise — GHC 10,200/mo</option>
+                        <option value="starter">Starter — GHC {(getSettings().starterPlan?.price || getSettings().starterPrice || 1800).toLocaleString()}/mo</option>
+                        <option value="growth">Growth — GHC {(getSettings().growthPlan?.price || getSettings().growthPrice || 5400).toLocaleString()}/mo</option>
+                        <option value="enterprise">Enterprise — GHC {(getSettings().enterprisePlan?.price || getSettings().enterprisePrice || 10200).toLocaleString()}/mo</option>
                       </select>
                     </td>
                     <td className="py-4 px-4">
