@@ -57,7 +57,7 @@ export default function CommunicationPage() {
         result = await smsAPI.send({
           recipients: phones,
           message: form.message,
-          senderId: getChurchSenderId()
+          senderId: (() => { const sid = getChurchSenderId(); console.log('Using sender ID:', sid); return sid; })()
         })
       }
 
