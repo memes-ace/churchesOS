@@ -368,5 +368,5 @@ export class PlatformSettings {
   @PrimaryGeneratedColumn('uuid') id: string;
   @Column({ unique: true }) key: string;
   @Column({ type: 'text' }) value: string;
-  @UpdateDateColumn() updated_at: Date;
+  @Column({ nullable: true }) updated_at: string;
 }
