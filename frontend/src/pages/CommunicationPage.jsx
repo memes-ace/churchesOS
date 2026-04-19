@@ -3,12 +3,24 @@ import { Send, Users, MessageSquare, Phone, Mail } from 'lucide-react'
 import { membersAPI, smsAPI } from '../utils/api'
 
 export default function CommunicationPage() {
-  const getChurchSenderId = () => {
-    try { 
-      const u = JSON.parse(localStorage.getItem('cos_user') || '{}')
-      return u.sender_id || 'Tabscrow'
-    } catch(e) { return 'Tabscrow' }
-  }
+  const getUser = () => { try { return JSON.parse(localStorage.getItem('cos_user') || '{}') } catch(e) { return {} } }
+  const [senderId, setSenderId] = useState('Tabscrow')
+
+  useEffect(() => {
+    const user = getUser()
+    if (user.church_id) {
+      fetch(`/api/churches/${user.church_id}/dashboard`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('cos_token')}` }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data?.sender_id) setSenderId(data.sender_id)
+      })
+      .catch(() => {})
+    }
+  }, [])
+
+  const getChurchSenderId = () => senderId
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
