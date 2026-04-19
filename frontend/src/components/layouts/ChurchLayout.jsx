@@ -57,23 +57,33 @@ export default function ChurchLayout() {
     }
   }, [])
 
-  // Get enabled features for this church from localStorage (set by super admin)
-  const getEnabledFeatures = () => {
-    try {
-      const churchData = JSON.parse(localStorage.getItem('cos_church_features') || 'null')
-      return churchData || null // null means all features enabled
-    } catch(e) { return null }
-  }
+  const [enabledFeatures, setEnabledFeatures] = useState(null)
 
-  const enabledFeatures = getEnabledFeatures()
-
-  const filteredNav = enabledFeatures
-    ? navItems.filter(item => {
-        const key = item.path.replace('/church/', '')
-        if (key === 'dashboard') return true // always show dashboard
-        return enabledFeatures.includes(key)
+  useEffect(() => {
+    // Load plan features from API settings
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then(s => {
+        const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+        const plan = (user.church_plan || 'trial').toLowerCase()
+        const planKey = plan + 'Plan'
+        const features = s[planKey]?.features || s[plan + 'PlanFeatures'] || null
+        setEnabledFeatures(features)
       })
-    : navItems
+      .catch(() => setEnabledFeatures(null))
+  }, [])
+
+  const filteredNav = navItems.map(item => {
+    const key = item.label // use label to match plan features
+    const alwaysAllowed = ['Dashboard']
+    if (alwaysAllowed.includes(item.label)) return { ...item, locked: false }
+    if (!enabledFeatures) return { ...item, locked: false }
+    const isEnabled = enabledFeatures.some(f => 
+      f.toLowerCase() === item.label.toLowerCase() ||
+      item.path.includes(f.toLowerCase().replace(/\s+/g, '-'))
+    )
+    return { ...item, locked: !isEnabled }
+  })
   const navRef = useRef(null)
 
   const handleNavClick = () => {
@@ -101,16 +111,25 @@ export default function ChurchLayout() {
       </div>
 
       <nav ref={navRef} className="flex-1 px-2 py-3 overflow-y-auto" style={{ scrollbarWidth: 'none', overflowAnchor: 'none' }}>
-        {filteredNav.map(({ label, path, icon: Icon }) => (
-          <NavLink key={path} to={path} onClick={handleNavClick}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium mb-0.5 transition ${
-                isActive ? 'bg-white/15 text-white' : 'text-white/55 hover:bg-white/10 hover:text-white'
-              }`
-            }>
-            <Icon size={15} className="flex-shrink-0" />
-            <span className="truncate">{label}</span>
-          </NavLink>
+        {filteredNav.map(({ label, path, icon: Icon, locked }) => (
+          locked ? (
+            <button key={path} onClick={() => setShowUpgrade(true)}
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium mb-0.5 w-full text-left transition text-white/25 hover:text-white/40">
+              <Icon size={15} className="flex-shrink-0 opacity-40" />
+              <span className="truncate flex-1">{label}</span>
+              <span className="text-white/20 text-xs">🔒</span>
+            </button>
+          ) : (
+            <NavLink key={path} to={path} onClick={handleNavClick}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium mb-0.5 transition ${
+                  isActive ? 'bg-white/15 text-white' : 'text-white/55 hover:bg-white/10 hover:text-white'
+                }`
+              }>
+              <Icon size={15} className="flex-shrink-0" />
+              <span className="truncate">{label}</span>
+            </NavLink>
+          )
         ))}
       </nav>
 
