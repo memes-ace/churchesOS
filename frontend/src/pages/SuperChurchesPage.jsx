@@ -190,7 +190,7 @@ export default function SuperChurchesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100">
-                {["Church", "Plan", "Status", "Sender ID", "Members", "Features", "Actions"].map(h => (
+                {["Church", "Plan", "Sender ID", "Status", "Members", "Features", "Actions"].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>

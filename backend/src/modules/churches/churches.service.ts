@@ -37,6 +37,7 @@ export class ChurchesService {
     if (data.features !== undefined) updateData.features = data.features
     if (data.name !== undefined) updateData.name = data.name
     if (data.pastor_name !== undefined) updateData.pastor_name = data.pastor_name
+    if (data.sender_id !== undefined) updateData.sender_id = data.sender_id
     await this.churchRepo.update(id, updateData)
     return this.findOne(id)
   }
