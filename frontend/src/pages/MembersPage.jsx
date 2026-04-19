@@ -10,7 +10,7 @@ const membershipStyle = { Active: { bg: '#DBEAFE', text: '#1E40AF' }, Inactive: 
 
 const emptyMember = {
   memberId: '', fullName: '', photo: null, photoPreview: null, gender: '',
-  dateOfBirth: '', phone: '', whatsapp: '', email: '', homeAddress: '',
+  dateOfBirth: '', phone: '', phone2: '', whatsapp: '', email: '', homeAddress: '',
   location: '', emergencyName: '', emergencyPhone: '', dateJoined: '',
   status: 'Member', membership: 'Active', ministry: '', cellGroup: '',
   baptismStatus: '', baptismDate: '', confirmedMember: 'No',
@@ -202,6 +202,10 @@ function MemberProfile({ member, onBack, onSave, onDelete }) {
               { label: 'Full Name', field: 'fullName', type: 'text' },
               { label: 'Gender', field: 'gender', type: 'select', options: ['Male', 'Female'] },
               { label: 'Date of Birth', field: 'dateOfBirth', type: 'date' },
+              { label: 'Phone Number 1', field: 'phone', type: 'tel', ph: '+233 24 000 0000' },
+              { label: 'Phone Number 2', field: 'phone2', type: 'tel', ph: '+233 24 000 0000' },
+              { label: 'WhatsApp Number', field: 'whatsapp', type: 'tel', ph: '+233 24 000 0000' },
+              { label: 'Email Address', field: 'email', type: 'email', ph: 'email@example.com' },
               { label: 'Marital Status', field: 'maritalStatus', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed'] },
               { label: 'Spouse Name', field: 'spouseName', type: 'text', ph: 'Spouse full name' },
               { label: 'Number of Children', field: 'numberOfChildren', type: 'number' },
@@ -625,7 +629,10 @@ function AddMemberModal({ onClose, onSave }) {
           {tab === 'contact' && (
             <>
               {[
-                { label: 'Phone Number *', field: 'phone', type: 'tel', ph: '+233 24 000 0000' },
+                { label: 'Phone Number 1 *', field: 'phone', type: 'tel', ph: '+233 24 000 0000' },
+                { label: 'Phone Number 2', field: 'phone2', type: 'tel', ph: '+233 24 000 0000' },
+                { label: 'WhatsApp Number', field: 'whatsapp', type: 'tel', ph: '+233 24 000 0000' },
+                { label: 'Email Address', field: 'email', type: 'email', ph: 'email@example.com' },
                 { label: 'WhatsApp Number', field: 'whatsapp', type: 'tel', ph: '+233 24 000 0000' },
                 { label: 'Email Address', field: 'email', type: 'email', ph: 'member@email.com' },
                 { label: 'Home Address', field: 'homeAddress', type: 'text', ph: 'Full home address' },
@@ -724,7 +731,7 @@ export default function MembersPage() {
   const handleSave = async (updated) => {
     try {
       await membersAPI.update(updated.id, {
-        name: updated.fullName, phone: updated.phone, email: updated.email,
+        name: updated.fullName, phone: updated.phone, phone2: updated.phone2, email: updated.email,
         ministry: updated.ministry, status: updated.status, membership: updated.membership,
         gender: updated.gender, address: updated.location, occupation: updated.occupation,
       })
@@ -739,6 +746,7 @@ export default function MembersPage() {
       await membersAPI.create({
         name: newM.fullName,
         phone: newM.phone,
+        phone2: newM.phone2,
         whatsapp: newM.whatsapp,
         email: newM.email,
         gender: newM.gender,
@@ -761,6 +769,7 @@ export default function MembersPage() {
           memberId: m.member_id || '',
           fullName: m.name || '',
           phone: m.phone || '',
+          phone2: m.phone2 || '',
           whatsapp: m.whatsapp || '',
           email: m.email || '',
           gender: m.gender || '',
@@ -935,3 +944,4 @@ export default function MembersPage() {
 if (typeof window !== 'undefined') {
   try { localStorage.removeItem('cos_members') } catch(e) {}
 }
+// force deploy Sun Apr 19 16:21:49 UTC 2026

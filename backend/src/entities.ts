@@ -7,6 +7,7 @@ export class Church {
   @Column({ nullable: true }) pastor_name: string;
   @Column({ nullable: true }) location: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) email: string;
   @Column({ nullable: true }) logo_url: string;
   @Column({ nullable: true }) tagline: string;
@@ -42,6 +43,7 @@ export class Member {
   @Column() church_id: string;
   @Column() name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) email: string;
   @Column({ nullable: true }) gender: string;
   @Column({ nullable: true }) date_of_birth: string;
@@ -104,6 +106,7 @@ export class Visitor {
   @Column() church_id: string;
   @Column() full_name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) email: string;
   @Column({ nullable: true }) gender: string;
   @Column({ nullable: true }) location: string;
@@ -127,6 +130,7 @@ export class PrayerRequest {
   @Column() church_id: string;
   @Column() name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column() request: string;
   @Column({ default: false }) anonymous: boolean;
   @Column({ default: 'Pending' }) status: string;
@@ -182,6 +186,7 @@ export class MinistryMember {
   @Column() church_id: string;
   @Column() full_name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) email: string;
   @Column({ nullable: true }) gender: string;
   @Column({ nullable: true }) date_of_birth: string;
@@ -226,6 +231,7 @@ export class CellGroupMember {
   @Column() church_id: string;
   @Column() name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) role: string;
   @Column({ nullable: true }) date_joined: string;
   @Column({ default: 'Active' }) status: string;
@@ -251,6 +257,7 @@ export class Volunteer {
   @Column() church_id: string;
   @Column() name: string;
   @Column({ nullable: true }) phone: string;
+  @Column({ nullable: true }) phone2: string;
   @Column({ nullable: true }) email: string;
   @Column({ nullable: true }) team: string;
   @Column({ nullable: true }) role: string;
