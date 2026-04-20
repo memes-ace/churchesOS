@@ -115,7 +115,6 @@ export default function CommunicationPage() {
   const [form, setForm] = useState({ channel: 'sms', audience: 'all', subject: '', message: '' })
   const [sentMessages, setSentMessages] = useState([])
 
-  const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
 
   useEffect(() => {
     const token = localStorage.getItem('cos_token') || ''
@@ -196,7 +195,6 @@ export default function CommunicationPage() {
     }
   }
 
-  const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
   const portalLink = `https://churches-os.vercel.app/member-portal?church=${user.church_id || ''}`
   const [copied, setCopied] = useState(false)
 
