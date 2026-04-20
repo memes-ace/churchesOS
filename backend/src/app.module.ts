@@ -53,6 +53,7 @@ import { VolunteersModule } from './modules/volunteers/volunteers.module'
     CounsellingModule,
     VendorsModule,
     ChurchesModule,
+    AiModule,
   ],
 })
 export class AppModule {}
