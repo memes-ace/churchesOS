@@ -83,6 +83,33 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async memberLogin(phone: string, memberId: string) {
+    const { Member } = require('../../entities')
+    // Try phone first, then member_id
+    let member: any = null
+    if (phone) {
+      member = await this.userRepo.manager.findOne(Member, { where: { phone } })
+    }
+    if (!member && memberId) {
+      member = await this.userRepo.manager.findOne(Member, { where: { member_id: memberId } })
+    }
+    if (!member) throw new Error('Member not found')
+    const payload = { sub: member.id, role: 'member', church_id: member.church_id }
+    return {
+      access_token: this.jwtService.sign(payload),
+      member: {
+        id: member.id,
+        name: member.name,
+        phone: member.phone,
+        email: member.email,
+        church_id: member.church_id,
+        member_id: member.member_id,
+        status: member.status,
+        ministry: member.ministry,
+      }
+    }
+  }
+
   async forgotPassword(email: string) {
     const user = await this.userRepo.findOne({ where: { email } })
     if (!user) return { message: 'If this email exists, a reset code has been sent' }

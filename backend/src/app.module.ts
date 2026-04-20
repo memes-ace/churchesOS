@@ -19,6 +19,8 @@ import { SongsModule } from './modules/songs/songs.module'
 import { CounsellingModule } from './modules/counselling/counselling.module'
 import { VendorsModule } from './modules/vendors/vendors.module'
 import { ChurchesModule } from './modules/churches/churches.module'
+import { EmailModule } from './modules/email/email.module'
+import { VolunteersModule } from './modules/volunteers/volunteers.module'
 
 @Module({
   imports: [

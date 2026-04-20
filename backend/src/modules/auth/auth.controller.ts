@@ -16,6 +16,11 @@ export class AuthController {
     return this.authService.register(body);
   }
 
+  @Post('member-login')
+  memberLogin(@Body() body: { phone: string; memberId: string }) {
+    return this.authService.memberLogin(body.phone, body.memberId);
+  }
+
   @Post('forgot-password')
   forgotPassword(@Body() body: { email: string }) {
     return this.authService.forgotPassword(body.email);

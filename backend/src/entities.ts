@@ -16,11 +16,9 @@ export class Church {
   @Column({ nullable: true }) primary_color: string;
   @Column({ default: 'starter' }) plan: string;
   @Column({ nullable: true }) sender_id: string;
-  @Column({ nullable: true }) phone: string;
   @Column({ nullable: true }) address: string;
   @Column({ nullable: true }) website: string;
   @Column({ nullable: true }) description: string;
-  @Column({ nullable: true }) email: string;
   @Column({ default: 'trial' }) status: string;
   @Column({ nullable: true, type: 'text' }) features: string;
   @CreateDateColumn() created_at: Date;
