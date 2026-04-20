@@ -34,6 +34,7 @@ import SuperVendorsPage from './pages/SuperVendorsPage'
 import QuoteRequestsPage from './pages/QuoteRequestsPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 import PlansPage from './pages/PlansPage'
+import SmsTopupsPage from './pages/SmsTopupsPage'
 import ChurchSettingsPage from './pages/ChurchSettingsPage'
 import SuperLoginPage from './pages/SuperLoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -98,6 +99,7 @@ export default function App() {
             <Route path="quotes" element={<QuoteRequestsPage />} />
             <Route path="settings" element={<SuperSettingsPage />} />
             <Route path="plans" element={<PlansPage />} />
+            <Route path="sms" element={<SmsTopupsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

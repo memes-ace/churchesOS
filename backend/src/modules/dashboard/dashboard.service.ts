@@ -29,6 +29,7 @@ export class DashboardService {
       status: church?.status || 'trial',
       church_name: church?.name || '',
       sender_id: church?.sender_id || 'Tabscrow',
+      sms_enabled: church?.sms_enabled || false,
     };
   }
   async getPlatformStats() {

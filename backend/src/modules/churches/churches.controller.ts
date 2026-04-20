@@ -19,6 +19,26 @@ export class ChurchesController {
   @Get('stats')
   getStats() { return this.svc.getPlatformStats(); }
 
+  @Get('sms-topups')
+  getSmsTopups() { return this.svc.getSmsTopups(); }
+
+  @Post('sms-topups')
+  submitSmsTopup(@Body() body: any) { return this.svc.submitSmsTopup(body); }
+
+  @Put('sms-topups/:id/approve')
+  approveSmsTopup(@Param('id') id: string) { return this.svc.approveSmsTopup(id); }
+
+  @Put('sms-topups/:id/reject')
+  rejectSmsTopup(@Param('id') id: string) { return this.svc.rejectSmsTopup(id); }
+
+  @Put('churches/:churchId/sms-toggle')
+  toggleSms(@Param('churchId') id: string, @Body() body: { enabled: boolean }) {
+    return this.svc.toggleSmsEnabled(id, body.enabled);
+  }
+
+  @Get('churches/:churchId/sms-status')
+  getSmsStatus(@Param('churchId') id: string) { return this.svc.getSmsStatus(id); }
+
   @Get('settings')
   getSettings() { return this.svc.getSettings(); }
 

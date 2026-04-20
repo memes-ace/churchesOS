@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailService } from '../email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings } from '../../entities';
+import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings, SmsTopup } from '../../entities';
 
 @Injectable()
 export class ChurchesService {
@@ -13,6 +13,7 @@ export class ChurchesService {
     @InjectRepository(AttendanceRecord) private attendRepo: Repository<AttendanceRecord>,
     @InjectRepository(PaymentRequest) private paymentRepo: Repository<PaymentRequest>,
     @InjectRepository(PlatformSettings) private settingsRepo: Repository<PlatformSettings>,
+    @InjectRepository(SmsTopup) private smsTopupRepo: Repository<SmsTopup>,
     private emailService: EmailService,
   ) {}
 
@@ -174,6 +175,47 @@ export class ChurchesService {
     enterprisePlan: { price: 10200, memberLimit: 999999, features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'] },
     freePlan: { price: 0, memberLimit: 100, features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'] },
   };
+
+  async submitSmsTopup(data: any) {
+    return this.smsTopupRepo.save(this.smsTopupRepo.create({
+      church_id: data.church_id,
+      church_name: data.church_name,
+      amount: data.amount,
+      transaction_id: data.transaction_id,
+      notes: data.notes || '',
+      status: 'pending',
+    }))
+  }
+
+  async getSmsTopups() {
+    return this.smsTopupRepo.find({ order: { created_at: 'DESC' } })
+  }
+
+  async approveSmsTopup(id: string) {
+    const topup = await this.smsTopupRepo.findOne({ where: { id } })
+    if (!topup) return { error: 'Not found' }
+    await this.smsTopupRepo.update(id, { status: 'approved' })
+    // Enable SMS for this church
+    await this.churchRepo.update(topup.church_id, { sms_enabled: true })
+    return { success: true }
+  }
+
+  async rejectSmsTopup(id: string) {
+    const topup = await this.smsTopupRepo.findOne({ where: { id } })
+    if (!topup) return { error: 'Not found' }
+    await this.smsTopupRepo.update(id, { status: 'rejected' })
+    return { success: true }
+  }
+
+  async toggleSmsEnabled(churchId: string, enabled: boolean) {
+    await this.churchRepo.update(churchId, { sms_enabled: enabled })
+    return { success: true, sms_enabled: enabled }
+  }
+
+  async getSmsStatus(churchId: string) {
+    const church = await this.churchRepo.findOne({ where: { id: churchId } })
+    return { sms_enabled: church?.sms_enabled || false }
+  }
 
   async getSettings() {
     try {

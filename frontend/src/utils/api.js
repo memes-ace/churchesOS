@@ -183,3 +183,12 @@ export const volunteersAPI = {
   update: (id, d) => api.put(`/churches/${churchId()}/volunteers/${id}`, d),
   delete: (id) => api.delete(`/churches/${churchId()}/volunteers/${id}`),
 }
+
+export const smsTopupAPI = {
+  submit: (d) => api.post('/admin/sms-topups', d),
+  getAll: () => api.get('/admin/sms-topups'),
+  approve: (id) => api.put(`/admin/sms-topups/${id}/approve`, {}),
+  reject: (id) => api.put(`/admin/sms-topups/${id}/reject`, {}),
+  toggleSms: (churchId, enabled) => api.put(`/admin/churches/${churchId}/sms-toggle`, { enabled }),
+  getStatus: (churchId) => api.get(`/admin/churches/${churchId}/sms-status`),
+}
