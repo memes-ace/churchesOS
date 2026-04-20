@@ -35,6 +35,7 @@ import QuoteRequestsPage from './pages/QuoteRequestsPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 import PlansPage from './pages/PlansPage'
 import SmsTopupsPage from './pages/SmsTopupsPage'
+import MarketplaceAdminPage from './pages/MarketplaceAdminPage'
 import ChurchSettingsPage from './pages/ChurchSettingsPage'
 import SuperLoginPage from './pages/SuperLoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -59,6 +60,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Root />} />
+          <Route path="/vendor-apply" element={<VendorRegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/member-portal" element={<MemberPortalPage />} />
@@ -100,6 +102,7 @@ export default function App() {
             <Route path="settings" element={<SuperSettingsPage />} />
             <Route path="plans" element={<PlansPage />} />
             <Route path="sms" element={<SmsTopupsPage />} />
+            <Route path="marketplace" element={<MarketplaceAdminPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

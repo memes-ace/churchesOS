@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailService } from '../email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings, SmsTopup } from '../../entities';
+import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings, SmsTopup, MarketplaceSubscription } from '../../entities';
 
 @Injectable()
 export class ChurchesService {
@@ -14,6 +14,7 @@ export class ChurchesService {
     @InjectRepository(PaymentRequest) private paymentRepo: Repository<PaymentRequest>,
     @InjectRepository(PlatformSettings) private settingsRepo: Repository<PlatformSettings>,
     @InjectRepository(SmsTopup) private smsTopupRepo: Repository<SmsTopup>,
+    @InjectRepository(MarketplaceSubscription) private mktRepo: Repository<MarketplaceSubscription>,
     private emailService: EmailService,
   ) {}
 
@@ -215,6 +216,39 @@ export class ChurchesService {
   async getSmsStatus(churchId: string) {
     const church = await this.churchRepo.findOne({ where: { id: churchId } })
     return { sms_enabled: church?.sms_enabled || false }
+  }
+
+  async submitMarketplaceSubscription(data: any) {
+    return this.mktRepo.save(this.mktRepo.create({
+      church_id: data.church_id,
+      church_name: data.church_name,
+      amount: data.amount || '50',
+      transaction_id: data.transaction_id,
+      notes: data.notes || '',
+      status: 'pending',
+    }))
+  }
+
+  async getMarketplaceSubscriptions() {
+    return this.mktRepo.find({ order: { created_at: 'DESC' } })
+  }
+
+  async approveMarketplaceSubscription(id: string) {
+    const sub = await this.mktRepo.findOne({ where: { id } })
+    if (!sub) return { error: 'Not found' }
+    await this.mktRepo.update(id, { status: 'approved' })
+    await this.churchRepo.update(sub.church_id, { marketplace_enabled: true })
+    return { success: true }
+  }
+
+  async rejectMarketplaceSubscription(id: string) {
+    await this.mktRepo.update(id, { status: 'rejected' })
+    return { success: true }
+  }
+
+  async toggleMarketplace(churchId: string, enabled: boolean) {
+    await this.churchRepo.update(churchId, { marketplace_enabled: enabled })
+    return { success: true, marketplace_enabled: enabled }
   }
 
   async getSettings() {

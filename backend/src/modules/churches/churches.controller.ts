@@ -19,6 +19,23 @@ export class ChurchesController {
   @Get('stats')
   getStats() { return this.svc.getPlatformStats(); }
 
+  @Get('marketplace-subscriptions')
+  getMarketplaceSubscriptions() { return this.svc.getMarketplaceSubscriptions(); }
+
+  @Post('marketplace-subscriptions')
+  submitMarketplaceSubscription(@Body() body: any) { return this.svc.submitMarketplaceSubscription(body); }
+
+  @Put('marketplace-subscriptions/:id/approve')
+  approveMarketplaceSubscription(@Param('id') id: string) { return this.svc.approveMarketplaceSubscription(id); }
+
+  @Put('marketplace-subscriptions/:id/reject')
+  rejectMarketplaceSubscription(@Param('id') id: string) { return this.svc.rejectMarketplaceSubscription(id); }
+
+  @Put('churches/:churchId/marketplace-toggle')
+  toggleMarketplace(@Param('churchId') id: string, @Body() body: { enabled: boolean }) {
+    return this.svc.toggleMarketplace(id, body.enabled);
+  }
+
   @Get('sms-topups')
   getSmsTopups() { return this.svc.getSmsTopups(); }
 

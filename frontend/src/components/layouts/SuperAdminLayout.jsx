@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Revenue', path: '/super-admin/revenue', icon: TrendingUp },
   { label: 'Plans', path: '/super-admin/plans', icon: CreditCard },
   { label: 'SMS Management', path: '/super-admin/sms', icon: MessageSquare },
+  { label: 'Marketplace', path: '/super-admin/marketplace', icon: Store },
   { label: 'Settings', path: '/super-admin/settings', icon: Settings },
 ]
 

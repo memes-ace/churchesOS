@@ -20,6 +20,7 @@ export class Church {
   @Column({ nullable: true }) website: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ default: 'trial' }) status: string;
   @Column({ nullable: true, type: 'text' }) features: string;
   @CreateDateColumn() created_at: Date;
@@ -100,6 +101,7 @@ export class ChurchEvent {
   @Column({ nullable: true }) location: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) capacity: number;
   @Column({ default: 0 }) registered: number;
   @Column({ default: 'upcoming' }) status: string;
@@ -153,6 +155,7 @@ export class Sermon {
   @Column({ nullable: true }) series: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) youtube_link: string;
   @Column({ nullable: true }) duration: string;
   @Column({ nullable: true }) tags: string;
@@ -182,6 +185,7 @@ export class Ministry {
   @Column({ nullable: true }) meeting_day: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) emoji: string;
   @Column({ nullable: true }) color: string;
   @CreateDateColumn() created_at: Date;
@@ -325,6 +329,7 @@ export class Vendor {
   @Column({ nullable: true }) category: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) owner_name: string;
   @Column({ nullable: true }) owner_phone: string;
   @Column({ nullable: true }) owner_email: string;
@@ -385,6 +390,18 @@ export class SmsTopup {
   @Column() church_id: string;
   @Column() church_name: string;
   @Column() amount: string;
+  @Column() transaction_id: string;
+  @Column({ nullable: true }) notes: string;
+  @Column({ default: 'pending' }) status: string;
+  @CreateDateColumn() created_at: Date;
+}
+
+@Entity('marketplace_subscriptions')
+export class MarketplaceSubscription {
+  @PrimaryGeneratedColumn('uuid') id: string;
+  @Column() church_id: string;
+  @Column() church_name: string;
+  @Column({ default: '50' }) amount: string;
   @Column() transaction_id: string;
   @Column({ nullable: true }) notes: string;
   @Column({ default: 'pending' }) status: string;

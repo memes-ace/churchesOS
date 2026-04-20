@@ -30,6 +30,7 @@ export class DashboardService {
       church_name: church?.name || '',
       sender_id: church?.sender_id || 'Tabscrow',
       sms_enabled: church?.sms_enabled || false,
+      marketplace_enabled: church?.marketplace_enabled || false,
     };
   }
   async getPlatformStats() {

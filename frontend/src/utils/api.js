@@ -192,3 +192,11 @@ export const smsTopupAPI = {
   toggleSms: (churchId, enabled) => api.put(`/admin/churches/${churchId}/sms-toggle`, { enabled }),
   getStatus: (churchId) => api.get(`/admin/churches/${churchId}/sms-status`),
 }
+
+export const marketplaceAPI = {
+  subscribe: (d) => api.post('/admin/marketplace-subscriptions', d),
+  getAll: () => api.get('/admin/marketplace-subscriptions'),
+  approve: (id) => api.put(`/admin/marketplace-subscriptions/${id}/approve`, {}),
+  reject: (id) => api.put(`/admin/marketplace-subscriptions/${id}/reject`, {}),
+  toggle: (churchId, enabled) => api.put(`/admin/churches/${churchId}/marketplace-toggle`, { enabled }),
+}
