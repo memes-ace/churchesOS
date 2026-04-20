@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Send, Users, MessageSquare, Phone, Mail, X, Check, AlertCircle } from 'lucide-react'
+import { Send, Users, MessageSquare, Phone, Mail, X, Check, AlertCircle, Copy } from 'lucide-react'
 import { membersAPI, smsTopupAPI } from '../utils/api'
 
 function SmsTopupModal({ onClose, onSubmit }) {
@@ -196,6 +196,16 @@ export default function CommunicationPage() {
     }
   }
 
+  const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+  const portalLink = `https://churches-os.vercel.app/member-portal?church=${user.church_id || ''}`
+  const [copied, setCopied] = useState(false)
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(portalLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto">
       {showTopup && <SmsTopupModal onClose={() => setShowTopup(false)} />}
@@ -223,6 +233,24 @@ export default function CommunicationPage() {
           </button>
         </div>
       )}
+
+      {/* Member Portal Link */}
+      <div className="mb-5 p-4 rounded-2xl border border-gray-100 bg-white fade-in">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p className="text-sm font-bold text-gray-800">📱 Member Portal Link</p>
+            <p className="text-xs text-gray-400 mt-0.5">Share this link with your members via SMS</p>
+            <p className="text-xs font-mono text-blue-600 mt-1 truncate max-w-xs">{portalLink}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={copyLink}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition"
+              style={{ background: copied ? '#DCFCE7' : '#EEF2FF', color: copied ? '#166534' : '#1B4FD8' }}>
+              {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-4 mb-6 fade-in">
         {[

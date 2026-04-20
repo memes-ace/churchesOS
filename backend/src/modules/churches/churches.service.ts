@@ -218,6 +218,20 @@ export class ChurchesService {
     return { sms_enabled: church?.sms_enabled || false }
   }
 
+  async getChurchBranding(churchId: string) {
+    const church = await this.churchRepo.findOne({ where: { id: churchId } })
+    if (!church) return { error: 'Church not found' }
+    return {
+      id: church.id,
+      name: church.name,
+      logo_url: church.logo_url || '',
+      primary_color: church.primary_color || '#1B4FD8',
+      tagline: church.tagline || '',
+      location: church.location || '',
+      phone: church.phone || '',
+    }
+  }
+
   async submitMarketplaceSubscription(data: any) {
     return this.mktRepo.save(this.mktRepo.create({
       church_id: data.church_id,

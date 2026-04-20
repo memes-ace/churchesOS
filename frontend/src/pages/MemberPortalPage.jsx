@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { User, Phone, Mail, MapPin, Calendar, Heart, DollarSign, CheckSquare, LogOut, BookOpen, Bell, ChevronRight, Home, Users, MessageCircle, Download } from 'lucide-react'
+import { User, Phone, Mail, Calendar, Heart, DollarSign, CheckSquare, LogOut, BookOpen, Bell, ChevronRight, Home, Users, MessageCircle, Download, Copy, Check } from 'lucide-react'
 
-// Install prompt handler
 let deferredPrompt = null
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault()
@@ -10,7 +9,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 export default function MemberPortalPage() {
   const [member, setMember] = useState(null)
-  const [church, setChurch] = useState(null)
+  const [churchBranding, setChurchBranding] = useState(null)
   const [attendance, setAttendance] = useState([])
   const [giving, setGiving] = useState([])
   const [announcements, setAnnouncements] = useState([])
@@ -18,23 +17,57 @@ export default function MemberPortalPage() {
   const [sermons, setSermons] = useState([])
   const [tab, setTab] = useState('home')
   const [loading, setLoading] = useState(false)
+  const [brandingLoading, setBrandingLoading] = useState(false)
   const [loginForm, setLoginForm] = useState({ phone: '' })
   const [error, setError] = useState('')
   const [showInstall, setShowInstall] = useState(false)
   const [prayerForm, setPrayerForm] = useState({ request: '' })
   const [prayerSent, setPrayerSent] = useState(false)
-  const [savedChurch, setSavedChurch] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('cos_member') || 'null') } catch { return null }
-  })
 
   useEffect(() => {
-    const saved = localStorage.getItem('cos_member')
-    if (saved) {
-      const m = JSON.parse(saved)
+    // Check for church ID in URL
+    const params = new URLSearchParams(window.location.search)
+    const churchId = params.get('church')
+
+    if (churchId) {
+      // Fetch church branding from public endpoint
+      setBrandingLoading(true)
+      fetch(`/api/admin/public/${churchId}/branding`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.error) {
+            setChurchBranding(data)
+            localStorage.setItem('cos_portal_church', JSON.stringify(data))
+          }
+        })
+        .catch(() => {})
+        .finally(() => setBrandingLoading(false))
+    } else {
+      // Try to load from localStorage (previous visit)
+      const saved = localStorage.getItem('cos_portal_church')
+      if (saved) {
+        try { setChurchBranding(JSON.parse(saved)) } catch {}
+      }
+    }
+
+    // Check if already logged in
+    const savedMember = localStorage.getItem('cos_member')
+    if (savedMember) {
+      const m = JSON.parse(savedMember)
       setMember(m)
+      // Set branding from member data
+      if (m.church_name) {
+        setChurchBranding({
+          name: m.church_name,
+          logo_url: m.church_logo || '',
+          primary_color: m.church_color || '#1B4FD8',
+          tagline: m.church_tagline || '',
+          phone: m.church_phone || '',
+        })
+      }
       loadMemberData(m)
     }
-    // Show install prompt after 3 seconds
+
     setTimeout(() => {
       if (deferredPrompt) setShowInstall(true)
     }, 3000)
@@ -75,47 +108,48 @@ export default function MemberPortalPage() {
         const data = await serRes.value.json()
         setSermons(Array.isArray(data) ? data.slice(0, 5) : [])
       }
-    } catch(e) {
-      console.warn(e)
-    } finally {
-      setLoading(false)
-    }
+    } catch(e) { console.warn(e) }
+    finally { setLoading(false) }
   }
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError("")
+    setError('')
     setLoading(true)
     try {
-      const res = await fetch("/api/auth/member-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: loginForm.phone, memberId: "" })
+      const res = await fetch('/api/auth/member-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: loginForm.phone, memberId: '' })
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message || "Login failed")
-      localStorage.setItem("cos_member_token", data.access_token)
-      localStorage.setItem("cos_member", JSON.stringify(data.member))
+      if (!res.ok) throw new Error(data.message || 'Login failed')
+      localStorage.setItem('cos_member_token', data.access_token)
+      localStorage.setItem('cos_member', JSON.stringify(data.member))
       setMember(data.member)
-      setSavedChurch(data.member)
+      setChurchBranding({
+        name: data.member.church_name,
+        logo_url: data.member.church_logo || '',
+        primary_color: data.member.church_color || '#1B4FD8',
+        tagline: data.member.church_tagline || '',
+        phone: data.member.church_phone || '',
+      })
       loadMemberData(data.member)
     } catch(e) {
-      setError(e.message || "Invalid phone number. Please check and try again.")
-    } finally {
-      setLoading(false)
-    }
+      setError(e.message || 'Invalid phone number. Please check and try again.')
+    } finally { setLoading(false) }
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("cos_member")
-    localStorage.removeItem("cos_member_token")
+    localStorage.removeItem('cos_member')
+    localStorage.removeItem('cos_member_token')
     setMember(null)
     setAttendance([])
     setGiving([])
     setAnnouncements([])
     setEvents([])
     setSermons([])
-    setTab("home")
+    setTab('home')
   }
 
   const handleInstall = async () => {
@@ -134,12 +168,7 @@ export default function MemberPortalPage() {
       await fetch(`/api/churches/${member.church_id}/prayer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({
-          name: member.name,
-          phone: member.phone,
-          request: prayerForm.request,
-          status: 'Pending'
-        })
+        body: JSON.stringify({ name: member.name, phone: member.phone, request: prayerForm.request, status: 'Pending' })
       })
       setPrayerSent(true)
       setPrayerForm({ request: '' })
@@ -150,14 +179,14 @@ export default function MemberPortalPage() {
   const totalGiving = giving.reduce((s, g) => s + Number(g.amount || 0), 0)
   const thisYear = new Date().getFullYear()
   const yearGiving = giving.filter(g => g.date?.startsWith(String(thisYear))).reduce((s, g) => s + Number(g.amount || 0), 0)
+  const brandColor = churchBranding?.primary_color || '#1B4FD8'
 
   // LOGIN SCREEN
   if (!member) {
     return (
       <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg, #0F172A 0%, #1E3A6E 50%, #0F172A 100%)' }}>
-        {/* Install Banner */}
         {showInstall && (
-          <div className="fixed top-0 left-0 right-0 z-50 p-3" style={{ background: '#1B4FD8' }}>
+          <div className="fixed top-0 left-0 right-0 z-50 p-3" style={{ background: brandColor }}>
             <div className="flex items-center justify-between max-w-sm mx-auto">
               <p className="text-white text-sm font-medium">📱 Install app for quick access</p>
               <button onClick={handleInstall} className="text-white text-xs px-3 py-1 rounded-lg border border-white/30">Install</button>
@@ -166,24 +195,28 @@ export default function MemberPortalPage() {
         )}
 
         <div className="flex-1 flex flex-col items-center justify-center p-6">
-          {/* Church Logo */}
-          {savedChurch?.church_logo ? (
-            <img src={savedChurch.church_logo} alt="Church Logo"
+          {brandingLoading ? (
+            <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 animate-pulse"
+              style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <span className="text-white/30 text-4xl font-bold">C</span>
+            </div>
+          ) : churchBranding?.logo_url ? (
+            <img src={churchBranding.logo_url} alt="Church Logo"
               className="w-20 h-20 rounded-3xl object-cover mb-6 shadow-2xl" />
           ) : (
             <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${savedChurch?.church_color || '#1B4FD8'}, #3B82F6)` }}>
+              style={{ background: `linear-gradient(135deg, ${brandColor}, #3B82F6)` }}>
               <span className="text-white text-4xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
-                {savedChurch?.church_name?.charAt(0) || 'C'}
+                {churchBranding?.name?.charAt(0) || 'C'}
               </span>
             </div>
           )}
 
           <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond' }}>
-            {savedChurch?.church_name || 'Member Portal'}
+            {churchBranding?.name || 'Member Portal'}
           </h1>
           <p className="text-white/50 text-sm mb-10">
-            {savedChurch?.church_tagline || 'Access your church profile'}
+            {churchBranding?.tagline || 'Access your church profile'}
           </p>
 
           <div className="w-full max-w-sm">
@@ -193,36 +226,23 @@ export default function MemberPortalPage() {
                   {error}
                 </div>
               )}
-
               <div>
-                <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  value={loginForm.phone}
+                <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Phone Number</label>
+                <input type="tel" value={loginForm.phone}
                   onChange={e => setLoginForm({ phone: e.target.value })}
-                  placeholder="e.g. 0244000000"
-                  required
+                  placeholder="e.g. 0244000000" required
                   className="w-full px-5 py-4 rounded-2xl text-white text-base placeholder-white/20 focus:outline-none"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-                />
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }} />
               </div>
-
               <button type="submit" disabled={loading}
                 className="w-full py-4 rounded-2xl text-white font-bold text-base disabled:opacity-50 transition-all active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                style={{ background: `linear-gradient(135deg, ${brandColor}, #3B82F6)` }}>
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
-
-            <p className="text-center text-white/30 text-xs mt-8">
-              Contact your church admin if you cannot log in
-            </p>
+            <p className="text-center text-white/30 text-xs mt-8">Contact your church admin if you cannot log in</p>
           </div>
         </div>
-
-        {/* Bottom branding */}
         <div className="text-center pb-8">
           <p className="text-white/20 text-xs">Powered by ChurchesOS</p>
         </div>
@@ -230,7 +250,6 @@ export default function MemberPortalPage() {
     )
   }
 
-  // MAIN APP
   const tabs = [
     { key: 'home', label: 'Home', icon: Home },
     { key: 'attendance', label: 'Attendance', icon: CheckSquare },
@@ -241,9 +260,8 @@ export default function MemberPortalPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#F0F4FF', paddingBottom: '80px' }}>
-      {/* Install Banner */}
       {showInstall && (
-        <div className="p-3" style={{ background: '#1B4FD8' }}>
+        <div className="p-3" style={{ background: brandColor }}>
           <div className="flex items-center justify-between">
             <p className="text-white text-sm font-medium">📱 Install for quick access</p>
             <div className="flex gap-2">
@@ -255,33 +273,31 @@ export default function MemberPortalPage() {
       )}
 
       {/* Header */}
-      <div className="px-5 pt-12 pb-6" style={{ background: `linear-gradient(135deg, #0F172A, ${member.church_color || '#1E3A6E'})` }}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {member.church_logo ? (
-              <img src={member.church_logo} alt="Church" className="w-8 h-8 rounded-lg object-cover" />
+      <div className="px-5 pt-12 pb-6" style={{ background: `linear-gradient(135deg, #0F172A, ${brandColor})` }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            {churchBranding?.logo_url ? (
+              <img src={churchBranding.logo_url} alt="Church" className="w-7 h-7 rounded-lg object-cover" />
             ) : (
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold"
                 style={{ background: 'rgba(255,255,255,0.15)' }}>
-                {member.church_name?.charAt(0) || 'C'}
+                {churchBranding?.name?.charAt(0) || 'C'}
               </div>
             )}
-            <p className="text-white/70 text-xs font-medium">{member.church_name}</p>
+            <p className="text-white/70 text-xs font-medium">{churchBranding?.name}</p>
           </div>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold"
             style={{ background: 'rgba(255,255,255,0.1)' }}>
             {member.name?.charAt(0) || 'M'}
           </div>
         </div>
-        <div>
-          <p className="text-white/50 text-xs uppercase tracking-widest">Welcome back</p>
-          <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
-            {member.name?.split(' ')[0]}
-          </h1>
-        </div>
+        <p className="text-white/50 text-xs uppercase tracking-widest">Welcome back</p>
+        <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
+          {member.name?.split(' ')[0]}
+        </h1>
 
         {/* Member Card */}
-        <div className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="rounded-2xl p-4 mt-3" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/50 text-xs">Member ID</p>
@@ -297,11 +313,8 @@ export default function MemberPortalPage() {
 
       {/* Content */}
       <div className="flex-1 px-4 pt-4">
-
-        {/* HOME TAB */}
         {tab === 'home' && (
           <div className="space-y-4 fade-in">
-            {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <p className="text-xs text-gray-400">This Year Giving</p>
@@ -309,11 +322,10 @@ export default function MemberPortalPage() {
               </div>
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <p className="text-xs text-gray-400">Services Attended</p>
-                <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{attendance.length}</p>
+                <p className="text-lg font-bold mt-1" style={{ color: brandColor }}>{attendance.length}</p>
               </div>
             </div>
 
-            {/* Announcements */}
             {announcements.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -331,17 +343,17 @@ export default function MemberPortalPage() {
               </div>
             )}
 
-            {/* Upcoming Events */}
             {events.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <Calendar size={16} style={{ color: '#1B4FD8' }} />
+                  <Calendar size={16} style={{ color: brandColor }} />
                   <h3 className="font-bold text-gray-800 text-sm">Upcoming Events</h3>
                 </div>
                 <div className="space-y-2">
                   {events.slice(0, 3).map((e, i) => (
                     <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#EEF2FF' }}>
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#1B4FD8' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: brandColor }}>
                         <Calendar size={16} className="text-white" />
                       </div>
                       <div>
@@ -354,7 +366,6 @@ export default function MemberPortalPage() {
               </div>
             )}
 
-            {/* Recent Sermons */}
             {sermons.length > 0 && (
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -369,7 +380,7 @@ export default function MemberPortalPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-800 truncate">{s.title}</p>
-                        <p className="text-xs text-gray-500">{s.preacher || s.speaker} • {s.date ? new Date(s.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : ''}</p>
+                        <p className="text-xs text-gray-500">{s.preacher || s.speaker}</p>
                       </div>
                     </div>
                   ))}
@@ -385,7 +396,6 @@ export default function MemberPortalPage() {
           </div>
         )}
 
-        {/* ATTENDANCE TAB */}
         {tab === 'attendance' && (
           <div className="fade-in">
             <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Attendance History</h2>
@@ -410,23 +420,19 @@ export default function MemberPortalPage() {
           </div>
         )}
 
-        {/* GIVING TAB */}
         {tab === 'giving' && (
           <div className="fade-in">
             <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Giving History</h2>
-
-            {/* Summary */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="rounded-2xl p-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #059669, #10B981)' }}>
                 <p className="text-green-100 text-xs">This Year</p>
                 <p className="text-white font-bold text-lg mt-1">GHC {yearGiving.toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl p-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+              <div className="rounded-2xl p-4 shadow-sm" style={{ background: `linear-gradient(135deg, ${brandColor}, #3B82F6)` }}>
                 <p className="text-blue-100 text-xs">Total Given</p>
                 <p className="text-white font-bold text-lg mt-1">GHC {totalGiving.toLocaleString()}</p>
               </div>
             </div>
-
             {giving.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl">
                 <DollarSign size={32} className="mx-auto mb-3 text-gray-200" />
@@ -448,12 +454,10 @@ export default function MemberPortalPage() {
           </div>
         )}
 
-        {/* PRAYER TAB */}
         {tab === 'prayer' && (
           <div className="fade-in">
             <h2 className="font-bold text-gray-800 mb-2" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Prayer Request</h2>
             <p className="text-gray-400 text-sm mb-5">Submit a prayer request to your church</p>
-
             <div className="bg-white rounded-2xl p-5 shadow-sm">
               {prayerSent ? (
                 <div className="text-center py-8">
@@ -465,16 +469,13 @@ export default function MemberPortalPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Your Prayer Request</label>
-                    <textarea rows={5} value={prayerForm.request}
-                      onChange={e => setPrayerForm({ request: e.target.value })}
-                      placeholder="Share your prayer request here..."
-                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none text-sm resize-none" />
-                  </div>
+                  <textarea rows={5} value={prayerForm.request}
+                    onChange={e => setPrayerForm({ request: e.target.value })}
+                    placeholder="Share your prayer request here..."
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none text-sm resize-none" />
                   <button onClick={handlePrayerSubmit} disabled={!prayerForm.request}
                     className="w-full py-4 rounded-2xl text-white font-bold text-sm disabled:opacity-50 active:scale-95 transition-all"
-                    style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                    style={{ background: `linear-gradient(135deg, ${brandColor}, #3B82F6)` }}>
                     🙏 Submit Prayer Request
                   </button>
                 </div>
@@ -483,16 +484,13 @@ export default function MemberPortalPage() {
           </div>
         )}
 
-        {/* MORE TAB */}
         {tab === 'more' && (
           <div className="fade-in space-y-3">
             <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>My Profile</h2>
-
-            {/* Profile Card */}
             <div className="bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold"
-                  style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                  style={{ background: `linear-gradient(135deg, ${brandColor}, #3B82F6)` }}>
                   {member.name?.charAt(0) || 'M'}
                 </div>
                 <div>
@@ -506,9 +504,9 @@ export default function MemberPortalPage() {
                   { label: 'Email', value: member.email, icon: Mail },
                   { label: 'Status', value: member.status, icon: User },
                   { label: 'Ministry', value: member.ministry, icon: Users },
-                ].map(f => f.value && (
+                ].filter(f => f.value).map(f => (
                   <div key={f.label} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#F8FAFF' }}>
-                    <f.icon size={16} style={{ color: '#1B4FD8' }} />
+                    <f.icon size={16} style={{ color: brandColor }} />
                     <div>
                       <p className="text-xs text-gray-400">{f.label}</p>
                       <p className="text-sm font-medium text-gray-800">{f.value}</p>
@@ -518,31 +516,32 @@ export default function MemberPortalPage() {
               </div>
             </div>
 
-            {/* Contact Church */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold text-gray-800 mb-3 text-sm">Contact Church</h3>
-              <div className="space-y-2">
-                <a href="tel:+233" className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
-                  style={{ background: '#EEF2FF' }}>
-                  <Phone size={16} style={{ color: '#1B4FD8' }} />
-                  <span className="text-sm font-medium text-gray-800">Call Church Office</span>
-                  <ChevronRight size={14} className="ml-auto text-gray-400" />
-                </a>
-                <a href="https://wa.me/" target="_blank" rel="noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
-                  style={{ background: '#DCFCE7' }}>
-                  <MessageCircle size={16} style={{ color: '#059669' }} />
-                  <span className="text-sm font-medium text-gray-800">WhatsApp Church</span>
-                  <ChevronRight size={14} className="ml-auto text-gray-400" />
-                </a>
+            {churchBranding?.phone && (
+              <div className="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 className="font-bold text-gray-800 mb-3 text-sm">Contact Church</h3>
+                <div className="space-y-2">
+                  <a href={`tel:${churchBranding.phone}`}
+                    className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
+                    style={{ background: '#EEF2FF' }}>
+                    <Phone size={16} style={{ color: brandColor }} />
+                    <span className="text-sm font-medium text-gray-800">Call Church Office</span>
+                    <ChevronRight size={14} className="ml-auto text-gray-400" />
+                  </a>
+                  <a href={`https://wa.me/${churchBranding.phone?.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
+                    style={{ background: '#DCFCE7' }}>
+                    <MessageCircle size={16} style={{ color: '#059669' }} />
+                    <span className="text-sm font-medium text-gray-800">WhatsApp Church</span>
+                    <ChevronRight size={14} className="ml-auto text-gray-400" />
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Install App */}
             {deferredPrompt && (
               <button onClick={handleInstall}
                 className="w-full flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-all">
-                <Download size={18} style={{ color: '#1B4FD8' }} />
+                <Download size={18} style={{ color: brandColor }} />
                 <div className="text-left">
                   <p className="text-sm font-bold text-gray-800">Install App</p>
                   <p className="text-xs text-gray-400">Add to your home screen</p>
@@ -551,7 +550,6 @@ export default function MemberPortalPage() {
               </button>
             )}
 
-            {/* Sign Out */}
             <button onClick={handleLogout}
               className="w-full flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-all">
               <LogOut size={18} style={{ color: '#DC2626' }} />
@@ -562,14 +560,14 @@ export default function MemberPortalPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-2 py-2 safe-area-pb"
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-2 py-2"
         style={{ boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
         <div className="flex">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className="flex-1 flex flex-col items-center gap-1 py-1 transition-all active:scale-95">
-              <t.icon size={20} style={{ color: tab === t.key ? '#1B4FD8' : '#9CA3AF' }} />
-              <span className="text-xs" style={{ color: tab === t.key ? '#1B4FD8' : '#9CA3AF', fontWeight: tab === t.key ? '700' : '400' }}>
+              <t.icon size={20} style={{ color: tab === t.key ? brandColor : '#9CA3AF' }} />
+              <span className="text-xs" style={{ color: tab === t.key ? brandColor : '#9CA3AF', fontWeight: tab === t.key ? '700' : '400' }}>
                 {t.label}
               </span>
             </button>

@@ -19,6 +19,9 @@ export class ChurchesController {
   @Get('stats')
   getStats() { return this.svc.getPlatformStats(); }
 
+  @Get('public/:churchId/branding')
+  getChurchBranding(@Param('churchId') id: string) { return this.svc.getChurchBranding(id); }
+
   @Get('marketplace-subscriptions')
   getMarketplaceSubscriptions() { return this.svc.getMarketplaceSubscriptions(); }
 
