@@ -165,7 +165,7 @@ export default function CommunicationPage() {
         await fetch("/api/admin/sms/send", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-          body: JSON.stringify({ recipients: phones, message: form.message, senderId })
+          body: JSON.stringify({ recipients: phones, message: form.message, senderId, churchId: user.church_id })
         })
       }
 

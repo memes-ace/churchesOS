@@ -20,6 +20,7 @@ export class Church {
   @Column({ nullable: true }) website: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: 0 }) sms_sent_count: number;
   @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ default: 'trial' }) status: string;
   @Column({ nullable: true, type: 'text' }) features: string;
@@ -101,6 +102,7 @@ export class ChurchEvent {
   @Column({ nullable: true }) location: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: 0 }) sms_sent_count: number;
   @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) capacity: number;
   @Column({ default: 0 }) registered: number;
@@ -155,6 +157,7 @@ export class Sermon {
   @Column({ nullable: true }) series: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: 0 }) sms_sent_count: number;
   @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) youtube_link: string;
   @Column({ nullable: true }) duration: string;
@@ -185,6 +188,7 @@ export class Ministry {
   @Column({ nullable: true }) meeting_day: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: 0 }) sms_sent_count: number;
   @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) emoji: string;
   @Column({ nullable: true }) color: string;
@@ -329,6 +333,7 @@ export class Vendor {
   @Column({ nullable: true }) category: string;
   @Column({ nullable: true }) description: string;
   @Column({ default: false }) sms_enabled: boolean;
+  @Column({ default: 0 }) sms_sent_count: number;
   @Column({ default: false }) marketplace_enabled: boolean;
   @Column({ nullable: true }) owner_name: string;
   @Column({ nullable: true }) owner_phone: string;

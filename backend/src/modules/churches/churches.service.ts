@@ -213,6 +213,11 @@ export class ChurchesService {
     return { success: true }
   }
 
+  async resetSmsCount(churchId: string) {
+    await this.churchRepo.update(churchId, { sms_sent_count: 0 })
+    return { success: true }
+  }
+
   async toggleSmsEnabled(churchId: string, enabled: boolean) {
     await this.churchRepo.update(churchId, { sms_enabled: enabled })
     return { success: true, sms_enabled: enabled }

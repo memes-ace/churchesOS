@@ -202,7 +202,7 @@ export default function SmsTopupsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100">
-                {['Church', 'Plan', 'SMS Status', 'Toggle SMS'].map(h => (
+                {['Church', 'Plan', 'SMS Sent', 'SMS Status', 'Toggle SMS'].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -218,6 +218,12 @@ export default function SmsTopupsPage() {
                     <span className="text-xs px-2 py-1 rounded-full capitalize" style={{ background: '#EEF2FF', color: '#1B4FD8' }}>
                       {c.plan || 'trial'}
                     </span>
+                  </td>
+                  <td className="py-4 px-4">
+                    <div>
+                      <p className="text-sm font-bold" style={{ color: '#1B4FD8' }}>{(c.sms_sent_count || 0).toLocaleString()}</p>
+                      <p className="text-xs text-gray-400">SMS sent</p>
+                    </div>
                   </td>
                   <td className="py-4 px-4">
                     <span className="text-xs px-2 py-1 rounded-full font-medium"

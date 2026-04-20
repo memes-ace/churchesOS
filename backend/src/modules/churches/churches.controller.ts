@@ -51,6 +51,9 @@ export class ChurchesController {
   @Put('sms-topups/:id/reject')
   rejectSmsTopup(@Param('id') id: string) { return this.svc.rejectSmsTopup(id); }
 
+  @Put('churches/:churchId/sms-reset')
+  resetSmsCount(@Param('churchId') id: string) { return this.svc.resetSmsCount(id); }
+
   @Put('churches/:churchId/sms-toggle')
   toggleSms(@Param('churchId') id: string, @Body() body: { enabled: boolean }) {
     return this.svc.toggleSmsEnabled(id, body.enabled);
