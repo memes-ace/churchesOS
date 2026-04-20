@@ -119,6 +119,24 @@ export class AuthService implements OnModuleInit {
     }
   }
 
+  async updateEmail(userId: string, currentPassword: string, newEmail: string) {
+    // Check user exists
+    const user = await this.userRepo.findOne({ where: { id: userId } })
+    if (!user) throw new UnauthorizedException('User not found')
+
+    // Verify current password
+    const valid = await bcrypt.compare(currentPassword, user.password)
+    if (!valid) throw new UnauthorizedException('Current password is incorrect')
+
+    // Check new email not already taken
+    const exists = await this.userRepo.findOne({ where: { email: newEmail } })
+    if (exists) throw new ConflictException('This email is already in use')
+
+    // Update email
+    await this.userRepo.update(userId, { email: newEmail })
+    return { success: true, message: 'Email updated successfully' }
+  }
+
   async forgotPassword(email: string) {
     const user = await this.userRepo.findOne({ where: { email } })
     if (!user) return { message: 'If this email exists, a reset code has been sent' }

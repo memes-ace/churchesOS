@@ -36,4 +36,10 @@ export class AuthController {
   me(@Request() req) {
     return req.user;
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('update-email')
+  updateEmail(@Request() req, @Body() body: { currentPassword: string; newEmail: string }) {
+    return this.authService.updateEmail(req.user.sub, body.currentPassword, body.newEmail);
+  }
 }

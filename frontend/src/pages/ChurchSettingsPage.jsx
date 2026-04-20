@@ -10,6 +10,9 @@ export default function ChurchSettingsPage() {
   })
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [emailForm, setEmailForm] = useState({ currentPassword: '', newEmail: '' })
+  const [emailStatus, setEmailStatus] = useState(null)
+  const [emailLoading, setEmailLoading] = useState(false)
 
   useEffect(() => {
     if (user.church_id) {
@@ -57,6 +60,38 @@ export default function ChurchSettingsPage() {
       setTimeout(() => setSaved(false), 3000)
     } catch(e) {
       console.warn('Save error:', e)
+    }
+  }
+
+  const handleEmailChange = async () => {
+    if (!emailForm.currentPassword || !emailForm.newEmail) return
+    setEmailLoading(true)
+    setEmailStatus(null)
+    try {
+      const res = await fetch('/api/auth/update-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('cos_token')}`
+        },
+        body: JSON.stringify(emailForm)
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed to update email')
+      setEmailStatus({ type: 'success', message: 'Email updated! Please log in again.' })
+      setEmailForm({ currentPassword: '', newEmail: '' })
+      // Update localStorage
+      const updated = { ...user, email: emailForm.newEmail }
+      localStorage.setItem('cos_user', JSON.stringify(updated))
+      setTimeout(() => {
+        localStorage.removeItem('cos_token')
+        localStorage.removeItem('cos_user')
+        window.location.href = '/login'
+      }, 2000)
+    } catch(e) {
+      setEmailStatus({ type: 'error', message: e.message })
+    } finally {
+      setEmailLoading(false)
     }
   }
 
@@ -204,6 +239,49 @@ export default function ChurchSettingsPage() {
                 placeholder="Brief description of your church..."
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm resize-none" />
             </div>
+          </div>
+        </div>
+
+
+        {/* Change Email */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Mail size={18} style={{ color: '#1B4FD8' }} />
+            <h3 className="font-bold text-gray-800">Change Login Email</h3>
+          </div>
+          <p className="text-sm text-gray-400 mb-4">Current email: <span className="font-medium text-gray-600">{user.email}</span></p>
+
+          {emailStatus && (
+            <div className="mb-4 p-3 rounded-xl text-sm font-medium"
+              style={{
+                background: emailStatus.type === 'success' ? '#DCFCE7' : '#FEE2E2',
+                color: emailStatus.type === 'success' ? '#166534' : '#991B1B'
+              }}>
+              {emailStatus.message}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">New Email Address</label>
+              <input type="email" value={emailForm.newEmail}
+                onChange={e => setEmailForm(p => ({ ...p, newEmail: e.target.value }))}
+                placeholder="new@email.com"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Current Password (to confirm)</label>
+              <input type="password" value={emailForm.currentPassword}
+                onChange={e => setEmailForm(p => ({ ...p, currentPassword: e.target.value }))}
+                placeholder="Enter your current password"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none text-sm" />
+            </div>
+            <button onClick={handleEmailChange}
+              disabled={!emailForm.currentPassword || !emailForm.newEmail || emailLoading}
+              className="w-full py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50"
+              style={{ background: '#1B4FD8' }}>
+              {emailLoading ? 'Updating...' : 'Update Email'}
+            </button>
           </div>
         </div>
 
