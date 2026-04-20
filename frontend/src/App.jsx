@@ -34,6 +34,7 @@ import SuperVendorsPage from './pages/SuperVendorsPage'
 import QuoteRequestsPage from './pages/QuoteRequestsPage'
 import SuperSettingsPage from './pages/SuperSettingsPage'
 import PlansPage from './pages/PlansPage'
+import ChurchSettingsPage from './pages/ChurchSettingsPage'
 import SuperLoginPage from './pages/SuperLoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="equipment" element={<EquipmentPage />} />
             <Route path="purchases" element={<PurchasesPage />} />
             <Route path="roles" element={<RolesPage />} />
+            <Route path="settings" element={<ChurchSettingsPage />} />
           </Route>
 
           <Route path="/super-admin" element={<SuperAdminLayout />}>

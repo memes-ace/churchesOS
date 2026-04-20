@@ -176,3 +176,10 @@ export const paymentsAPI = {
 export const smsAPI = {
   send: (d) => api.post('/admin/sms/send', d),
 }
+
+export const volunteersAPI = {
+  getAll: () => api.get(`/churches/${churchId()}/volunteers`),
+  create: (d) => api.post(`/churches/${churchId()}/volunteers`, d),
+  update: (id, d) => api.put(`/churches/${churchId()}/volunteers/${id}`, d),
+  delete: (id) => api.delete(`/churches/${churchId()}/volunteers/${id}`),
+}

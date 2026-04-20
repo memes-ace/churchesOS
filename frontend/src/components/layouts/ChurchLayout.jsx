@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck, Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog } from 'lucide-react'
+import { LayoutDashboard, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck, Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog, Settings } from 'lucide-react'
 import UpgradeModal from '../UpgradeModal'
 
 const navItems = [
@@ -25,6 +25,7 @@ const navItems = [
   { label: 'Purchases', path: '/church/purchases', icon: Receipt },
   { label: 'Reports', path: '/church/reports', icon: BarChart3 },
   { label: 'Roles & Access', path: '/church/roles', icon: UserCog },
+  { label: 'Church Settings', path: '/church/settings', icon: Settings },
 ]
 
 export default function ChurchLayout() {

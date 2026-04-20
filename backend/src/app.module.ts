@@ -23,6 +23,8 @@ import { ChurchesModule } from './modules/churches/churches.module'
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    EmailModule,
+    VolunteersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,

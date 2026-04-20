@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EmailService } from '../email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Church, Member, Transaction, AttendanceRecord, PaymentRequest, PlatformSettings } from '../../entities';
@@ -12,6 +13,7 @@ export class ChurchesService {
     @InjectRepository(AttendanceRecord) private attendRepo: Repository<AttendanceRecord>,
     @InjectRepository(PaymentRequest) private paymentRepo: Repository<PaymentRequest>,
     @InjectRepository(PlatformSettings) private settingsRepo: Repository<PlatformSettings>,
+    private emailService: EmailService,
   ) {}
 
   async findAll() {
@@ -39,6 +41,11 @@ export class ChurchesService {
     if (data.name !== undefined) updateData.name = data.name
     if (data.pastor_name !== undefined) updateData.pastor_name = data.pastor_name
     if (data.sender_id !== undefined) updateData.sender_id = data.sender_id
+    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.address !== undefined) updateData.address = data.address
+    if (data.website !== undefined) updateData.website = data.website
+    if (data.description !== undefined) updateData.description = data.description
+    if (data.email !== undefined) updateData.email = data.email
     await this.churchRepo.update(id, updateData)
     return this.findOne(id)
   }
@@ -124,11 +131,30 @@ export class ChurchesService {
     if (!payment) return { error: 'Not found' }
     await this.paymentRepo.update(id, { status: 'approved' })
     await this.churchRepo.update(payment.church_id, { plan: payment.plan_requested, status: 'active' })
+    // Find church admin email and notify
+    try {
+      const { InjectRepository } = require('@nestjs/typeorm')
+      const User = require('../../entities').User
+      // Get church to find admin user
+      const church = await this.churchRepo.findOne({ where: { id: payment.church_id } })
+      if (church) {
+        await this.emailService.sendPaymentApprovedEmail(payment.church_name, payment.plan_requested, church.email || '')
+      }
+    } catch(e) { console.warn('Email error:', e) }
     return { success: true }
   }
 
   async rejectPayment(id: string) {
+    const payment = await this.paymentRepo.findOne({ where: { id } })
     await this.paymentRepo.update(id, { status: 'rejected' })
+    try {
+      if (payment) {
+        const church = await this.churchRepo.findOne({ where: { id: payment.church_id } })
+        if (church) {
+          await this.emailService.sendPaymentRejectedEmail(payment.church_name, payment.plan_requested, church.email || '')
+        }
+      }
+    } catch(e) { console.warn('Email error:', e) }
     return { success: true }
   }
 

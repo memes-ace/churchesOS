@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException, OnModuleInit } fr
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcryptjs';
 import { User, Church } from '../../entities';
 
@@ -11,6 +12,7 @@ export class AuthService implements OnModuleInit {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Church) private churchRepo: Repository<Church>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async onModuleInit() {
