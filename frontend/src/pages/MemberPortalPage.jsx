@@ -23,6 +23,9 @@ export default function MemberPortalPage() {
   const [showInstall, setShowInstall] = useState(false)
   const [prayerForm, setPrayerForm] = useState({ request: '' })
   const [prayerSent, setPrayerSent] = useState(false)
+  const [savedChurch, setSavedChurch] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('cos_member') || 'null') } catch { return null }
+  })
 
   useEffect(() => {
     const saved = localStorage.getItem('cos_member')
@@ -94,6 +97,7 @@ export default function MemberPortalPage() {
       localStorage.setItem("cos_member_token", data.access_token)
       localStorage.setItem("cos_member", JSON.stringify(data.member))
       setMember(data.member)
+      setSavedChurch(data.member)
       loadMemberData(data.member)
     } catch(e) {
       setError(e.message || "Invalid phone number. Please check and try again.")
@@ -162,16 +166,25 @@ export default function MemberPortalPage() {
         )}
 
         <div className="flex-1 flex flex-col items-center justify-center p-6">
-          {/* Logo */}
-          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-2xl"
-            style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
-            <span className="text-white text-4xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>C</span>
-          </div>
+          {/* Church Logo */}
+          {savedChurch?.church_logo ? (
+            <img src={savedChurch.church_logo} alt="Church Logo"
+              className="w-20 h-20 rounded-3xl object-cover mb-6 shadow-2xl" />
+          ) : (
+            <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-2xl"
+              style={{ background: `linear-gradient(135deg, ${savedChurch?.church_color || '#1B4FD8'}, #3B82F6)` }}>
+              <span className="text-white text-4xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
+                {savedChurch?.church_name?.charAt(0) || 'C'}
+              </span>
+            </div>
+          )}
 
           <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond' }}>
-            Member Portal
+            {savedChurch?.church_name || 'Member Portal'}
           </h1>
-          <p className="text-white/50 text-sm mb-10">Access your church profile</p>
+          <p className="text-white/50 text-sm mb-10">
+            {savedChurch?.church_tagline || 'Access your church profile'}
+          </p>
 
           <div className="w-full max-w-sm">
             <form onSubmit={handleLogin} className="space-y-4">
@@ -242,18 +255,29 @@ export default function MemberPortalPage() {
       )}
 
       {/* Header */}
-      <div className="px-5 pt-12 pb-6" style={{ background: 'linear-gradient(135deg, #0F172A, #1E3A6E)' }}>
+      <div className="px-5 pt-12 pb-6" style={{ background: `linear-gradient(135deg, #0F172A, ${member.church_color || '#1E3A6E'})` }}>
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-white/50 text-xs uppercase tracking-widest">Welcome back</p>
-            <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
-              {member.name?.split(' ')[0]}
-            </h1>
+          <div className="flex items-center gap-3">
+            {member.church_logo ? (
+              <img src={member.church_logo} alt="Church" className="w-8 h-8 rounded-lg object-cover" />
+            ) : (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+                style={{ background: 'rgba(255,255,255,0.15)' }}>
+                {member.church_name?.charAt(0) || 'C'}
+              </div>
+            )}
+            <p className="text-white/70 text-xs font-medium">{member.church_name}</p>
           </div>
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-bold text-lg"
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold"
             style={{ background: 'rgba(255,255,255,0.1)' }}>
             {member.name?.charAt(0) || 'M'}
           </div>
+        </div>
+        <div>
+          <p className="text-white/50 text-xs uppercase tracking-widest">Welcome back</p>
+          <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
+            {member.name?.split(' ')[0]}
+          </h1>
         </div>
 
         {/* Member Card */}

@@ -94,6 +94,8 @@ export class AuthService implements OnModuleInit {
       member = await this.userRepo.manager.findOne(Member, { where: { member_id: memberId } })
     }
     if (!member) throw new Error('Member not found')
+    // Get church branding
+    const church = await this.churchRepo.findOne({ where: { id: member.church_id } })
     const payload = { sub: member.id, role: 'member', church_id: member.church_id }
     return {
       access_token: this.jwtService.sign(payload),
@@ -106,6 +108,13 @@ export class AuthService implements OnModuleInit {
         member_id: member.member_id,
         status: member.status,
         ministry: member.ministry,
+        // Church branding
+        church_name: church?.name || '',
+        church_logo: church?.logo_url || '',
+        church_color: church?.primary_color || '#1B4FD8',
+        church_tagline: church?.tagline || '',
+        church_phone: church?.phone || '',
+        church_whatsapp: church?.phone || '',
       }
     }
   }
