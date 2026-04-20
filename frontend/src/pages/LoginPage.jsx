@@ -134,10 +134,8 @@ export default function LoginPage() {
               <p className="text-sm text-gray-500">New church? <a href="/register" className="font-medium" style={{ color: '#1B4FD8' }}>Register your church</a>
           </p>
 
-          <div className="mt-8 p-4 rounded-xl border" style={{ background: '#EEF2FF', borderColor: '#C7D2FE' }}>
-            <p className="text-xs font-semibold mb-2" style={{ color: '#1B4FD8' }}>Demo Accounts</p>
-            <p className="text-xs text-gray-600">Super Admin: churchesos97@gmail.com / Arielle@2025</p>
-            <p className="text-xs text-gray-600">Church Admin: use credentials provided by your admin</p>
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-400">Built by <a href="https://tabscrow.com" target="_blank" rel="noreferrer" className="font-medium" style={{ color: '#1B4FD8' }}>Tabscrow</a></p>
           </div>
         </div>
       </div>

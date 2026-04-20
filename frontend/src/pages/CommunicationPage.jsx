@@ -4,6 +4,14 @@ import { membersAPI, smsTopupAPI } from '../utils/api'
 
 function SmsTopupModal({ onClose, onSubmit }) {
   const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+  const portalLink = `https://churches-os.vercel.app/member-portal?church=${user.church_id || ''}`
+  const [copied, setCopied] = useState(false)
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(portalLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
   const [form, setForm] = useState({ amount: '100', transaction_id: '', notes: '' })
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -193,15 +201,6 @@ export default function CommunicationPage() {
     } finally {
       setSending(false)
     }
-  }
-
-  const portalLink = `https://churches-os.vercel.app/member-portal?church=${user.church_id || ''}`
-  const [copied, setCopied] = useState(false)
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(portalLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
