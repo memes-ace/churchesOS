@@ -1,15 +1,28 @@
 import { useState, useEffect } from 'react'
-import { User, Phone, Mail, MapPin, Calendar, Heart, DollarSign, CheckSquare, LogOut } from 'lucide-react'
+import { User, Phone, Mail, MapPin, Calendar, Heart, DollarSign, CheckSquare, LogOut, BookOpen, Bell, ChevronRight, Home, Users, MessageCircle, Download } from 'lucide-react'
+
+// Install prompt handler
+let deferredPrompt = null
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault()
+  deferredPrompt = e
+})
 
 export default function MemberPortalPage() {
   const [member, setMember] = useState(null)
-  const [profile, setProfile] = useState(null)
+  const [church, setChurch] = useState(null)
   const [attendance, setAttendance] = useState([])
   const [giving, setGiving] = useState([])
-  const [tab, setTab] = useState('profile')
+  const [announcements, setAnnouncements] = useState([])
+  const [events, setEvents] = useState([])
+  const [sermons, setSermons] = useState([])
+  const [tab, setTab] = useState('home')
   const [loading, setLoading] = useState(false)
-  const [loginForm, setLoginForm] = useState({ phone: '', memberId: '' })
+  const [loginForm, setLoginForm] = useState({ phone: '' })
   const [error, setError] = useState('')
+  const [showInstall, setShowInstall] = useState(false)
+  const [prayerForm, setPrayerForm] = useState({ request: '' })
+  const [prayerSent, setPrayerSent] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('cos_member')
@@ -18,27 +31,46 @@ export default function MemberPortalPage() {
       setMember(m)
       loadMemberData(m)
     }
+    // Show install prompt after 3 seconds
+    setTimeout(() => {
+      if (deferredPrompt) setShowInstall(true)
+    }, 3000)
   }, [])
 
   const loadMemberData = async (m) => {
     setLoading(true)
     try {
-      const token = localStorage.getItem('cos_member_token')
+      const token = localStorage.getItem('cos_member_token') || ''
       const headers = { 'Authorization': `Bearer ${token}` }
-      
-      // Load attendance
-      const attRes = await fetch(`/api/churches/${m.church_id}/attendance`, { headers })
-      if (attRes.ok) {
-        const attData = await attRes.json()
-        setAttendance(Array.isArray(attData) ? attData.slice(0, 10) : [])
-      }
+      const churchId = m.church_id
 
-      // Load finance/giving
-      const finRes = await fetch(`/api/churches/${m.church_id}/finance/transactions`, { headers })
-      if (finRes.ok) {
-        const finData = await finRes.json()
-        // Filter transactions that might relate to this member
-        setGiving(Array.isArray(finData) ? finData.filter(t => t.type === 'income').slice(0, 10) : [])
+      const [attRes, finRes, annRes, evtRes, serRes] = await Promise.allSettled([
+        fetch(`/api/churches/${churchId}/attendance`, { headers }),
+        fetch(`/api/churches/${churchId}/finance/transactions`, { headers }),
+        fetch(`/api/churches/${churchId}/announcements`, { headers }),
+        fetch(`/api/churches/${churchId}/events`, { headers }),
+        fetch(`/api/churches/${churchId}/sermons`, { headers }),
+      ])
+
+      if (attRes.status === 'fulfilled' && attRes.value.ok) {
+        const data = await attRes.value.json()
+        setAttendance(Array.isArray(data) ? data.slice(0, 10) : [])
+      }
+      if (finRes.status === 'fulfilled' && finRes.value.ok) {
+        const data = await finRes.value.json()
+        setGiving(Array.isArray(data) ? data.filter(t => t.type === 'income').slice(0, 10) : [])
+      }
+      if (annRes.status === 'fulfilled' && annRes.value.ok) {
+        const data = await annRes.value.json()
+        setAnnouncements(Array.isArray(data) ? data.slice(0, 5) : [])
+      }
+      if (evtRes.status === 'fulfilled' && evtRes.value.ok) {
+        const data = await evtRes.value.json()
+        setEvents(Array.isArray(data) ? data.slice(0, 5) : [])
+      }
+      if (serRes.status === 'fulfilled' && serRes.value.ok) {
+        const data = await serRes.value.json()
+        setSermons(Array.isArray(data) ? data.slice(0, 5) : [])
       }
     } catch(e) {
       console.warn(e)
@@ -49,172 +81,304 @@ export default function MemberPortalPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError('')
+    setError("")
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/member-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginForm)
+      const res = await fetch("/api/auth/member-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: loginForm.phone, memberId: "" })
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Login failed')
-      localStorage.setItem('cos_member_token', data.access_token)
-      localStorage.setItem('cos_member', JSON.stringify(data.member))
+      if (!res.ok) throw new Error(data.message || "Login failed")
+      localStorage.setItem("cos_member_token", data.access_token)
+      localStorage.setItem("cos_member", JSON.stringify(data.member))
       setMember(data.member)
       loadMemberData(data.member)
     } catch(e) {
-      setError(e.message || 'Invalid phone number or member ID')
+      setError(e.message || "Invalid phone number. Please check and try again.")
     } finally {
       setLoading(false)
     }
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('cos_member')
-    localStorage.removeItem('cos_member_token')
+    localStorage.removeItem("cos_member")
+    localStorage.removeItem("cos_member_token")
     setMember(null)
     setAttendance([])
     setGiving([])
+    setAnnouncements([])
+    setEvents([])
+    setSermons([])
+    setTab("home")
   }
 
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt()
+      await deferredPrompt.userChoice
+      deferredPrompt = null
+      setShowInstall(false)
+    }
+  }
+
+  const handlePrayerSubmit = async () => {
+    if (!prayerForm.request) return
+    try {
+      const token = localStorage.getItem('cos_member_token') || ''
+      await fetch(`/api/churches/${member.church_id}/prayer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          name: member.name,
+          phone: member.phone,
+          request: prayerForm.request,
+          status: 'Pending'
+        })
+      })
+      setPrayerSent(true)
+      setPrayerForm({ request: '' })
+      setTimeout(() => setPrayerSent(false), 3000)
+    } catch(e) { console.warn(e) }
+  }
+
+  const totalGiving = giving.reduce((s, g) => s + Number(g.amount || 0), 0)
+  const thisYear = new Date().getFullYear()
+  const yearGiving = giving.filter(g => g.date?.startsWith(String(thisYear))).reduce((s, g) => s + Number(g.amount || 0), 0)
+
+  // LOGIN SCREEN
   if (!member) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4"
-        style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%)' }}>
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ background: '#1B4FD8' }}>
-              <User size={28} className="text-white" />
+      <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg, #0F172A 0%, #1E3A6E 50%, #0F172A 100%)' }}>
+        {/* Install Banner */}
+        {showInstall && (
+          <div className="fixed top-0 left-0 right-0 z-50 p-3" style={{ background: '#1B4FD8' }}>
+            <div className="flex items-center justify-between max-w-sm mx-auto">
+              <p className="text-white text-sm font-medium">📱 Install app for quick access</p>
+              <button onClick={handleInstall} className="text-white text-xs px-3 py-1 rounded-lg border border-white/30">Install</button>
             </div>
-            <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Cormorant Garamond' }}>
-              Member Portal
-            </h1>
-            <p className="text-white/50 text-sm mt-1">Access your church profile</p>
+          </div>
+        )}
+
+        <div className="flex-1 flex flex-col items-center justify-center p-6">
+          {/* Logo */}
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-2xl"
+            style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+            <span className="text-white text-4xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>C</span>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+          <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Cormorant Garamond' }}>
+            Member Portal
+          </h1>
+          <p className="text-white/50 text-sm mb-10">Access your church profile</p>
+
+          <div className="w-full max-w-sm">
             <form onSubmit={handleLogin} className="space-y-4">
               {error && (
-                <div className="p-3 rounded-xl text-sm" style={{ background: 'rgba(220,38,38,0.2)', color: '#FCA5A5' }}>
+                <div className="p-3 rounded-2xl text-sm text-center" style={{ background: 'rgba(220,38,38,0.2)', color: '#FCA5A5' }}>
                   {error}
                 </div>
               )}
+
               <div>
-                <label className="block text-xs font-bold text-white/60 uppercase tracking-widest mb-2">Phone Number</label>
-                <input type="tel" value={loginForm.phone} onChange={e => setLoginForm(p => ({ ...p, phone: e.target.value }))}
-                  placeholder="+233 24 000 0000" required
-                  className="w-full px-4 py-3 rounded-xl text-white placeholder-white/30 focus:outline-none text-sm"
-                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} />
+                <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={loginForm.phone}
+                  onChange={e => setLoginForm({ phone: e.target.value })}
+                  placeholder="e.g. 0244000000"
+                  required
+                  className="w-full px-5 py-4 rounded-2xl text-white text-base placeholder-white/20 focus:outline-none"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-white/60 uppercase tracking-widest mb-2">Member ID</label>
-                <input type="text" value={loginForm.memberId} onChange={e => setLoginForm(p => ({ ...p, memberId: e.target.value }))}
-                  placeholder="e.g. GCI-1234"
-                  className="w-full px-4 py-3 rounded-xl text-white placeholder-white/30 focus:outline-none text-sm"
-                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }} />
-              </div>
-              <p className="text-white/40 text-xs">Enter your phone number or member ID to login</p>
-              <button type="submit" disabled={loading || (!loginForm.phone && !loginForm.memberId)}
-                className="w-full py-3 rounded-xl text-white font-semibold text-sm disabled:opacity-50"
-                style={{ background: '#1B4FD8' }}>
-                {loading ? 'Logging in...' : 'Access My Profile'}
+
+              <button type="submit" disabled={loading}
+                className="w-full py-4 rounded-2xl text-white font-bold text-base disabled:opacity-50 transition-all active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
+
+            <p className="text-center text-white/30 text-xs mt-8">
+              Contact your church admin if you cannot log in
+            </p>
           </div>
+        </div>
+
+        {/* Bottom branding */}
+        <div className="text-center pb-8">
+          <p className="text-white/20 text-xs">Powered by ChurchesOS</p>
         </div>
       </div>
     )
   }
 
+  // MAIN APP
+  const tabs = [
+    { key: 'home', label: 'Home', icon: Home },
+    { key: 'attendance', label: 'Attendance', icon: CheckSquare },
+    { key: 'giving', label: 'Giving', icon: DollarSign },
+    { key: 'prayer', label: 'Prayer', icon: Heart },
+    { key: 'more', label: 'More', icon: Users },
+  ]
+
   return (
-    <div className="min-h-screen" style={{ background: '#F8FAFF' }}>
-      {/* Header */}
-      <div style={{ background: '#0F172A' }} className="px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-              style={{ background: '#1B4FD8' }}>
-              {member.name?.charAt(0) || 'M'}
-            </div>
-            <div>
-              <p className="text-white font-semibold text-sm">{member.name}</p>
-              <p className="text-white/40 text-xs">{member.member_id || member.phone}</p>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F0F4FF', paddingBottom: '80px' }}>
+      {/* Install Banner */}
+      {showInstall && (
+        <div className="p-3" style={{ background: '#1B4FD8' }}>
+          <div className="flex items-center justify-between">
+            <p className="text-white text-sm font-medium">📱 Install for quick access</p>
+            <div className="flex gap-2">
+              <button onClick={() => setShowInstall(false)} className="text-white/60 text-xs px-2 py-1">Later</button>
+              <button onClick={handleInstall} className="text-white text-xs px-3 py-1 rounded-lg border border-white/30">Install</button>
             </div>
           </div>
-          <button onClick={handleLogout} className="flex items-center gap-2 text-white/40 hover:text-white text-xs transition">
-            <LogOut size={14} /> Sign Out
-          </button>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="px-5 pt-12 pb-6" style={{ background: 'linear-gradient(135deg, #0F172A, #1E3A6E)' }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-white/50 text-xs uppercase tracking-widest">Welcome back</p>
+            <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cormorant Garamond' }}>
+              {member.name?.split(' ')[0]}
+            </h1>
+          </div>
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-bold text-lg"
+            style={{ background: 'rgba(255,255,255,0.1)' }}>
+            {member.name?.charAt(0) || 'M'}
+          </div>
+        </div>
+
+        {/* Member Card */}
+        <div className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/50 text-xs">Member ID</p>
+              <p className="text-white font-bold text-sm">{member.member_id || 'N/A'}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-white/50 text-xs">Status</p>
+              <p className="text-green-400 font-bold text-sm">{member.status || 'Active'}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto p-6">
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          {[
-            { key: 'profile', label: 'My Profile', icon: User },
-            { key: 'attendance', label: 'Attendance', icon: CheckSquare },
-            { key: 'giving', label: 'Giving', icon: DollarSign },
-          ].map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition"
-              style={{
-                background: tab === t.key ? '#1B4FD8' : 'white',
-                color: tab === t.key ? 'white' : '#6B7280',
-                border: '1px solid ' + (tab === t.key ? '#1B4FD8' : '#E5E7EB')
-              }}>
-              <t.icon size={14} /> {t.label}
-            </button>
-          ))}
-        </div>
+      {/* Content */}
+      <div className="flex-1 px-4 pt-4">
 
-        {/* Profile Tab */}
-        {tab === 'profile' && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 fade-in">
-            <h3 className="font-bold text-gray-800 mb-5" style={{ fontFamily: 'Cormorant Garamond', fontSize: 20 }}>
-              My Profile
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: 'Full Name', value: member.name, icon: User },
-                { label: 'Phone', value: member.phone, icon: Phone },
-                { label: 'Email', value: member.email, icon: Mail },
-                { label: 'Member ID', value: member.member_id, icon: Calendar },
-                { label: 'Status', value: member.status, icon: Heart },
-                { label: 'Ministry', value: member.ministry, icon: Heart },
-              ].map(f => (
-                <div key={f.label} className="p-4 rounded-xl" style={{ background: '#F8FAFF' }}>
-                  <p className="text-xs text-gray-400 mb-1">{f.label}</p>
-                  <p className="text-sm font-semibold text-gray-800">{f.value || '—'}</p>
-                </div>
-              ))}
+        {/* HOME TAB */}
+        {tab === 'home' && (
+          <div className="space-y-4 fade-in">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <p className="text-xs text-gray-400">This Year Giving</p>
+                <p className="text-lg font-bold mt-1" style={{ color: '#059669' }}>GHC {yearGiving.toLocaleString()}</p>
+              </div>
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <p className="text-xs text-gray-400">Services Attended</p>
+                <p className="text-lg font-bold mt-1" style={{ color: '#1B4FD8' }}>{attendance.length}</p>
+              </div>
             </div>
+
+            {/* Announcements */}
+            {announcements.length > 0 && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bell size={16} style={{ color: '#F59E0B' }} />
+                  <h3 className="font-bold text-gray-800 text-sm">Announcements</h3>
+                </div>
+                <div className="space-y-2">
+                  {announcements.slice(0, 3).map((a, i) => (
+                    <div key={i} className="p-3 rounded-xl" style={{ background: '#FFFBEB' }}>
+                      <p className="text-sm font-medium text-gray-800">{a.title}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{a.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upcoming Events */}
+            {events.length > 0 && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar size={16} style={{ color: '#1B4FD8' }} />
+                  <h3 className="font-bold text-gray-800 text-sm">Upcoming Events</h3>
+                </div>
+                <div className="space-y-2">
+                  {events.slice(0, 3).map((e, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#EEF2FF' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#1B4FD8' }}>
+                        <Calendar size={16} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{e.title || e.name}</p>
+                        <p className="text-xs text-gray-500">{e.date ? new Date(e.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent Sermons */}
+            {sermons.length > 0 && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen size={16} style={{ color: '#7C3AED' }} />
+                  <h3 className="font-bold text-gray-800 text-sm">Recent Sermons</h3>
+                </div>
+                <div className="space-y-2">
+                  {sermons.slice(0, 3).map((s, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#F5F3FF' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#7C3AED' }}>
+                        <BookOpen size={16} className="text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">{s.title}</p>
+                        <p className="text-xs text-gray-500">{s.preacher || s.speaker} • {s.date ? new Date(s.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : ''}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {loading && (
+              <div className="text-center py-8">
+                <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Attendance Tab */}
+        {/* ATTENDANCE TAB */}
         {tab === 'attendance' && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 fade-in">
-            <h3 className="font-bold text-gray-800 mb-5" style={{ fontFamily: 'Cormorant Garamond', fontSize: 20 }}>
-              Attendance History
-            </h3>
+          <div className="fade-in">
+            <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Attendance History</h2>
             {attendance.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-16 bg-white rounded-2xl">
                 <CheckSquare size={32} className="mx-auto mb-3 text-gray-200" />
                 <p className="text-gray-400 text-sm">No attendance records yet</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {attendance.map((a, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl"
-                    style={{ background: '#F8FAFF' }}>
+                  <div key={i} className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{a.service_name || 'Service'}</p>
-                      <p className="text-xs text-gray-400">{a.date ? new Date(a.date).toLocaleDateString('en-GB') : '—'}</p>
+                      <p className="text-sm font-semibold text-gray-800">{a.service_name || 'Service'}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{a.date ? new Date(a.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) : '—'}</p>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full font-medium"
-                      style={{ background: '#DCFCE7', color: '#166534' }}>Present</span>
+                    <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ background: '#DCFCE7', color: '#166534' }}>Present</span>
                   </div>
                 ))}
               </div>
@@ -222,35 +386,171 @@ export default function MemberPortalPage() {
           </div>
         )}
 
-        {/* Giving Tab */}
+        {/* GIVING TAB */}
         {tab === 'giving' && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 fade-in">
-            <h3 className="font-bold text-gray-800 mb-5" style={{ fontFamily: 'Cormorant Garamond', fontSize: 20 }}>
-              Giving History
-            </h3>
+          <div className="fade-in">
+            <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Giving History</h2>
+
+            {/* Summary */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="rounded-2xl p-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #059669, #10B981)' }}>
+                <p className="text-green-100 text-xs">This Year</p>
+                <p className="text-white font-bold text-lg mt-1">GHC {yearGiving.toLocaleString()}</p>
+              </div>
+              <div className="rounded-2xl p-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                <p className="text-blue-100 text-xs">Total Given</p>
+                <p className="text-white font-bold text-lg mt-1">GHC {totalGiving.toLocaleString()}</p>
+              </div>
+            </div>
+
             {giving.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-16 bg-white rounded-2xl">
                 <DollarSign size={32} className="mx-auto mb-3 text-gray-200" />
                 <p className="text-gray-400 text-sm">No giving records yet</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {giving.map((g, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl"
-                    style={{ background: '#F8FAFF' }}>
+                  <div key={i} className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{g.category || g.description || 'Offering'}</p>
-                      <p className="text-xs text-gray-400">{g.date ? new Date(g.date).toLocaleDateString('en-GB') : '—'}</p>
+                      <p className="text-sm font-semibold text-gray-800">{g.category || g.description || 'Offering'}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{g.date ? new Date(g.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
                     </div>
-                    <p className="text-sm font-bold" style={{ color: '#059669' }}>
-                      GHC {Number(g.amount || 0).toLocaleString()}
-                    </p>
+                    <p className="text-base font-bold" style={{ color: '#059669' }}>GHC {Number(g.amount || 0).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
             )}
           </div>
         )}
+
+        {/* PRAYER TAB */}
+        {tab === 'prayer' && (
+          <div className="fade-in">
+            <h2 className="font-bold text-gray-800 mb-2" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Prayer Request</h2>
+            <p className="text-gray-400 text-sm mb-5">Submit a prayer request to your church</p>
+
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              {prayerSent ? (
+                <div className="text-center py-8">
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#DCFCE7' }}>
+                    <Heart size={24} style={{ color: '#166534' }} />
+                  </div>
+                  <h3 className="font-bold text-gray-800 mb-2">Prayer Request Sent!</h3>
+                  <p className="text-gray-500 text-sm">Your church will be praying for you.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Your Prayer Request</label>
+                    <textarea rows={5} value={prayerForm.request}
+                      onChange={e => setPrayerForm({ request: e.target.value })}
+                      placeholder="Share your prayer request here..."
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none text-sm resize-none" />
+                  </div>
+                  <button onClick={handlePrayerSubmit} disabled={!prayerForm.request}
+                    className="w-full py-4 rounded-2xl text-white font-bold text-sm disabled:opacity-50 active:scale-95 transition-all"
+                    style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                    🙏 Submit Prayer Request
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* MORE TAB */}
+        {tab === 'more' && (
+          <div className="fade-in space-y-3">
+            <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>My Profile</h2>
+
+            {/* Profile Card */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold"
+                  style={{ background: 'linear-gradient(135deg, #1B4FD8, #3B82F6)' }}>
+                  {member.name?.charAt(0) || 'M'}
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800 text-lg">{member.name}</h3>
+                  <p className="text-sm text-gray-400">{member.member_id || 'Member'}</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { label: 'Phone', value: member.phone, icon: Phone },
+                  { label: 'Email', value: member.email, icon: Mail },
+                  { label: 'Status', value: member.status, icon: User },
+                  { label: 'Ministry', value: member.ministry, icon: Users },
+                ].map(f => f.value && (
+                  <div key={f.label} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#F8FAFF' }}>
+                    <f.icon size={16} style={{ color: '#1B4FD8' }} />
+                    <div>
+                      <p className="text-xs text-gray-400">{f.label}</p>
+                      <p className="text-sm font-medium text-gray-800">{f.value}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact Church */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <h3 className="font-bold text-gray-800 mb-3 text-sm">Contact Church</h3>
+              <div className="space-y-2">
+                <a href="tel:+233" className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
+                  style={{ background: '#EEF2FF' }}>
+                  <Phone size={16} style={{ color: '#1B4FD8' }} />
+                  <span className="text-sm font-medium text-gray-800">Call Church Office</span>
+                  <ChevronRight size={14} className="ml-auto text-gray-400" />
+                </a>
+                <a href="https://wa.me/" target="_blank" rel="noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-xl active:scale-95 transition-all"
+                  style={{ background: '#DCFCE7' }}>
+                  <MessageCircle size={16} style={{ color: '#059669' }} />
+                  <span className="text-sm font-medium text-gray-800">WhatsApp Church</span>
+                  <ChevronRight size={14} className="ml-auto text-gray-400" />
+                </a>
+              </div>
+            </div>
+
+            {/* Install App */}
+            {deferredPrompt && (
+              <button onClick={handleInstall}
+                className="w-full flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-all">
+                <Download size={18} style={{ color: '#1B4FD8' }} />
+                <div className="text-left">
+                  <p className="text-sm font-bold text-gray-800">Install App</p>
+                  <p className="text-xs text-gray-400">Add to your home screen</p>
+                </div>
+                <ChevronRight size={14} className="ml-auto text-gray-400" />
+              </button>
+            )}
+
+            {/* Sign Out */}
+            <button onClick={handleLogout}
+              className="w-full flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-all">
+              <LogOut size={18} style={{ color: '#DC2626' }} />
+              <span className="text-sm font-bold text-red-600">Sign Out</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-2 py-2 safe-area-pb"
+        style={{ boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
+        <div className="flex">
+          {tabs.map(t => (
+            <button key={t.key} onClick={() => setTab(t.key)}
+              className="flex-1 flex flex-col items-center gap-1 py-1 transition-all active:scale-95">
+              <t.icon size={20} style={{ color: tab === t.key ? '#1B4FD8' : '#9CA3AF' }} />
+              <span className="text-xs" style={{ color: tab === t.key ? '#1B4FD8' : '#9CA3AF', fontWeight: tab === t.key ? '700' : '400' }}>
+                {t.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
