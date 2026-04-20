@@ -47,6 +47,11 @@ export class ChurchesService {
     if (data.address !== undefined) updateData.address = data.address
     if (data.website !== undefined) updateData.website = data.website
     if (data.description !== undefined) updateData.description = data.description
+    if (data.logo_url !== undefined) updateData.logo_url = data.logo_url
+    if (data.primary_color !== undefined) updateData.primary_color = data.primary_color
+    if (data.tagline !== undefined) updateData.tagline = data.tagline
+    if (data.denomination !== undefined) updateData.denomination = data.denomination
+    if (data.service_time !== undefined) updateData.service_time = data.service_time
     if (data.email !== undefined) updateData.email = data.email
     await this.churchRepo.update(id, updateData)
     return this.findOne(id)
