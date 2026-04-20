@@ -107,6 +107,14 @@ export class ChurchesService {
       }
     }
 
+    // Increment SMS count for this church
+    const { churchId } = data
+    if (churchId && results.length > 0) {
+      try {
+        await this.churchRepo.increment({ id: churchId }, 'sms_sent_count', results.length)
+      } catch(e) { console.warn('SMS count update failed:', e) }
+    }
+
     return {
       success: true,
       sent: results.length,
