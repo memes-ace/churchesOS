@@ -172,7 +172,7 @@ export class ChurchesService {
     starterPlan: { price: 1800, memberLimit: 500, features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'] },
     growthPlan: { price: 5400, memberLimit: 2000, features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports'] },
     enterprisePlan: { price: 10200, memberLimit: 999999, features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'] },
-    freePlan: { price: 0, memberLimit: 100, features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'] },
+    freePlan: { price: 0, memberLimit: 100, features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'] },
   };
 
   async getSettings() {

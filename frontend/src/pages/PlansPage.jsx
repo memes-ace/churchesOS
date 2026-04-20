@@ -6,7 +6,7 @@ const ALL_FEATURES = [
   'Members', 'Attendance', 'Finance', 'Events', 'Communication',
   'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups',
   'Counselling', 'Announcements', 'Volunteers', 'Marketplace',
-  'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'
+  'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access', 'Church Settings'
 ]
 
 const SETTINGS_KEY = 'cos_platform_settings'
@@ -19,10 +19,10 @@ const loadSettings = () => {
 }
 
 const defaultPlans = {
-  free:       { label: 'Free',       price: 0,     memberLimit: 100,   color: '#6B7280', bg: '#F3F4F6', features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'] },
-  starter:    { label: 'Starter',    price: 1800,  memberLimit: 500,   color: '#1B4FD8', bg: '#EEF2FF', features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication'] },
-  growth:     { label: 'Growth',     price: 5400,  memberLimit: 2000,  color: '#7C3AED', bg: '#EDE9FE', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports'] },
-  enterprise: { label: 'Enterprise', price: 10200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'] },
+  free:       { label: 'Free',       price: 0,     memberLimit: 100,   color: '#6B7280', bg: '#F3F4F6', features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'] },
+  starter:    { label: 'Starter',    price: 1800,  memberLimit: 500,   color: '#1B4FD8', bg: '#EEF2FF', features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'] },
+  growth:     { label: 'Growth',     price: 5400,  memberLimit: 2000,  color: '#7C3AED', bg: '#EDE9FE', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports', 'Church Settings'] },
+  enterprise: { label: 'Enterprise', price: 10200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access', 'Church Settings'] },
 }
 
 export default function PlansPage() {
