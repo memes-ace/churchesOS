@@ -36,61 +36,64 @@ export default function ChurchLayout() {
   const navigate = useNavigate()
   const initials = user?.name?.split(' ').map(w => w[0]).slice(0,2).join('') || 'PA'
 
-  // Fetch latest church plan from API on load
-  useEffect(() => {
-    if (user?.church_id) {
-      fetch(`/api/churches/${user.church_id}/dashboard`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('cos_token')}` }
-      })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) {
-          const updated = { 
-            ...user, 
-            church_plan: data.plan || user.church_plan, 
-            church_status: data.status || user.church_status,
-            sender_id: data.sender_id || user.sender_id || 'Tabscrow'
-          }
-          localStorage.setItem('cos_user', JSON.stringify(updated))
-          console.log('Stored sender_id:', updated.sender_id)
-        }
-      })
-      .catch(() => {})
-    }
-  }, [])
-
   const [enabledFeatures, setEnabledFeatures] = useState(null)
+  const [currentPlan, setCurrentPlan] = useState(user?.church_plan || 'trial')
 
+  // Always fetch fresh plan + features from API - no caching
   useEffect(() => {
+    if (!user?.church_id) return
     const token = localStorage.getItem('cos_token') || ''
-    const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
-    const plan = (user.church_plan || 'trial').toLowerCase()
 
-    fetch('/api/admin/settings', {
+    const defaults = {
+      trial: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'],
+      free: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'],
+      starter: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'],
+      growth: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports', 'Church Settings', 'AI Intelligence'],
+      enterprise: null,
+    }
+
+    fetch(`/api/churches/${user.church_id}/dashboard`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data) return
+      const freshPlan = (data.plan || 'trial').toLowerCase()
+      setCurrentPlan(freshPlan)
+
+      const updated = {
+        ...user,
+        church_plan: freshPlan,
+        church_status: data.status || user.church_status,
+        sender_id: data.sender_id || user.sender_id || 'Tabscrow',
+        sms_enabled: data.sms_enabled || false,
+        marketplace_enabled: data.marketplace_enabled || false,
+      }
+      localStorage.setItem('cos_user', JSON.stringify(updated))
+
+      fetch('/api/admin/settings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
       .then(r => r.json())
       .then(s => {
-        if (plan === 'trial') {
-          // trial gets only basic features
-          setEnabledFeatures(['Members', 'Attendance', 'Prayer Requests', 'Announcements'])
+        if (freshPlan === 'trial' || freshPlan === 'free') {
+          setEnabledFeatures(defaults.trial)
           return
         }
-        const planKey = plan + 'Plan'
-        const features = s[planKey]?.features || s[plan + 'PlanFeatures'] || null
+        if (freshPlan === 'enterprise') {
+          setEnabledFeatures(null)
+          return
+        }
+        const planKey = freshPlan + 'Plan'
+        const features = s[planKey]?.features || s[freshPlan + 'PlanFeatures'] || defaults[freshPlan] || null
         setEnabledFeatures(features)
       })
-      .catch(() => {
-        // fallback based on plan name
-        const defaults = {
-          trial: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
-          free: ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
-          starter: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication'],
-          growth: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports'],
-          enterprise: null, // all features
-        }
-        setEnabledFeatures(defaults[plan] || null)
-      })
+      .catch(() => { setEnabledFeatures(defaults[freshPlan] || null) })
+    })
+    .catch(() => {
+      const plan = (user?.church_plan || 'trial').toLowerCase()
+      setEnabledFeatures(defaults[plan] || null)
+    })
   }, [])
 
   const filteredNav = navItems.map(item => {
@@ -169,7 +172,7 @@ export default function ChurchLayout() {
             <div className="flex items-center justify-between px-2 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
               <div>
                 <p className="text-white/40 text-xs">Current Plan</p>
-                <p className="text-white text-xs font-bold capitalize">{user.church_plan || 'trial'}</p>
+                <p className="text-white text-xs font-bold capitalize">{currentPlan || 'trial'}</p>
               </div>
               {(user.church_plan || 'trial') !== 'enterprise' && (
                 <button onClick={() => setShowUpgrade(true)}
