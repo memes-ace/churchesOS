@@ -21,6 +21,7 @@ import { VendorsModule } from './modules/vendors/vendors.module'
 import { ChurchesModule } from './modules/churches/churches.module'
 import { EmailModule } from './modules/email/email.module'
 import { VolunteersModule } from './modules/volunteers/volunteers.module'
+import { AiModule } from './modules/ai/ai.module'
 
 @Module({
   imports: [

@@ -57,7 +57,7 @@ MEMBERS (first 20):
 ${ctx.members.slice(0, 20).map(m => `- ${m.name} | ${m.status} | Phone: ${m.phone || 'N/A'} | Ministry: ${m.ministry || 'None'}`).join('\n')}
 
 RECENT TRANSACTIONS (last 10):
-${ctx.transactions.slice(0, 10).map(t => `- ${t.type}: GHC ${t.amount} | ${t.category || t.description || 'N/A'} | ${t.date}`).join('\n')}
+${ctx.transactions.slice(0, 10).map(t => `- ${t.type}: GHC ${t.amount} | ${t.category || t.notes || 'N/A'} | ${t.date}`).join('\n')}
 
 PASTOR'S QUESTION: ${message}
 
