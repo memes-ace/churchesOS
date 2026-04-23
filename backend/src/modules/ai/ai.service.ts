@@ -5,7 +5,7 @@ import { Church, Member, Transaction, AttendanceRecord } from '../../entities';
 
 @Injectable()
 export class AiService {
-  private geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  private geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
   private apiKey = process.env.GEMINI_API_KEY;
 
   constructor(
