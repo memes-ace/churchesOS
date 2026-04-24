@@ -39,6 +39,7 @@ import SuperSettingsPage from './pages/SuperSettingsPage'
 import PlansPage from './pages/PlansPage'
 import SmsTopupsPage from './pages/SmsTopupsPage'
 import MarketplaceAdminPage from './pages/MarketplaceAdminPage'
+import LandingEditorPage from './pages/LandingEditorPage'
 import ChurchSettingsPage from './pages/ChurchSettingsPage'
 import SuperLoginPage from './pages/SuperLoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -108,6 +109,7 @@ export default function App() {
             <Route path="plans" element={<PlansPage />} />
             <Route path="sms" element={<SmsTopupsPage />} />
             <Route path="marketplace" element={<MarketplaceAdminPage />} />
+            <Route path="landing" element={<LandingEditorPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

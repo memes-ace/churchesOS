@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { LayoutDashboard, Building, DollarSign, LogOut, Menu, X, Shield, Store, FileText, Settings, TrendingUp, CreditCard, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Building, DollarSign, LogOut, Menu, X, Shield, Store, FileText, Settings, TrendingUp, CreditCard, MessageSquare, Globe } from 'lucide-react'
 
 const navItems = [
   { label: 'Overview', path: '/super-admin', icon: LayoutDashboard, exact: true },
@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Revenue', path: '/super-admin/revenue', icon: TrendingUp },
   { label: 'Plans', path: '/super-admin/plans', icon: CreditCard },
   { label: 'SMS Management', path: '/super-admin/sms', icon: MessageSquare },
+  { label: 'Landing Page Editor', path: '/super-admin/landing', icon: Globe },
   { label: 'Marketplace', path: '/super-admin/marketplace', icon: Store },
   { label: 'Settings', path: '/super-admin/settings', icon: Settings },
 ]

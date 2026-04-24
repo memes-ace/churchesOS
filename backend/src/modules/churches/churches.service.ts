@@ -174,6 +174,22 @@ export class ChurchesService {
   }
 
   private defaultSettings: any = {
+    // Landing Page Content
+    landing_hero_title: 'Run Your Church',
+    landing_hero_subtitle: 'The all-in-one church management platform for African churches. Manage members, finances, attendance, SMS and grow with AI.',
+    landing_hero_badge: 'Built for African Churches',
+    landing_stats: [
+      { number: '500+', label: 'Churches' },
+      { number: '50,000+', label: 'Members' },
+      { number: 'GHC 2M+', label: 'Tracked' },
+      { number: '99.9%', label: 'Uptime' },
+    ],
+    landing_momo_number: '0599 001 992',
+    landing_momo_name: 'Tabscrow Company Limited',
+    landing_whatsapp: '233599001992',
+    landing_email: 'admin@churchesos.com',
+    landing_cta_title: 'Ready to transform your church management?',
+    landing_cta_subtitle: 'Join churches across Ghana using ChurchesOS to save time and grow their congregation.',
     platformName: 'ChurchesOS',
     commissionRate: '3',
     starterPrice: '1800',
