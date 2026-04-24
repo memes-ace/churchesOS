@@ -35,8 +35,10 @@ export default function LoginPage() {
         }
         // Save via AuthContext
         login(data.user, data.access_token)
-        // Redirect
-        if (data.user.role === 'super_admin') {
+        // Check if pending
+        if (data.pending || data.user.church_status === 'pending') {
+          window.location.href = '/pending'
+        } else if (data.user.role === 'super_admin') {
           window.location.href = '/super-admin'
         } else {
           window.location.href = '/church/dashboard'

@@ -71,6 +71,21 @@ export class AuthService implements OnModuleInit {
     if (user.church_id) {
       churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
     }
+    // Block pending churches from accessing the system
+    if (user.role === 'church_admin' && churchData?.status === 'pending') {
+      return {
+        access_token: this.jwtService.sign(payload),
+        user: {
+          id: user.id, name: user.name, email: user.email,
+          role: user.role, church_id: user.church_id,
+          church_name: churchData?.name || '',
+          church_plan: churchData?.plan || 'trial',
+          church_status: 'pending',
+        },
+        pending: true,
+        message: 'Your account is pending approval. Please make payment and await confirmation from ChurchesOS.'
+      }
+    }
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -172,7 +187,7 @@ export class AuthService implements OnModuleInit {
       name: data.churchName,
       location: data.location,
       pastor_name: data.name,
-      status: 'trial',
+      status: 'pending',
       plan: 'starter',
       primary_color: data.primaryColor || '#1B4FD8',
       tagline: data.tagline || '',
@@ -193,6 +208,21 @@ export class AuthService implements OnModuleInit {
     let churchData = null
     if (user.church_id) {
       churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
+    }
+    // Block pending churches from accessing the system
+    if (user.role === 'church_admin' && churchData?.status === 'pending') {
+      return {
+        access_token: this.jwtService.sign(payload),
+        user: {
+          id: user.id, name: user.name, email: user.email,
+          role: user.role, church_id: user.church_id,
+          church_name: churchData?.name || '',
+          church_plan: churchData?.plan || 'trial',
+          church_status: 'pending',
+        },
+        pending: true,
+        message: 'Your account is pending approval. Please make payment and await confirmation from ChurchesOS.'
+      }
     }
     return {
       access_token: this.jwtService.sign(payload),
