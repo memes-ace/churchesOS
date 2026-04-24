@@ -293,39 +293,34 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PAYMENT */}
+      {/* HOW IT WORKS */}
       <section id="payment" style={{ position:'relative', zIndex:1, padding:'5rem 5%', textAlign:'center', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
-        <div style={S.sectionBadge}>— Easy Payment</div>
-        <h2 style={{ ...S.sectionTitle, fontSize:'clamp(1.8rem,4vw,3rem)', marginBottom:'0.5rem' }}>Pay via Mobile Money</h2>
-        <p style={{ color:'rgba(255,255,255,0.4)', marginBottom:'3rem', fontSize:'0.85rem' }}>No credit card needed. Fast, simple and secure.</p>
-        <div style={{ maxWidth:'520px', margin:'0 auto' }}>
-          <div style={{ background:'rgba(212,168,83,0.08)', border:'1px solid rgba(212,168,83,0.25)', borderRadius:'18px', padding:'2rem', textAlign:'left', marginBottom:'1rem' }}>
-            <div style={{ fontSize:'1.8rem', marginBottom:'0.75rem' }}>📲</div>
-            <div style={{ fontSize:'1rem', fontWeight:500, marginBottom:'1.25rem' }}>MTN Mobile Money</div>
-            {[['MoMo Number', landingContent.momo_number],['Account Name', landingContent.momo_name]].map(([l,v]) => (
-              <div key={l} style={{ display:'flex', justifyContent:'space-between', padding:'0.7rem 1rem', background:'rgba(255,255,255,0.05)', borderRadius:'10px', marginBottom:'0.5rem', flexWrap:'wrap', gap:'0.5rem' }}>
-                <span style={{ color:'rgba(255,255,255,0.4)', fontSize:'0.82rem' }}>{l}</span>
-                <span style={{ color:'#D4A853', fontWeight:600, fontSize:'0.82rem' }}>{v}</span>
+        <div style={S.sectionBadge}>— Simple Process</div>
+        <h2 style={{ ...S.sectionTitle, fontSize:'clamp(1.8rem,4vw,3rem)', marginBottom:'0.5rem' }}>Get started in 4 simple steps</h2>
+        <p style={{ color:'rgba(255,255,255,0.4)', marginBottom:'3rem', fontSize:'0.85rem' }}>No credit card required upfront. Pay via Mobile Money after registration.</p>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'1.5rem', maxWidth:'900px', margin:'0 auto' }}>
+          {[
+            { num:'1', icon:'📝', title:'Register Your Church', desc:'Fill in your church details and create your admin account in minutes.' },
+            { num:'2', icon:'📋', title:'Choose Your Plan', desc:'Select the plan that fits your church size and needs.' },
+            { num:'3', icon:'📲', title:'Make Payment', desc:'Send payment via Mobile Money. We verify and activate within 2 hours.' },
+            { num:'4', icon:'🚀', title:'Start Managing', desc:'Login and start managing your church. Add members, track attendance and more.' },
+          ].map(s => (
+            <div key={s.num} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'16px', padding:'1.75rem', textAlign:'left', transition:'all 0.3s' }}
+              onMouseEnter={e => { e.currentTarget.style.border='1px solid rgba(27,79,216,0.3)'; e.currentTarget.style.background='rgba(27,79,216,0.06)' }}
+              onMouseLeave={e => { e.currentTarget.style.border='1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.background='rgba(255,255,255,0.03)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1rem' }}>
+                <div style={{ width:36, height:36, borderRadius:'50%', background:'rgba(27,79,216,0.2)', border:'1px solid rgba(27,79,216,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Cormorant Garamond', fontWeight:600, color:'#60A5FA', fontSize:'1rem', flexShrink:0 }}>{s.num}</div>
+                <span style={{ fontSize:'1.3rem' }}>{s.icon}</span>
               </div>
-            ))}
-          </div>
-          <div style={{ background:'rgba(27,79,216,0.1)', border:'1px solid rgba(27,79,216,0.25)', borderRadius:'14px', padding:'1.5rem', textAlign:'left', marginBottom:'1rem' }}>
-            <p style={{ color:'#60A5FA', fontWeight:600, fontSize:'0.83rem', marginBottom:'0.75rem' }}>ℹ️ How we identify your payment</p>
-            <p style={{ fontSize:'0.8rem', color:'rgba(255,255,255,0.5)', lineHeight:1.7, marginBottom:'0.75rem' }}>After sending payment, contact us with:</p>
-            {['1. Your Church Name','2. MoMo Transaction ID','3. Plan you are paying for','4. Your registered email address'].map(item => (
-              <div key={item} style={{ fontSize:'0.78rem', color:'rgba(203,213,225,0.7)', padding:'0.4rem 0.75rem', background:'rgba(255,255,255,0.04)', borderRadius:'7px', marginBottom:'0.4rem' }}>• {item}</div>
-            ))}
-          </div>
-          <div className="payment-actions" style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', justifyContent:'center' }}>
-            <a href={`https://wa.me/${landingContent.whatsapp}`} target="_blank" rel="noreferrer"
-              style={{ display:'inline-flex', alignItems:'center', gap:'0.4rem', background:'rgba(52,211,153,0.15)', border:'1px solid rgba(52,211,153,0.3)', color:'#34D399', padding:'0.6rem 1.25rem', borderRadius:'10px', textDecoration:'none', fontSize:'0.82rem', fontWeight:500 }}>
-              💬 WhatsApp Us
-            </a>
-            <a href={`mailto:${landingContent.email}`}
-              style={{ display:'inline-flex', alignItems:'center', gap:'0.4rem', background:'rgba(96,165,250,0.15)', border:'1px solid rgba(96,165,250,0.3)', color:'#60A5FA', padding:'0.6rem 1.25rem', borderRadius:'10px', textDecoration:'none', fontSize:'0.82rem', fontWeight:500 }}>
-              ✉️ Email Us
-            </a>
-          </div>
+              <div style={{ fontSize:'0.92rem', fontWeight:500, marginBottom:'0.5rem', color:'white' }}>{s.title}</div>
+              <div style={{ fontSize:'0.8rem', color:'rgba(255,255,255,0.4)', lineHeight:1.7 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop:'2.5rem' }}>
+          <button onClick={() => navigate('/register')} style={{ ...S.btnPrimary, fontSize:'1rem', padding:'1rem 2.5rem' }}>
+            Get Started Now →
+          </button>
         </div>
       </section>
 
