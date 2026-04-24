@@ -62,10 +62,9 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Root />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/vendor-apply" element={<VendorRegisterPage />} />
           <Route path="/pending" element={<PendingApprovalPage user={JSON.parse(localStorage.getItem('cos_user') || '{}')} />} />
-          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/member-portal" element={<MemberPortalPage />} />
