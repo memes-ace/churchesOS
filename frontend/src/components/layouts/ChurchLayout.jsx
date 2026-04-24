@@ -25,7 +25,7 @@ const navItems = [
   { label: 'Purchases', path: '/church/purchases', icon: Receipt },
   { label: 'Reports', path: '/church/reports', icon: BarChart3 },
   { label: 'Roles & Access', path: '/church/roles', icon: UserCog },
-  { label: 'AI Intelligence', path: '/church/ai', icon: Brain, feature: 'Church Settings' },
+  { label: 'AI Intelligence', path: '/church/ai', icon: Brain },
   { label: 'Church Settings', path: '/church/settings', icon: Settings },
 ]
 
@@ -47,8 +47,8 @@ export default function ChurchLayout() {
     const defaults = {
       trial: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'],
       free: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'],
-      starter: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'],
-      growth: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports', 'Church Settings', 'AI Intelligence'],
+      starter: ['Members', 'Attendance', 'Finance', 'Visitors', 'Communication', 'Ministries', 'Marketplace', 'Church Settings'],
+      growth: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Reports', 'Marketplace', 'Roles & Access', 'Church Settings', 'Volunteers', 'AI Intelligence'],
       enterprise: null,
     }
 

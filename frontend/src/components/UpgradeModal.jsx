@@ -40,7 +40,7 @@ export default function UpgradeModal({ user, onClose }) {
 
   useEffect(() => {
     // Load latest plans from API so church sees super admin's settings
-    fetch('/api/admin/settings')
+    fetch('/api/admin/settings', { headers: { 'Authorization': `Bearer ${localStorage.getItem('cos_token')}` } })
       .then(r => r.json())
       .then(s => {
         if (s && (s.starterPlan || s.starterPrice)) {
