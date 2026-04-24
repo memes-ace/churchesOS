@@ -317,7 +317,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="payment-actions" style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', justifyContent:'center' }}>
-            <a {`https://wa.me/${landingContent.whatsapp}`} target="_blank" rel="noreferrer"
+            <a href={`https://wa.me/${landingContent.whatsapp}`} target="_blank" rel="noreferrer"
               style={{ display:'inline-flex', alignItems:'center', gap:'0.4rem', background:'rgba(52,211,153,0.15)', border:'1px solid rgba(52,211,153,0.3)', color:'#34D399', padding:'0.6rem 1.25rem', borderRadius:'10px', textDecoration:'none', fontSize:'0.82rem', fontWeight:500 }}>
               💬 WhatsApp Us
             </a>
