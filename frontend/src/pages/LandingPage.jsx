@@ -89,6 +89,12 @@ export default function LandingPage() {
 
   return (
     <div style={{ background: '#0A0F1E', color: 'white', fontFamily: "DM Sans, sans-serif", overflowX: 'hidden' }}>
+      <style>{`
+        * { box-sizing: border-box; }
+        @media (max-width: 640px) {
+          #nav-links { display: none !important; }
+        }
+      `}</style>
       <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} />
 
       {/* NAV */}
@@ -104,19 +110,21 @@ export default function LandingPage() {
         <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.6rem', fontWeight: 600 }}>
           Churches<span style={{ color: '#D4A853' }}>OS</span>
         </div>
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-          {[['Features', 'features'], ['Pricing', 'pricing'], ['Payment', 'payment']].map(([label, id]) => (
-            <button key={id} onClick={() => scrollTo(id)}
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div id="nav-links" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+            {[['Features', 'features'], ['Pricing', 'pricing'], ['Payment', 'payment']].map(([label, id]) => (
+              <button key={id} onClick={() => scrollTo(id)}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '0.9rem' }}>
+                {label}
+              </button>
+            ))}
+            <button onClick={() => navigate('/login')}
               style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '0.9rem' }}>
-              {label}
+              Login
             </button>
-          ))}
-          <button onClick={() => navigate('/login')}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '0.9rem' }}>
-            Login
-          </button>
+          </div>
           <button onClick={() => navigate('/register')}
-            style={{ background: '#1B4FD8', color: 'white', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }}>
+            style={{ background: '#1B4FD8', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap' }}>
             Get Started →
           </button>
         </div>
@@ -128,7 +136,7 @@ export default function LandingPage() {
           ✦ Built for African Churches
         </div>
 
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 300, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: '1.5rem' }}>
+        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2.2rem, 7vw, 6rem)', fontWeight: 300, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
           Run Your Church<br />
           <em style={{ fontStyle: 'italic', color: '#D4A853' }}>Smarter,</em>{' '}
           <strong style={{ fontWeight: 600 }}>Not Harder.</strong>
@@ -240,7 +248,7 @@ export default function LandingPage() {
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '4rem', fontSize: '0.9rem' }}>14-day free trial • No credit card required • Cancel anytime</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
           {plans.map(p => (
             <div key={p.name} style={{
               background: p.popular ? 'linear-gradient(135deg,rgba(27,79,216,0.12),rgba(124,58,237,0.08))' : 'rgba(255,255,255,0.03)',
@@ -288,7 +296,23 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>After payment, register your church and send your transaction ID to <strong style={{ color: '#D4A853' }}>admin@churchesos.com</strong> or WhatsApp <strong style={{ color: '#D4A853' }}>0599 001 992</strong>. We activate within 2 hours.</p>
+          <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.7, marginBottom: '1rem' }}>After payment contact us with the details below so we can identify your payment and activate your account within 2 hours.</p>
+          <div style={{ background: 'rgba(27,79,216,0.1)', border: '1px solid rgba(27,79,216,0.25)', borderRadius: '12px', padding: '1rem', marginBottom: '1rem' }}>
+            <p style={{ color: '#60A5FA', fontSize: '0.78rem', fontWeight: 600, marginBottom: '0.5rem' }}>📋 Send us these details after payment:</p>
+            {['1. Your Church Name', '2. MoMo Transaction ID', '3. Plan you are paying for (Starter/Growth/Enterprise)', '4. Your registered email address'].map(item => (
+              <p key={item} style={{ fontSize: '0.78rem', color: 'rgba(203,213,225,0.7)', marginBottom: '0.3rem' }}>• {item}</p>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <a href="https://wa.me/233599001992" target="_blank" rel="noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', color: '#34D399', padding: '0.5rem 1rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 500 }}>
+              💬 WhatsApp: 0599 001 992
+            </a>
+            <a href="mailto:admin@churchesos.com"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.3)', color: '#60A5FA', padding: '0.5rem 1rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 500 }}>
+              ✉️ admin@churchesos.com
+            </a>
+          </div>
         </div>
       </section>
 
@@ -314,7 +338,7 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ position: 'relative', zIndex: 1, borderTop: '1px solid rgba(255,255,255,0.08)', padding: '3rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <footer style={{ position: 'relative', zIndex: 1, borderTop: '1px solid rgba(255,255,255,0.08)', padding: '2rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
           <div style={{ fontFamily: 'Cormorant Garamond', fontSize: '1.4rem', fontWeight: 600, marginBottom: '0.3rem' }}>
             Churches<span style={{ color: '#D4A853' }}>OS</span>
