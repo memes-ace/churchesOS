@@ -162,8 +162,6 @@ function PaymentMethodsTab({ churchId, token }) {
         </div>
       )}
     </div>
-      )}
-    </div>
   )
 }
 
