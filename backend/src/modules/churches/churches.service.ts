@@ -57,6 +57,22 @@ export class ChurchesService {
 
   async deleteChurch(id: string) {
     try {
+      const connection = this.churchRepo.manager.connection
+      await connection.query('DELETE FROM users WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM members WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM transactions WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM attendance_records WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM payment_requests WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM sms_topups WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM marketplace_subscriptions WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM events WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM announcements WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM prayer_requests WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM sermons WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM volunteers WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM visitors WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM cell_groups WHERE church_id = $1', [id])
+      await connection.query('DELETE FROM ministries WHERE church_id = $1', [id])
       await this.churchRepo.delete(id)
       return { success: true, message: 'Church deleted successfully' }
     } catch(e) {
