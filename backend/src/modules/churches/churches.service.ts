@@ -35,6 +35,26 @@ export class ChurchesService {
     return { ...church, member_count: memberCount };
   }
 
+  async getPaymentMethods(churchId: string) {
+    try {
+      const row = await this.settingsRepo.findOne({ where: { key: `church_payment_methods_${churchId}` } })
+      if (row) return JSON.parse(row.value)
+      return []
+    } catch(e) { return [] }
+  }
+
+  async savePaymentMethods(churchId: string, methods: any[]) {
+    try {
+      const existing = await this.settingsRepo.findOne({ where: { key: `church_payment_methods_${churchId}` } })
+      if (existing) {
+        await this.settingsRepo.update(existing.id, { value: JSON.stringify(methods) })
+      } else {
+        await this.settingsRepo.save(this.settingsRepo.create({ key: `church_payment_methods_${churchId}`, value: JSON.stringify(methods) }))
+      }
+      return { success: true, methods }
+    } catch(e) { return { success: false, error: (e as any).message } }
+  }
+
   async deleteChurch(id: string) {
     try {
       await this.churchRepo.delete(id)

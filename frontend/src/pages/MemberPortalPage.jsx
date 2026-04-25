@@ -16,6 +16,8 @@ export default function MemberPortalPage() {
   const [events, setEvents] = useState([])
   const [sermons, setSermons] = useState([])
   const [tab, setTab] = useState('home')
+  const [paymentMethods, setPaymentMethods] = useState([])
+  const [copiedMethod, setCopiedMethod] = useState(null)
   const [loading, setLoading] = useState(false)
   const [brandingLoading, setBrandingLoading] = useState(false)
   const [loginForm, setLoginForm] = useState({ phone: '' })
@@ -150,6 +152,13 @@ export default function MemberPortalPage() {
     setEvents([])
     setSermons([])
     setTab('home')
+    // Fetch church payment methods
+    if (data.church_id) {
+      fetch(`/api/admin/churches/${data.church_id}/payment-methods`)
+        .then(r => r.json())
+        .then(methods => { if (Array.isArray(methods)) setPaymentMethods(methods) })
+        .catch(() => {})
+    }
   }
 
   const handleInstall = async () => {
@@ -254,6 +263,7 @@ export default function MemberPortalPage() {
     { key: 'home', label: 'Home', icon: Home },
     { key: 'attendance', label: 'Attendance', icon: CheckSquare },
     { key: 'giving', label: 'Giving', icon: DollarSign },
+    { key: 'pay', label: 'Pay', icon: CreditCard },
     { key: 'prayer', label: 'Prayer', icon: Heart },
     { key: 'more', label: 'More', icon: Users },
   ]
@@ -481,6 +491,54 @@ export default function MemberPortalPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {tab === 'pay' && (
+          <div className="fade-in space-y-3">
+            <h2 className="font-bold text-gray-800 mb-4" style={{ fontFamily: 'Cormorant Garamond', fontSize: 22 }}>Make Payment</h2>
+            <p className="text-xs text-gray-400 mb-4">Pay your tithes, offerings and donations using the methods below</p>
+            {paymentMethods.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
+                <div className="text-4xl mb-3">💳</div>
+                <p className="font-medium text-gray-600 mb-1">No payment methods yet</p>
+                <p className="text-xs text-gray-400">Your church has not set up payment methods yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {paymentMethods.map(m => (
+                  <div key={m.id} className="bg-white rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                        style={{ background: '#F0F4FF' }}>
+                        {m.type === 'Mobile Money' ? '📲' : m.type === 'Bank Transfer' ? '🏦' : '💳'}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-gray-800">{m.name}</p>
+                        <p className="text-xs text-gray-400 mb-2">{m.type}</p>
+                        <div className="p-3 rounded-xl mb-2" style={{ background: '#F8FAFF' }}>
+                          <p className="text-xs text-gray-400">Number / Account</p>
+                          <p className="font-bold text-lg" style={{ color: brandColor }}>{m.number}</p>
+                          {m.account_name && <p className="text-xs text-gray-500">{m.account_name}</p>}
+                        </div>
+                        {m.instructions && (
+                          <p className="text-xs text-gray-400 italic mb-3">📝 {m.instructions}</p>
+                        )}
+                        <button onClick={() => {
+                          navigator.clipboard.writeText(m.number)
+                          setCopiedMethod(m.id)
+                          setTimeout(() => setCopiedMethod(null), 2000)
+                        }}
+                          className="w-full py-2.5 rounded-xl text-sm font-semibold transition active:scale-95"
+                          style={{ background: copiedMethod === m.id ? '#DCFCE7' : brandColor, color: copiedMethod === m.id ? '#166534' : 'white' }}>
+                          {copiedMethod === m.id ? '✓ Copied!' : 'Copy Number'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

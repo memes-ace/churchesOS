@@ -1,5 +1,5 @@
 import { financeAPI } from '../utils/api'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Download, DollarSign, X, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 
@@ -15,6 +15,157 @@ const trendData = [
   { month: 'Dec', income: 9600, expenses: 4200 },{ month: 'Jan', income: 7400, expenses: 3600 },
   { month: 'Feb', income: 8300, expenses: 3900 },{ month: 'Mar', income: 9200, expenses: 4550 },
 ]
+
+
+// Payment Methods Tab Component
+function PaymentMethodsTab({ churchId, token }) {
+  const [methods, setMethods] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [showAdd, setShowAdd] = useState(false)
+  const [form, setForm] = useState({ name: '', type: 'Mobile Money', number: '', account_name: '', instructions: '' })
+
+  useEffect(() => {
+    fetch(`/api/admin/churches/${churchId}/payment-methods`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => { setMethods(Array.isArray(data) ? data : []); setLoading(false) })
+    .catch(() => setLoading(false))
+  }, [])
+
+  const save = async (newMethods) => {
+    setSaving(true)
+    await fetch(`/api/admin/churches/${churchId}/payment-methods`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ methods: newMethods })
+    })
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const addMethod = () => {
+    if (!form.name || !form.number) return
+    const newMethods = [...methods, { ...form, id: Date.now().toString() }]
+    setMethods(newMethods)
+    save(newMethods)
+    setForm({ name: '', type: 'Mobile Money', number: '', account_name: '', instructions: '' })
+    setShowAdd(false)
+  }
+
+  const deleteMethod = (id) => {
+    const newMethods = methods.filter(m => m.id !== id)
+    setMethods(newMethods)
+    save(newMethods)
+  }
+
+  if (loading) return <div className="flex justify-center p-8"><div className="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /></div>
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="font-bold text-gray-800">Payment Methods</h3>
+          <p className="text-xs text-gray-400 mt-0.5">These appear in the Member Portal so members can pay tithes, offerings and donations</p>
+        </div>
+        <button onClick={() => setShowAdd(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white"
+          style={{ background: '#1B4FD8' }}>
+          <Plus size={14} /> Add Method
+        </button>
+      </div>
+
+      {methods.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          <div className="text-4xl mb-3">💳</div>
+          <p className="font-medium text-gray-600 mb-1">No payment methods yet</p>
+          <p className="text-sm">Add MoMo, bank account or other payment methods for your members</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {methods.map(m => (
+            <div key={m.id} className="p-4 rounded-2xl border border-gray-100 bg-white flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
+                  style={{ background: '#EEF2FF' }}>
+                  {m.type === 'Mobile Money' ? '📲' : m.type === 'Bank Transfer' ? '🏦' : '💳'}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">{m.name}</p>
+                  <p className="text-xs text-gray-500">{m.type}</p>
+                  <p className="text-sm font-mono font-bold mt-1" style={{ color: '#1B4FD8' }}>{m.number}</p>
+                  {m.account_name && <p className="text-xs text-gray-500">{m.account_name}</p>}
+                  {m.instructions && <p className="text-xs text-gray-400 mt-1 italic">{m.instructions}</p>}
+                </div>
+              </div>
+              <button onClick={() => deleteMethod(m.id)}
+                className="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0">
+                <X size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showAdd && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowAdd(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="font-bold text-gray-800">Add Payment Method</h3>
+              <button onClick={() => setShowAdd(false)} className="p-1.5 hover:bg-gray-100 rounded-lg"><X size={16} /></button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Method Name *</label>
+                <input type="text" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))}
+                  placeholder="e.g. Tithe & Offering, General Donation"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Payment Type *</label>
+                <select value={form.type} onChange={e => setForm(p => ({...p, type: e.target.value}))}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none">
+                  <option>Mobile Money</option>
+                  <option>Bank Transfer</option>
+                  <option>Cash</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Number / Account *</label>
+                <input type="text" value={form.number} onChange={e => setForm(p => ({...p, number: e.target.value}))}
+                  placeholder="e.g. 0244000000 or Account number"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Account Name</label>
+                <input type="text" value={form.account_name} onChange={e => setForm(p => ({...p, account_name: e.target.value}))}
+                  placeholder="e.g. Grace Chapel International"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Instructions (optional)</label>
+                <input type="text" value={form.instructions} onChange={e => setForm(p => ({...p, instructions: e.target.value}))}
+                  placeholder="e.g. Use your name as reference"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none" />
+              </div>
+              <button onClick={addMethod}
+                className="w-full py-3 rounded-xl text-white font-semibold text-sm"
+                style={{ background: '#1B4FD8' }}>
+                Add Payment Method
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+      )}
+    </div>
+  )
+}
 
 function AddModal({ onClose }) {
   const [type, setType] = useState('income')
@@ -62,10 +213,15 @@ function AddModal({ onClose }) {
         </div>
       </div>
     </div>
+      )}
+    </div>
   )
 }
 
 export default function FinancePage() {
+  const user = JSON.parse(localStorage.getItem('cos_user') || '{}')
+  const token = localStorage.getItem('cos_token') || ''
+  const [activeTab, setActiveTab] = useState('overview')
   const [showAdd, setShowAdd] = useState(false)
   const [tab, setTab] = useState('all')
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
@@ -186,6 +342,8 @@ export default function FinancePage() {
         </table>
       </div>
       {showAdd && <AddModal onClose={() => setShowAdd(false)} />}
+    </div>
+      )}
     </div>
   )
 }

@@ -85,4 +85,10 @@ export class ChurchesController {
 
   @Delete('churches/:id')
   deleteChurch(@Param('id') id: string) { return this.svc.deleteChurch(id); }
+
+  @Get('churches/:churchId/payment-methods')
+  getPaymentMethods(@Param('churchId') churchId: string) { return this.svc.getPaymentMethods(churchId); }
+
+  @Put('churches/:churchId/payment-methods')
+  savePaymentMethods(@Param('churchId') churchId: string, @Body() body: { methods: any[] }) { return this.svc.savePaymentMethods(churchId, body.methods); }
 }
