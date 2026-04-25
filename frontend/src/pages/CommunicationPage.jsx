@@ -216,21 +216,36 @@ export default function CommunicationPage() {
         </div>
       )}
 
-      {/* Member Portal Link */}
-      <div className="mb-5 p-4 rounded-2xl border border-gray-100 bg-white fade-in">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <p className="text-sm font-bold text-gray-800">📱 Member Portal Link</p>
-            <p className="text-xs text-gray-400 mt-0.5">Share this link with your members via SMS</p>
-            <p className="text-xs font-mono mt-1 truncate max-w-xs" style={{ color: "#1B4FD8" }}>{portalLink}</p>
+      {/* Member Portal Link - Growth and Enterprise only */}
+      {['growth', 'enterprise'].includes((user.church_plan || '').toLowerCase()) ? (
+        <div className="mb-5 p-4 rounded-2xl border border-gray-100 bg-white fade-in">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="text-sm font-bold text-gray-800">📱 Member Portal Link</p>
+              <p className="text-xs text-gray-400 mt-0.5">Share this link with your members via SMS</p>
+              <p className="text-xs font-mono mt-1 truncate max-w-xs" style={{ color: "#1B4FD8" }}>{portalLink}</p>
+            </div>
+            <button onClick={copyLink}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition"
+              style={{ background: copied ? "#DCFCE7" : "#EEF2FF", color: copied ? "#166534" : "#1B4FD8" }}>
+              {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
+            </button>
           </div>
-          <button onClick={copyLink}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition"
-            style={{ background: copied ? "#DCFCE7" : "#EEF2FF", color: copied ? "#166534" : "#1B4FD8" }}>
-            {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
-          </button>
         </div>
-      </div>
+      ) : (
+        <div className="mb-5 p-4 rounded-2xl border border-gray-100 bg-white fade-in">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="text-sm font-bold text-gray-800">📱 Member Portal Link</p>
+              <p className="text-xs text-gray-400 mt-0.5">Available on Growth and Enterprise plans</p>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+              style={{ background: "#FEF9C3", color: "#92400E" }}>
+              🔒 Upgrade to unlock
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid lg:grid-cols-3 gap-4 mb-6 fade-in">
