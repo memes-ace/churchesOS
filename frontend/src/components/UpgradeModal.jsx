@@ -93,7 +93,6 @@ export default function UpgradeModal({ user, onClose }) {
         plan_requested: selectedPlan.key,
         billing_period: billingPeriod,
         amount: getPeriodPrice(selectedPlan.price),
-        amount: String(selectedPlan.price),
         payment_method: form.method,
         reference: form.reference,
         proof_description: form.proof,
