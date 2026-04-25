@@ -226,7 +226,28 @@ export default function ChurchLayout() {
           <span className="font-bold text-gray-800 text-sm">ChurchesOS</span>
           <div className="w-9" />
         </header>
-        <main className="flex-1 overflow-y-auto"><Outlet /></main>
+        <main className="flex-1 overflow-y-auto">
+          {isCurrentLocked ? (
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style={{ background: '#EEF2FF' }}>
+                <span style={{ fontSize: '2.5rem' }}>🔒</span>
+              </div>
+              <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Cormorant Garamond', color: '#0F172A' }}>
+                Feature Locked
+              </h2>
+              <p className="text-gray-400 text-sm mb-6 max-w-sm">
+                This feature is not available on your current plan. Upgrade to unlock it.
+              </p>
+              <button onClick={() => setShowUpgrade(true)}
+                className="px-6 py-3 rounded-xl text-white font-semibold text-sm"
+                style={{ background: '#1B4FD8' }}>
+                Upgrade Plan →
+              </button>
+            </div>
+          ) : (
+            <Outlet />
+          )}
+        </main>
       </div>
     </div>
   )
