@@ -20,9 +20,9 @@ const loadSettings = () => {
 
 const defaultPlans = {
   free:       { label: 'Free',       price: 0,     memberLimit: 100,   color: '#6B7280', bg: '#F3F4F6', features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'] },
-  starter:    { label: 'Starter',    price: 1800,  memberLimit: 500,   color: '#1B4FD8', bg: '#EEF2FF', features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'] },
-  growth:     { label: 'Growth',     price: 5400,  memberLimit: 2000,  color: '#7C3AED', bg: '#EDE9FE', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports', 'Church Settings'] },
-  enterprise: { label: 'Enterprise', price: 10200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access', 'Church Settings'] },
+  starter:    { label: 'Starter',    price: 50,  memberLimit: 500,   color: '#1B4FD8', bg: '#EEF2FF', features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'] },
+  growth:     { label: 'Growth',     price: 100,  memberLimit: 2000,  color: '#7C3AED', bg: '#EDE9FE', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Song Library', 'Reports', 'Church Settings'] },
+  enterprise: { label: 'Enterprise', price: 200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access', 'Church Settings'] },
 }
 
 export default function PlansPage() {
@@ -44,9 +44,9 @@ export default function PlansPage() {
         if (s) {
           setPlans({
             free:       { ...defaultPlans.free,       ...(s.freePlan || {}) },
-            starter:    { ...defaultPlans.starter,    ...(s.starterPlan || {}), price: Number(s.starterPlan?.price || s.starterPrice || 1800) },
-            growth:     { ...defaultPlans.growth,     ...(s.growthPlan || {}), price: Number(s.growthPlan?.price || s.growthPrice || 5400) },
-            enterprise: { ...defaultPlans.enterprise, ...(s.enterprisePlan || {}), price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200) },
+            starter:    { ...defaultPlans.starter,    ...(s.starterPlan || {}), price: Number(s.starterPlan?.price || s.starterPrice || 50) },
+            growth:     { ...defaultPlans.growth,     ...(s.growthPlan || {}), price: Number(s.growthPlan?.price || s.growthPrice || 100) },
+            enterprise: { ...defaultPlans.enterprise, ...(s.enterprisePlan || {}), price: Number(s.enterprisePlan?.price || s.enterprisePrice || 200) },
           })
         }
       })

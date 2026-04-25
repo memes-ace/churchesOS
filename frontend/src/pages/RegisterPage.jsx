@@ -11,9 +11,9 @@ export default function RegisterPage() {
   const [copied, setCopied] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState('growth')
   const [plans, setPlans] = useState([
-    { key: 'starter', name: 'Starter', price: 'GHC 200', desc: 'Up to 100 members' },
-    { key: 'growth', name: 'Growth', price: 'GHC 459', desc: 'Up to 500 members', popular: true },
-    { key: 'enterprise', name: 'Enterprise', price: 'GHC 859', desc: 'Unlimited members' },
+    { key: 'starter', name: 'Starter', price: 'GHC 50', desc: 'Up to 100 members' },
+    { key: 'growth', name: 'Growth', price: 'GHC 100', desc: 'Up to 500 members', popular: true },
+    { key: 'enterprise', name: 'Enterprise', price: 'GHC 200', desc: 'Unlimited members' },
   ])
   const [momoNumber, setMomoNumber] = useState('0599 001 992')
   const [momoName, setMomoName] = useState('Tabscrow Company Limited')

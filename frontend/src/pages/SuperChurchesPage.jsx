@@ -125,8 +125,8 @@ export default function SuperChurchesPage() {
   }
 
   const updatePlan = async (id, plan) => {
-    try { await adminAPI.updateChurch(id, { plan }) } catch(e) {}
-    setChurches(prev => prev.map(c => c.id === id ? { ...c, plan } : c))
+    try { await adminAPI.updateChurch(id, { plan, status: 'active' }) } catch(e) {}
+    setChurches(prev => prev.map(c => c.id === id ? { ...c, plan, status: 'active' } : c))
   }
 
   const saveFeatures = async (id, features) => {
@@ -220,9 +220,9 @@ export default function SuperChurchesPage() {
                         style={{ background: plan.bg, color: plan.text }}>
                         {(() => {
                           const s = getSettings()
-                          const sp = Number(s.starterPlan?.price || s.starterPrice || 1800).toLocaleString()
-                          const gp = Number(s.growthPlan?.price || s.growthPrice || 5400).toLocaleString()
-                          const ep = Number(s.enterprisePlan?.price || s.enterprisePrice || 10200).toLocaleString()
+                          const sp = Number(s.starterPlan?.price || s.starterPrice || 50).toLocaleString()
+                          const gp = Number(s.growthPlan?.price || s.growthPrice || 100).toLocaleString()
+                          const ep = Number(s.enterprisePlan?.price || s.enterprisePrice || 200).toLocaleString()
                           return <>
                             <option value="trial">Trial</option>
                             <option value="free">Free</option>

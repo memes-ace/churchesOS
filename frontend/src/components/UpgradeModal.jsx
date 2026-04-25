@@ -9,26 +9,26 @@ const getPlans = () => {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')
     return [
       { key: 'starter', label: 'Starter',
-        price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+        price: Number(s.starterPlan?.price || s.starterPrice || 50),
         memberLimit: s.starterPlan?.memberLimit || 500,
         color: '#1B4FD8', bg: '#EEF2FF',
         features: s.starterPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'] },
       { key: 'growth', label: 'Growth',
-        price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+        price: Number(s.growthPlan?.price || s.growthPrice || 100),
         memberLimit: s.growthPlan?.memberLimit || 2000,
         color: '#7C3AED', bg: '#EDE9FE',
         features: s.growthPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'] },
       { key: 'enterprise', label: 'Enterprise',
-        price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+        price: Number(s.enterprisePlan?.price || s.enterprisePrice || 200),
         memberLimit: s.enterprisePlan?.memberLimit || 999999,
         color: '#F59E0B', bg: '#FEF9C3',
         features: s.enterprisePlan?.features || ['All features included'] },
     ]
   } catch(e) {
     return [
-      { key: 'starter', label: 'Starter', price: 1800, memberLimit: 500, color: '#1B4FD8', bg: '#EEF2FF', features: ['Up to 500 members', 'Finance & Events'] },
-      { key: 'growth', label: 'Growth', price: 5400, memberLimit: 2000, color: '#7C3AED', bg: '#EDE9FE', features: ['Up to 2000 members', 'All Starter features'] },
-      { key: 'enterprise', label: 'Enterprise', price: 10200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Unlimited members', 'All features'] },
+      { key: 'starter', label: 'Starter', price: 50, memberLimit: 500, color: '#1B4FD8', bg: '#EEF2FF', features: ['Up to 500 members', 'Finance & Events'] },
+      { key: 'growth', label: 'Growth', price: 100, memberLimit: 2000, color: '#7C3AED', bg: '#EDE9FE', features: ['Up to 2000 members', 'All Starter features'] },
+      { key: 'enterprise', label: 'Enterprise', price: 200, memberLimit: 999999, color: '#F59E0B', bg: '#FEF9C3', features: ['Unlimited members', 'All features'] },
     ]
   }
 }
@@ -46,17 +46,17 @@ export default function UpgradeModal({ user, onClose }) {
         if (s && (s.starterPlan || s.starterPrice)) {
           setPLANS([
             { key: 'starter', label: 'Starter',
-              price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+              price: Number(s.starterPlan?.price || s.starterPrice || 50),
               memberLimit: s.starterPlan?.memberLimit || 500,
               color: '#1B4FD8', bg: '#EEF2FF',
               features: s.starterPlan?.features || [] },
             { key: 'growth', label: 'Growth',
-              price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+              price: Number(s.growthPlan?.price || s.growthPrice || 100),
               memberLimit: s.growthPlan?.memberLimit || 2000,
               color: '#7C3AED', bg: '#EDE9FE',
               features: s.growthPlan?.features || [] },
             { key: 'enterprise', label: 'Enterprise',
-              price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+              price: Number(s.enterprisePlan?.price || s.enterprisePrice || 200),
               memberLimit: s.enterprisePlan?.memberLimit || 999999,
               color: '#F59E0B', bg: '#FEF9C3',
               features: s.enterprisePlan?.features || [] },

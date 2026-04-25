@@ -44,6 +44,17 @@ import ChurchSettingsPage from './pages/ChurchSettingsPage'
 import SuperLoginPage from './pages/SuperLoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 
+// Keep backend alive - ping every 10 minutes to prevent Render cold starts
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    fetch('https://churchesos.onrender.com/api/auth/login', { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'ping', password: 'ping' })
+    }).catch(() => {})
+  }, 10 * 60 * 1000) // every 10 minutes
+}
+
 function Root() {
   const { user, loading } = useAuth()
   if (loading) return (

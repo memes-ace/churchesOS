@@ -7,9 +7,9 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [plans, setPlans] = useState([
-    { name: 'Starter', price: 'GHC 200', period: '/month', color: '#1B4FD8', features: ['Up to 100 members', 'Member profiles & attendance', 'Finance tracking', 'Announcements & Prayer', 'Member Portal PWA', 'Church Settings'] },
-    { name: 'Growth', price: 'GHC 459', period: '/month', color: '#7C3AED', popular: true, features: ['Up to 500 members', 'Everything in Starter', 'SMS communication', 'Events & Sermons', 'Ministries & Cell Groups', 'Volunteers module', 'AI Intelligence suite', 'Reports & Analytics'] },
-    { name: 'Enterprise', price: 'GHC 859', period: '/month', color: '#F59E0B', features: ['Unlimited members', 'Everything in Growth', 'Marketplace access', 'Equipment management', 'Purchases tracking', 'Counselling records', 'Priority support'] },
+    { name: 'Starter', price: 'GHC 50', period: '/month', color: '#1B4FD8', features: ['Up to 100 members', 'Member profiles & attendance', 'Finance tracking', 'Announcements & Prayer', 'Member Portal PWA', 'Church Settings'] },
+    { name: 'Growth', price: 'GHC 100', period: '/month', color: '#7C3AED', popular: true, features: ['Up to 500 members', 'Everything in Starter', 'SMS communication', 'Events & Sermons', 'Ministries & Cell Groups', 'Volunteers module', 'AI Intelligence suite', 'Reports & Analytics'] },
+    { name: 'Enterprise', price: 'GHC 200', period: '/month', color: '#F59E0B', features: ['Unlimited members', 'Everything in Growth', 'Marketplace access', 'Equipment management', 'Purchases tracking', 'Counselling records', 'Priority support'] },
   ])
 
   const [landingContent, setLandingContent] = useState({
