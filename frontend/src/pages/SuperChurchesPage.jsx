@@ -217,19 +217,13 @@ export default function SuperChurchesPage() {
                       <select value={c.plan || "trial"} onChange={e => updatePlan(c.id, e.target.value)}
                         className="text-xs px-2 py-1.5 rounded-lg font-medium border-0 cursor-pointer focus:outline-none"
                         style={{ background: plan.bg, color: plan.text }}>
-                        {(() => {
-                          const s = getSettings()
-                          const sp = Number(s.starterPlan?.price || s.starterPrice || 50).toLocaleString()
-                          const gp = Number(s.growthPlan?.price || s.growthPrice || 100).toLocaleString()
-                          const ep = Number(s.enterprisePlan?.price || s.enterprisePrice || 200).toLocaleString()
-                          return <>
-                            <option value="trial">Trial</option>
-                            <option value="free">Free</option>
-                            <option value="starter">Starter — GHC {sp}/mo</option>
-                            <option value="growth">Growth — GHC {gp}/mo</option>
-                            <option value="enterprise">Enterprise — GHC {ep}/mo</option>
-                          </>
-                        })()}
+                        <>
+                          <option value="trial">Trial</option>
+                          <option value="free">Free</option>
+                          <option value="starter">Starter — GHC {Number(settings.starterPlan?.price || settings.starterPrice || 50).toLocaleString()}/mo</option>
+                          <option value="growth">Growth — GHC {Number(settings.growthPlan?.price || settings.growthPrice || 100).toLocaleString()}/mo</option>
+                          <option value="enterprise">Enterprise — GHC {Number(settings.enterprisePlan?.price || settings.enterprisePrice || 200).toLocaleString()}/mo</option>
+                        </>
                       </select>
                     </td>
                     <td className="py-4 px-4">
@@ -257,11 +251,24 @@ export default function SuperChurchesPage() {
                       <span className="text-xs text-gray-500">{featCount}/{ALL_FEATURES.length} enabled</span>
                     </td>
                     <td className="py-4 px-4">
-                      <button onClick={() => setFeatureChurch(c)}
-                        className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg"
-                        style={{ background: "#EDE9FE", color: "#7C3AED" }}>
-                        <Settings size={12} /> Features
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setFeatureChurch(c)}
+                          className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg"
+                          style={{ background: "#EDE9FE", color: "#7C3AED" }}>
+                          <Settings size={12} /> Features
+                        </button>
+                        <button onClick={() => {
+                          if (window.confirm(`Delete ${c.name}? This cannot be undone.`)) {
+                            adminAPI.deleteChurch(c.id)
+                              .then(() => setChurches(prev => prev.filter(ch => ch.id !== c.id)))
+                              .catch(e => alert('Delete failed'))
+                          }
+                        }}
+                          className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                          style={{ background: "#FEE2E2", color: "#DC2626" }}>
+                          🗑 Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )
