@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { LayoutDashboard, Brain, Users, CalendarDays, DollarSign, MessageSquare, BookOpen, Eye, Heart, ShoppingBag, BarChart3, Music, Wrench, Receipt, UserCheck, Handshake, LogOut, Menu, X, CheckSquare, Bell, Home, UserCog, Settings } from 'lucide-react'
 import UpgradeModal from '../UpgradeModal'
