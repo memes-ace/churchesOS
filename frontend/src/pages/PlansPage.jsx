@@ -9,15 +9,6 @@ const ALL_FEATURES = [
   'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access', 'Church Settings'
 ]
 
-const SETTINGS_KEY = 'cos_platform_settings'
-
-const loadSettings = () => {
-  try {
-    const saved = localStorage.getItem(SETTINGS_KEY)
-    return saved ? JSON.parse(saved) : {}
-  } catch(e) { return {} }
-}
-
 const defaultPlans = {
   free:       { label: 'Free',       price: 0,     memberLimit: 100,   color: '#6B7280', bg: '#F3F4F6', features: ['Members', 'Attendance', 'Prayer Requests', 'Announcements', 'Church Settings'] },
   starter:    { label: 'Starter',    price: 50,  memberLimit: 500,   color: '#1B4FD8', bg: '#EEF2FF', features: ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements', 'Communication', 'Church Settings'] },
@@ -26,14 +17,11 @@ const defaultPlans = {
 }
 
 export default function PlansPage() {
-  const [plans, setPlans] = useState(() => {
-    const saved = loadSettings()
-    return {
-      free:       { ...defaultPlans.free,       ...(saved.freePlan || {}) },
-      starter:    { ...defaultPlans.starter,    ...(saved.starterPlan || {}) },
-      growth:     { ...defaultPlans.growth,     ...(saved.growthPlan || {}) },
-      enterprise: { ...defaultPlans.enterprise, ...(saved.enterprisePlan || {}) },
-    }
+  const [plans, setPlans] = useState({
+    free:       { ...defaultPlans.free },
+    starter:    { ...defaultPlans.starter },
+    growth:     { ...defaultPlans.growth },
+    enterprise: { ...defaultPlans.enterprise },
   })
   const [saved, setSaved] = useState(false)
   const [activeEdit, setActiveEdit] = useState('free')

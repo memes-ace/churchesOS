@@ -188,7 +188,6 @@ export default function SuperVendorsPage() {
 
   const saveVendors = (list) => {
     setVendors(list)
-    try { localStorage.setItem('cos_vendor_applications', JSON.stringify(list)) } catch(e) {}
   }
 
   const updateStatus = (id, status) => saveVendors(vendors.map(v => v.id === id ? { ...v, status, approvedDate: status === 'Approved' ? new Date().toISOString() : v.approvedDate } : v))

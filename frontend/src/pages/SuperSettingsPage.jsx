@@ -77,7 +77,7 @@ export default function SuperSettingsPage() {
 
   const handleBroadcast = () => {
     if (!settings.broadcastMessage) return
-    const announcements = JSON.parse(localStorage.getItem('cos_announcements') || '[]')
+    const announcements = []
     announcements.unshift({
       id: Date.now(),
       title: 'Platform Announcement',
@@ -88,7 +88,6 @@ export default function SuperSettingsPage() {
       recurring: false,
       views: 0,
     })
-    localStorage.setItem('cos_announcements', JSON.stringify(announcements))
     update('broadcastMessage', '')
     setBroadcastSent(true)
     setTimeout(() => setBroadcastSent(false), 3000)

@@ -122,20 +122,36 @@ function EventModal({ event, onClose, onSave, onDelete }) {
 }
 
 export default function EventsPage() {
-  const storageKey = 'cos_events'
-  const getEvents = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
-  const [events, setEvents] = useState(getEvents)
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
   const [showAdd, setShowAdd] = useState(false)
   const [filter, setFilter] = useState('All')
 
-  const save = (list) => { setEvents(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
-  const handleSave = (form) => {
-    if (selected) save(events.map(e => e.id === selected.id ? { ...e, ...form } : e))
-    else save([...events, { id: Date.now(), ...form }])
+  useEffect(() => {
+    eventsAPI.getAll()
+      .then(data => { if (Array.isArray(data)) setEvents(data) })
+      .catch(e => console.warn(e))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleSave = async (form) => {
+    try {
+      if (selected) {
+        await eventsAPI.update(selected.id, form)
+        setEvents(prev => prev.map(e => e.id === selected.id ? { ...e, ...form } : e))
+      } else {
+        const saved = await eventsAPI.create(form)
+        setEvents(prev => [saved || { id: Date.now(), ...form }, ...prev])
+      }
+    } catch(e) { console.warn(e) }
     setSelected(null); setShowAdd(false)
   }
-  const handleDelete = (id) => { save(events.filter(e => e.id !== id)); setSelected(null) }
+  const handleDelete = async (id) => {
+    try { await eventsAPI.delete(id) } catch(e) { console.warn(e) }
+    setEvents(prev => prev.filter(e => e.id !== id))
+    setSelected(null)
+  }
 
   const filtered = filter === 'All' ? events : events.filter(e => e.status === filter || e.type === filter)
 

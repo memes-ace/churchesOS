@@ -46,8 +46,7 @@ export default function VendorRegisterPage() {
   }
 
   const handleSubmit = () => {
-    // Save to localStorage for super admin to see
-    const vendors = JSON.parse(localStorage.getItem('cos_vendor_applications') || '[]')
+    // Save via API
     vendors.push({
       id: Date.now(),
       refNumber,
@@ -56,7 +55,6 @@ export default function VendorRegisterPage() {
       appliedDate: new Date().toISOString(),
       logo: null,
     })
-    localStorage.setItem('cos_vendor_applications', JSON.stringify(vendors))
     setSubmitted(true)
   }
 
