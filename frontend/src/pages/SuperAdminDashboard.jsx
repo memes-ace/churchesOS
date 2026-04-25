@@ -5,12 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const GHC = 'GHC'
 
-const getSettings = () => {
-  try {
-    const saved = localStorage.getItem('cos_platform_settings')
-    return saved ? JSON.parse(saved) : {}
-  } catch(e) { return {} }
-}
+
 
 const revenueData = [
   { month: 'Oct', revenue: 14400 }, { month: 'Nov', revenue: 22200 },
@@ -29,10 +24,11 @@ const planData = [
 const churches = []
 
 const planConfig = {
-  Free: { bg: '#F3F4F6', text: '#6B7280', price: 0 },
-  Starter: { bg: '#DBEAFE', text: '#1E40AF', price: () => Number(getSettings().starterPrice || 50) },
-  Growth: { bg: '#EDE9FE', text: '#5B21B6', price: () => Number(getSettings().growthPrice || 100) },
-  Enterprise: { bg: '#FEF9C3', text: '#854D0E', price: () => Number(getSettings().enterprisePrice || 200) },
+  Free:       { bg: '#F3F4F6', text: '#6B7280' },
+  Trial:      { bg: '#F3F4F6', text: '#6B7280' },
+  Starter:    { bg: '#DBEAFE', text: '#1E40AF' },
+  Growth:     { bg: '#EDE9FE', text: '#5B21B6' },
+  Enterprise: { bg: '#FEF9C3', text: '#854D0E' },
 }
 
 const statusConfig = {
@@ -181,6 +177,10 @@ function ChurchDetailModal({ church, onClose, onStatusChange }) {
 }
 
 export default function SuperAdminDashboard() {
+  const [dbSettings, setDbSettings] = useState({})
+  useEffect(() => {
+    adminAPI.getSettings().then(s => { if(s) setDbSettings(s) }).catch(() => {})
+  }, [])
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
   const [selected, setSelected] = useState(null)
@@ -456,23 +456,23 @@ export default function SuperAdminDashboard() {
       {activeTab === 'plans' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 fade-in">
           {(() => {
-            const s = getSettings()
+            const s = dbSettings
             return [
               { plan: 'Free', price: 0,
                 memberLimit: (s.freePlan?.memberLimit || 100),
-                features: s.freePlan?.features || s.freePlanFeatures || ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
+                features: s.freePlan?.features || ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
                 color: '#6B7280', bg: '#F3F4F6' },
               { plan: 'Starter', price: Number(s.starterPlan?.price || s.starterPrice || 50),
                 memberLimit: (s.starterPlan?.memberLimit || 500),
-                features: s.starterPlan?.features || s.starterPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'],
+                features: s.starterPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'],
                 color: '#1B4FD8', bg: '#EEF2FF' },
               { plan: 'Growth', price: Number(s.growthPlan?.price || s.growthPrice || 100),
                 memberLimit: (s.growthPlan?.memberLimit || 2000),
-                features: s.growthPlan?.features || s.growthPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'],
+                features: s.growthPlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'],
                 color: '#7C3AED', bg: '#EDE9FE' },
               { plan: 'Enterprise', price: Number(s.enterprisePlan?.price || s.enterprisePrice || 200),
                 memberLimit: (s.enterprisePlan?.memberLimit || 999999),
-                features: s.enterprisePlan?.features || s.enterprisePlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'],
+                features: s.enterprisePlan?.features || ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'],
                 color: '#F59E0B', bg: '#FEF9C3' },
             ]
           })().map(p => (
