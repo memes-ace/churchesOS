@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ChurchesService } from './churches.service';
 
@@ -82,4 +82,7 @@ export class ChurchesController {
 
   @Put('payments/:id/reject')
   rejectPayment(@Param('id') id: string) { return this.svc.rejectPayment(id); }
+
+  @Delete('churches/:id')
+  deleteChurch(@Param('id') id: string) { return this.svc.deleteChurch(id); }
 }

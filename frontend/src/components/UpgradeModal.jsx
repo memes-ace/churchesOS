@@ -35,6 +35,7 @@ const getPlans = () => {
 
 export default function UpgradeModal({ user, onClose }) {
   const [step, setStep] = useState(1)
+  const [billingPeriod, setBillingPeriod] = useState('monthly')
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [PLANS, setPLANS] = useState(getPlans())
 
@@ -71,6 +72,18 @@ export default function UpgradeModal({ user, onClose }) {
 
   const update = (f, v) => setForm(p => ({ ...p, [f]: v }))
 
+  const getPeriodPrice = (price) => {
+    if (billingPeriod === 'quarterly') return Math.round(price * 3 * 0.9) // 10% discount
+    if (billingPeriod === 'yearly') return Math.round(price * 12 * 0.8) // 20% discount
+    return price
+  }
+
+  const getPeriodLabel = (price) => {
+    if (billingPeriod === 'quarterly') return `GHC ${getPeriodPrice(price)} / 3 months (10% off)`
+    if (billingPeriod === 'yearly') return `GHC ${getPeriodPrice(price)} / year (20% off)`
+    return `GHC ${price} / month`
+  }
+
   const handleSubmit = async () => {
     setLoading(true)
     try {
@@ -78,6 +91,8 @@ export default function UpgradeModal({ user, onClose }) {
         church_id: user.church_id,
         church_name: user.church_name || 'My Church',
         plan_requested: selectedPlan.key,
+        billing_period: billingPeriod,
+        amount: getPeriodPrice(selectedPlan.price),
         amount: String(selectedPlan.price),
         payment_method: form.method,
         reference: form.reference,

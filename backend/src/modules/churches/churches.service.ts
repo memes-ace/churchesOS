@@ -35,6 +35,15 @@ export class ChurchesService {
     return { ...church, member_count: memberCount };
   }
 
+  async deleteChurch(id: string) {
+    try {
+      await this.churchRepo.delete(id)
+      return { success: true, message: 'Church deleted successfully' }
+    } catch(e) {
+      return { success: false, error: (e as any).message }
+    }
+  }
+
   async update(id: string, data: any) {
     const updateData: any = {}
     if (data.status !== undefined) updateData.status = data.status

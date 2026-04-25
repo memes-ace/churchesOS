@@ -107,6 +107,12 @@ export default function ChurchLayout() {
     )
     return { ...item, locked: !isEnabled }
   })
+  const location = useLocation()
+
+  // Block direct URL access to locked features
+  const currentNavItem = filteredNav.find(item => location.pathname === item.path)
+  const isCurrentLocked = currentNavItem?.locked === true
+
   const navRef = useRef(null)
 
   const handleNavClick = () => {
