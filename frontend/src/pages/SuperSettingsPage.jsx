@@ -33,7 +33,7 @@ const SETTINGS_KEY = 'cos_platform_settings'
 
 const loadSettings = () => {
   try {
-    const saved = localStorage.getItem(SETTINGS_KEY)
+    // Settings loaded from API only
     if (saved) return { ...defaultSettings, ...JSON.parse(saved) }
     return { ...defaultSettings }
   } catch(e) { return { ...defaultSettings } }
@@ -48,7 +48,6 @@ export default function SuperSettingsPage() {
         if (data) {
           const merged = { ...loadSettings(), ...data }
           setSettings(merged)
-          localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged))
         }
       })
       .catch(e => console.warn('Settings load error:', e))
@@ -64,8 +63,7 @@ export default function SuperSettingsPage() {
 
   const handleSave = async () => {
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
-      await adminAPI.updateSettings(settings)
+        await adminAPI.updateSettings(settings)
       setSaved(true)
       setChanged(false)
       setTimeout(() => setSaved(false), 2000)
@@ -100,8 +98,7 @@ export default function SuperSettingsPage() {
   useEffect(() => {
     if (changed) {
       const timer = setTimeout(() => {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
-      }, 500)
+          }, 500)
       return () => clearTimeout(timer)
     }
   }, [settings, changed])

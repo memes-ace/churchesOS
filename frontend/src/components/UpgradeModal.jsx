@@ -2,11 +2,8 @@ import { useState, useEffect } from 'react'
 import { X, Check, CreditCard, Phone, Building } from 'lucide-react'
 import { paymentsAPI } from '../utils/api'
 
-const SETTINGS_KEY = 'cos_platform_settings'
-
-const getPlans = () => {
+const getPlans = (s = {}) => {
   try {
-    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')
     return [
       { key: 'starter', label: 'Starter',
         price: Number(s.starterPlan?.price || s.starterPrice || 50),

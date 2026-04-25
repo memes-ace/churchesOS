@@ -79,9 +79,8 @@ export default function PlansPage() {
       growthPlanFeatures: plans.growth.features,
       enterprisePlanFeatures: plans.enterprise.features,
     }
-    // Save to localStorage for admin side
-    const existing = loadSettings()
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...existing, ...planData }))
+    //     const existing = loadSettings()
+
     // Save to API so churches can read it
     try {
       await adminAPI.updateSettings(planData)
