@@ -413,7 +413,7 @@ function MinistryMembersView({ ministry, onBack }) {
 
   const getMembers = () => {
     try {
-      const saved = localStorage.getItem(storageKey)
+      const saved = null
       return saved ? JSON.parse(saved) : []
     } catch(e) { return [] }
   }
@@ -424,7 +424,6 @@ function MinistryMembersView({ ministry, onBack }) {
 
   const saveMembers = (list) => {
     setMembers(list)
-    try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
   }
 
   const handleSave = (form) => {
@@ -663,7 +662,7 @@ export default function MinistriesPage() {
 
   const getMemberCount = (ministryId) => {
     try {
-      const saved = localStorage.getItem(`cos_ministry_${ministryId}`)
+      const saved = null
       return saved ? JSON.parse(saved).length : 0
     } catch(e) { return 0 }
   }

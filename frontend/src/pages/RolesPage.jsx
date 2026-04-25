@@ -105,7 +105,7 @@ const roleDefinitions = [
 const storageKey = 'cos_user_roles'
 
 const getUserRoles = () => {
-  try { const s = localStorage.getItem(storageKey); return s ? JSON.parse(s) : [] }
+  try { return [] }
   catch(e) { return [] }
 }
 
@@ -232,7 +232,7 @@ export default function RolesPage() {
   const [showAdd, setShowAdd] = useState(false)
   const [activeTab, setActiveTab] = useState('users')
 
-  const saveUsers = (list) => { setUsers(list); try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {} }
+  const saveUsers = (list) => { setUsers(list) }
 
   const handleSaveRole = (updated) => {
     saveUsers(users.map(u => u.id === updated.id ? updated : u))

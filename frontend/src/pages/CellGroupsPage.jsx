@@ -113,7 +113,7 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
   const storageKey = `cos_cell_${cell.id}`
 
   const getData = () => {
-    try { const s = localStorage.getItem(storageKey); return s ? JSON.parse(s) : { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
+    try { return { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
     catch(e) { return { members: [], attendance: [], visitors: [], activities: [], announcements: [] } }
   }
 
@@ -132,7 +132,7 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
 
   const save = (newData) => {
     setData(newData)
-    try { localStorage.setItem(storageKey, JSON.stringify(newData)) } catch(e) {}
+
   }
 
   const addMember = () => {
@@ -718,7 +718,7 @@ export default function CellGroupsPage() {
 
   const saveCellGroups = (list) => {
     setCellGroups(list)
-    try { localStorage.setItem(mainKey, JSON.stringify(list)) } catch(e) {}
+
   }
 
   const handleCreate = (form) => {
@@ -736,7 +736,7 @@ export default function CellGroupsPage() {
   }
 
   const getMemberCount = (cellId) => {
-    try { const s = localStorage.getItem(`cos_cell_${cellId}`); if (!s) return 0; const d = JSON.parse(s); return d.members?.length || 0 }
+    try { return 0 }
     catch(e) { return 0 }
   }
 
