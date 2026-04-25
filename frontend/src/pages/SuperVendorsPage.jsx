@@ -342,17 +342,11 @@ export default function SuperVendorsPage() {
 }
 
 export function QuoteRequestsPage() {
-  const getRequests = () => {
-    try { return JSON.parse(localStorage.getItem('cos_quote_requests') || '[]') }
-    catch(e) { return [] }
-  }
-  const [requests, setRequests] = useState(getRequests)
+  const [requests, setRequests] = useState([])
   const [filter, setFilter] = useState('All')
 
   const updateStatus = (id, status) => {
-    const updated = requests.map(r => r.id === id ? { ...r, status } : r)
-    setRequests(updated)
-    try { localStorage.setItem('cos_quote_requests', JSON.stringify(updated)) } catch(e) {}
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r))
   }
 
   const filtered = filter === 'All' ? requests : requests.filter(r => r.status === filter)
