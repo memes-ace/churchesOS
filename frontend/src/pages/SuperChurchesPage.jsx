@@ -24,11 +24,6 @@ const ALL_FEATURES = [
   { key: 'roles', label: 'Roles & Access' },
 ]
 
-const getSettings = () => {
-  try { return JSON.parse(localStorage.getItem('cos_platform_settings') || '{}') }
-  catch(e) { return {} }
-}
-
 const getPlans = (s) => ({
   trial:      { label: 'Trial',      bg: '#F3F4F6', text: '#6B7280',  price: 0 },
   free:       { label: 'Free',       bg: '#F3F4F6', text: '#6B7280',  price: 0 },
@@ -105,8 +100,11 @@ export default function SuperChurchesPage() {
   const [search, setSearch] = useState("")
   const [selected, setSelected] = useState(null)
   const [featureChurch, setFeatureChurch] = useState(null)
+  const [settings, setSettings] = useState({})
 
   useEffect(() => {
+    // Fetch settings from API for live prices
+    adminAPI.getSettings().then(s => { if(s) setSettings(s) }).catch(() => {})
     adminAPI.getChurches()
       .then(data => {
         console.log('Churches data:', data)
