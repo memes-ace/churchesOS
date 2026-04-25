@@ -3,8 +3,6 @@ import { useDB } from '../hooks/useDB'
 import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Upload, Play, Download, Edit } from 'lucide-react'
 
-// API-backed: cos_sermons
-const getSermons = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch(e) { return [] } }
 
 const emptySermon = { title: '', pastor: '', date: '', series: '', description: '', youtubeLink: '', duration: '', tags: '' }
 

@@ -11,14 +11,9 @@ export function useDB(apiObj, localKey) {
       const result = await apiObj.getAll()
       if (Array.isArray(result)) {
         setData(result)
-        try { localStorage.setItem(localKey, JSON.stringify(result)) } catch(e) {}
       }
     } catch(e) {
-      console.warn(`API failed for ${localKey}, using localStorage:`, e.message)
-      try {
-        const cached = localStorage.getItem(localKey)
-        if (cached) setData(JSON.parse(cached))
-      } catch(le) {}
+      console.warn(`API failed for ${localKey}:`, e.message)
       setError(e.message)
     } finally {
       setLoading(false)
@@ -33,20 +28,29 @@ export function useDB(apiObj, localKey) {
       setData(prev => [saved, ...prev])
       return saved
     } catch(e) {
-      const localItem = { ...item, id: Date.now().toString(), created_at: new Date().toISOString() }
-      setData(prev => [localItem, ...prev])
-      return localItem
+      console.warn('Create failed:', e.message)
+      throw e
     }
   }, [apiObj])
 
   const update = useCallback(async (id, item) => {
-    try { await apiObj.update(id, item) } catch(e) { console.warn('Update failed:', e.message) }
-    setData(prev => prev.map(d => d.id === id ? { ...d, ...item } : d))
+    try {
+      await apiObj.update(id, item)
+      setData(prev => prev.map(d => d.id === id ? { ...d, ...item } : d))
+    } catch(e) {
+      console.warn('Update failed:', e.message)
+      throw e
+    }
   }, [apiObj])
 
   const remove = useCallback(async (id) => {
-    try { await apiObj.delete(id) } catch(e) { console.warn('Delete failed:', e.message) }
-    setData(prev => prev.filter(d => d.id !== id))
+    try {
+      await apiObj.delete(id)
+      setData(prev => prev.filter(d => d.id !== id))
+    } catch(e) {
+      console.warn('Delete failed:', e.message)
+      throw e
+    }
   }, [apiObj])
 
   return { data, loading, error, create, update, remove, reload: load }

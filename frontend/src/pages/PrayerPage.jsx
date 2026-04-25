@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Heart, Check } from 'lucide-react'
 import { prayerAPI } from '../utils/api'
 
-const storageKey = 'cos_prayer_requests'
 
 export default function PrayerPage() {
   const [requests, setRequests] = useState([])
@@ -18,7 +17,6 @@ export default function PrayerPage() {
       })
       .catch(() => {
         try {
-          const cached = localStorage.getItem(storageKey)
           if (cached) setRequests(JSON.parse(cached))
         } catch(e) {}
       })
@@ -27,7 +25,6 @@ export default function PrayerPage() {
 
   const save = (list) => {
     setRequests(list)
-    try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch(e) {}
   }
 
   const handleAdd = async () => {
