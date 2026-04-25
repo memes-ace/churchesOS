@@ -73,14 +73,14 @@ export default function UpgradeModal({ user, onClose }) {
   const update = (f, v) => setForm(p => ({ ...p, [f]: v }))
 
   const getPeriodPrice = (price) => {
-    if (billingPeriod === 'quarterly') return Math.round(price * 3 * 0.9) // 10% discount
-    if (billingPeriod === 'yearly') return Math.round(price * 12 * 0.8) // 20% discount
+    if (billingPeriod === 'quarterly') return Math.round(price * 3)
+    if (billingPeriod === 'yearly') return Math.round(price * 12)
     return price
   }
 
   const getPeriodLabel = (price) => {
-    if (billingPeriod === 'quarterly') return `GHC ${getPeriodPrice(price)} / 3 months (10% off)`
-    if (billingPeriod === 'yearly') return `GHC ${getPeriodPrice(price)} / year (20% off)`
+    if (billingPeriod === 'quarterly') return `GHC ${getPeriodPrice(price)} / 3 months`
+    if (billingPeriod === 'yearly') return `GHC ${getPeriodPrice(price)} / year`
     return `GHC ${price} / month`
   }
 
