@@ -23,7 +23,7 @@ export default function SuperRevenuePage() {
     return acc
   }, {})
 
-  const planPrices = { starter: 1800, growth: 5400, enterprise: 10200, free: 0, trial: 0 }
+  const planPrices = { starter: 50, growth: 100, enterprise: 200, free: 0, trial: 0 }
 
   const planRevenue = Object.entries(planCounts).map(([plan, count]) => ({
     plan: plan.charAt(0).toUpperCase() + plan.slice(1),

@@ -1,8 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Clock, Phone, Mail, LogOut, Copy, Check } from 'lucide-react'
 
 export default function PendingApprovalPage({ user }) {
   const [copied, setCopied] = useState(false)
+  const [prices, setPrices] = useState({ starter: 50, growth: 100, enterprise: 200 })
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then(s => {
+        if (s) setPrices({
+          starter: s.starterPlan?.price || s.starterPrice || 50,
+          growth: s.growthPlan?.price || s.growthPrice || 100,
+          enterprise: s.enterprisePlan?.price || s.enterprisePrice || 200,
+        })
+      }).catch(() => {})
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('cos_token')
@@ -68,15 +81,15 @@ export default function PendingApprovalPage({ user }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-white/50 text-sm">Starter Plan</span>
-                <span className="text-white text-sm font-bold">GHC 150/month</span>
+                <span className="text-white text-sm font-bold">GHC {prices.starter}/month</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/50 text-sm">Growth Plan</span>
-                <span className="text-white text-sm font-bold">GHC 350/month</span>
+                <span className="text-white text-sm font-bold">GHC {prices.growth}/month</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/50 text-sm">Enterprise Plan</span>
-                <span className="text-white text-sm font-bold">GHC 700/month</span>
+                <span className="text-white text-sm font-bold">GHC {prices.enterprise}/month</span>
               </div>
             </div>
           </div>

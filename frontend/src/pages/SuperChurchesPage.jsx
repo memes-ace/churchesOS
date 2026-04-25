@@ -29,13 +29,14 @@ const getSettings = () => {
   catch(e) { return {} }
 }
 
-const planConfig = {
-  free:       { label: 'Free',       bg: '#F3F4F6', text: '#6B7280',  price: 0 },
-  starter:    { label: 'Starter',    bg: '#DBEAFE', text: '#1E40AF',  price: 1800 },
-  growth:     { label: 'Growth',     bg: '#EDE9FE', text: '#5B21B6',  price: 5400 },
-  enterprise: { label: 'Enterprise', bg: '#FEF9C3', text: '#854D0E',  price: 10200 },
+const getPlans = (s) => ({
   trial:      { label: 'Trial',      bg: '#F3F4F6', text: '#6B7280',  price: 0 },
-}
+  free:       { label: 'Free',       bg: '#F3F4F6', text: '#6B7280',  price: 0 },
+  starter:    { label: 'Starter',    bg: '#DBEAFE', text: '#1E40AF',  price: Number(s?.starterPlan?.price || s?.starterPrice || 50) },
+  growth:     { label: 'Growth',     bg: '#EDE9FE', text: '#5B21B6',  price: Number(s?.growthPlan?.price || s?.growthPrice || 100) },
+  enterprise: { label: 'Enterprise', bg: '#FEF9C3', text: '#854D0E',  price: Number(s?.enterprisePlan?.price || s?.enterprisePrice || 200) },
+})
+
 
 const statusConfig = {
   active:    { label: 'Active',    bg: '#DCFCE7', text: '#166534' },
@@ -146,7 +147,7 @@ export default function SuperChurchesPage() {
   )
 
   const getStatus = (s) => statusConfig[s?.toLowerCase()] || { label: s || "Trial", bg: "#F3F4F6", text: "#6B7280" }
-  const getPlan = (p) => planConfig[p?.toLowerCase()] || { label: p || "Trial", bg: "#F3F4F6", text: "#6B7280", price: 0 }
+  const getPlan = (p) => getPlans(settings)[p?.toLowerCase()] || { label: p || "Trial", bg: "#F3F4F6", text: "#6B7280", price: 0 }
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">

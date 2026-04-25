@@ -30,9 +30,9 @@ const churches = []
 
 const planConfig = {
   Free: { bg: '#F3F4F6', text: '#6B7280', price: 0 },
-  Starter: { bg: '#DBEAFE', text: '#1E40AF', price: () => Number(getSettings().starterPrice || 1800) },
-  Growth: { bg: '#EDE9FE', text: '#5B21B6', price: () => Number(getSettings().growthPrice || 5400) },
-  Enterprise: { bg: '#FEF9C3', text: '#854D0E', price: () => Number(getSettings().enterprisePrice || 10200) },
+  Starter: { bg: '#DBEAFE', text: '#1E40AF', price: () => Number(getSettings().starterPrice || 50) },
+  Growth: { bg: '#EDE9FE', text: '#5B21B6', price: () => Number(getSettings().growthPrice || 100) },
+  Enterprise: { bg: '#FEF9C3', text: '#854D0E', price: () => Number(getSettings().enterprisePrice || 200) },
 }
 
 const statusConfig = {
@@ -442,7 +442,7 @@ export default function SuperAdminDashboard() {
                       <p className="text-sm font-bold" style={{ color: '#059669' }}>{GHC}{c.revenue.toLocaleString()}/mo</p>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-1.5">
-                      <div className="h-1.5 rounded-full" style={{ width: (c.revenue / 10200 * 100) + '%', background: '#1B4FD8' }}></div>
+                      <div className="h-1.5 rounded-full" style={{ width: (c.revenue / 200 * 100) + '%', background: '#1B4FD8' }}></div>
                     </div>
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: planConfig[c.plan]?.bg, color: planConfig[c.plan]?.text }}>{c.plan}</span>
@@ -462,15 +462,15 @@ export default function SuperAdminDashboard() {
                 memberLimit: (s.freePlan?.memberLimit || 100),
                 features: s.freePlan?.features || s.freePlanFeatures || ['Members', 'Attendance', 'Prayer Requests', 'Announcements'],
                 color: '#6B7280', bg: '#F3F4F6' },
-              { plan: 'Starter', price: Number(s.starterPlan?.price || s.starterPrice || 1800),
+              { plan: 'Starter', price: Number(s.starterPlan?.price || s.starterPrice || 50),
                 memberLimit: (s.starterPlan?.memberLimit || 500),
                 features: s.starterPlan?.features || s.starterPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Sermons', 'Visitors', 'Prayer Requests', 'Announcements'],
                 color: '#1B4FD8', bg: '#EEF2FF' },
-              { plan: 'Growth', price: Number(s.growthPlan?.price || s.growthPrice || 5400),
+              { plan: 'Growth', price: Number(s.growthPlan?.price || s.growthPrice || 100),
                 memberLimit: (s.growthPlan?.memberLimit || 2000),
                 features: s.growthPlan?.features || s.growthPlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Ministries', 'Cell Groups', 'Song Library', 'Reports'],
                 color: '#7C3AED', bg: '#EDE9FE' },
-              { plan: 'Enterprise', price: Number(s.enterprisePlan?.price || s.enterprisePrice || 10200),
+              { plan: 'Enterprise', price: Number(s.enterprisePlan?.price || s.enterprisePrice || 200),
                 memberLimit: (s.enterprisePlan?.memberLimit || 999999),
                 features: s.enterprisePlan?.features || s.enterprisePlanFeatures || ['Members', 'Attendance', 'Finance', 'Events', 'Communication', 'Sermons', 'Visitors', 'Prayer Requests', 'Ministries', 'Cell Groups', 'Counselling', 'Announcements', 'Volunteers', 'Marketplace', 'Song Library', 'Equipment', 'Purchases', 'Reports', 'Roles & Access'],
                 color: '#F59E0B', bg: '#FEF9C3' },
