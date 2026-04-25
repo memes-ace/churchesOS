@@ -23,7 +23,12 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.message || 'Invalid email or password')
+        const msg = data.message || 'Invalid email or password'
+        if (msg.toLowerCase().includes('suspended')) {
+          window.location.href = '/suspended'
+          return
+        }
+        setError(msg)
         setLoading(false)
         return
       }

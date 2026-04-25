@@ -71,6 +71,10 @@ export class AuthService implements OnModuleInit {
     if (user.church_id) {
       churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
     }
+    // Block suspended churches
+    if (user.role === 'church_admin' && churchData?.status === 'suspended') {
+      throw new UnauthorizedException('Your account has been suspended. Please contact ChurchesOS support.')
+    }
     // Block pending churches from accessing the system
     if (user.role === 'church_admin' && churchData?.status === 'pending') {
       return {
@@ -208,6 +212,10 @@ export class AuthService implements OnModuleInit {
     let churchData = null
     if (user.church_id) {
       churchData = await this.churchRepo.findOne({ where: { id: user.church_id } })
+    }
+    // Block suspended churches
+    if (user.role === 'church_admin' && churchData?.status === 'suspended') {
+      throw new UnauthorizedException('Your account has been suspended. Please contact ChurchesOS support.')
     }
     // Block pending churches from accessing the system
     if (user.role === 'church_admin' && churchData?.status === 'pending') {

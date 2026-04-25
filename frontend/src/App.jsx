@@ -22,6 +22,7 @@ import AnnouncementsPage from './pages/AnnouncementsPage'
 import VolunteersPage from './pages/VolunteersPage'
 import AiPage from './pages/AiPage'
 import PendingApprovalPage from './pages/PendingApprovalPage'
+import SuspendedPage from './pages/SuspendedPage'
 import LandingPage from './pages/LandingPage'
 import SongLibraryPage from './pages/SongLibraryPage'
 import EquipmentPage from './pages/EquipmentPage'
@@ -76,6 +77,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/vendor-apply" element={<VendorRegisterPage />} />
+          <Route path="/suspended" element={<SuspendedPage />} />
           <Route path="/pending" element={<PendingApprovalPage user={JSON.parse(localStorage.getItem('cos_user') || '{}')} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
