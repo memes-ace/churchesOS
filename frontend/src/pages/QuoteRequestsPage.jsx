@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Check, X, Clock, DollarSign, Eye, ChevronDown } from 'lucide-react'
-import { adminAPI } from '../utils/api'
+import { paymentsAPI } from '../utils/api'
 
 const statusConfig = {
   pending:  { bg: '#FEF9C3', text: '#854D0E', label: 'Pending' },
@@ -16,7 +16,7 @@ export default function QuoteRequestsPage() {
   const [actionLoading, setActionLoading] = useState(null)
 
   useEffect(() => {
-    adminAPI.getPayments()
+    paymentsAPI.getAll()
       .then(data => { if (Array.isArray(data)) setPayments(data) })
       .catch(e => console.warn('Payments load error:', e))
       .finally(() => setLoading(false))
@@ -25,7 +25,7 @@ export default function QuoteRequestsPage() {
   const handleApprove = async (id) => {
     setActionLoading(id)
     try {
-      await adminAPI.approvePayment(id)
+      await paymentsAPI.approve(id)
       setPayments(prev => prev.map(p => p.id === id ? { ...p, status: 'approved' } : p))
       if (selected?.id === id) setSelected(prev => ({ ...prev, status: 'approved' }))
     } catch(e) {
@@ -38,7 +38,7 @@ export default function QuoteRequestsPage() {
   const handleReject = async (id) => {
     setActionLoading(id)
     try {
-      await adminAPI.rejectPayment(id)
+      await paymentsAPI.reject(id)
       setPayments(prev => prev.map(p => p.id === id ? { ...p, status: 'rejected' } : p))
       if (selected?.id === id) setSelected(prev => ({ ...prev, status: 'rejected' }))
     } catch(e) {
