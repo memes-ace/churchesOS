@@ -1,6 +1,5 @@
 import { eventsAPI } from '../utils/api'
-import { useDB } from '../hooks/useDB'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Calendar, MapPin, Users, Edit } from 'lucide-react'
 
 const eventTypes = ['Sunday Service', 'Midweek Service', 'Crusade', 'Conference', 'Youth Program', 'Wedding', 'Funeral', 'Special Program', 'Fundraising', 'Retreat', 'Other']

@@ -1,5 +1,4 @@
 import { sermonsAPI } from '../utils/api'
-import { useDB } from '../hooks/useDB'
 import { useState, useEffect } from 'react'
 import { Plus, X, Save, Trash2, Upload, Play, Download, Edit } from 'lucide-react'
 
