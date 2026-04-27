@@ -691,9 +691,20 @@ export default function MinistriesPage() {
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ background: m.color + '15' }}>
                   {m.emoji}
                 </div>
-                <button onClick={() => setEditMinistry(m)} className="p-1.5 hover:bg-gray-100 rounded-lg transition">
-                  <Edit size={14} className="text-gray-400" />
-                </button>
+                <div className="flex gap-1">
+                  <button onClick={() => setEditMinistry(m)} className="p-1.5 hover:bg-gray-100 rounded-lg transition">
+                    <Edit size={14} className="text-gray-400" />
+                  </button>
+                  <button onClick={() => {
+                    if (window.confirm(`Delete "${m.name}"? This cannot be undone.`)) {
+                      ministriesAPI.delete(m.id)
+                        .then(() => setMinistries(prev => prev.filter(x => x.id !== m.id)))
+                        .catch(e => alert('Delete failed: ' + e.message))
+                    }
+                  }} className="p-1.5 hover:bg-red-50 rounded-lg transition">
+                    <Trash2 size={14} className="text-red-400" />
+                  </button>
+                </div>
               </div>
               <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Cormorant Garamond', fontSize: '18px' }}>{m.name}</h3>
               <p className="text-xs text-gray-400 mb-3 leading-relaxed">{m.description}</p>
