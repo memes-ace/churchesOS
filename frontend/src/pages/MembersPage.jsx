@@ -676,7 +676,7 @@ function AddMemberModal({ onClose, onSave }) {
           )}
         </div>
         <div className="p-5 border-t border-gray-100 flex-shrink-0">
-          <button onClick={() => { if(form.fullName) { onSave({ id: Date.now(), ...form }); onClose() } }}
+          <button onClick={() => { if(form.fullName) { onSave({ ...form }); onClose() } }}
             disabled={!form.fullName}
             className="w-full py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ background: '#1B4FD8' }}>
@@ -690,8 +690,6 @@ function AddMemberModal({ onClose, onSave }) {
 
 // ─── Main Members Page ─────────────────────────────────────────────────────────
 export default function MembersPage() {
-  const storageKey = 'cos_members'
-
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
 

@@ -112,7 +112,7 @@ export default function EquipmentPage() {
       }
     } catch(e) {
       if (selected) setReports(prev => prev.map(r => r.id === selected.id ? { ...r, ...form } : r))
-      else setReports(prev => [{ ...form, id: Date.now() }, ...prev])
+      console.warn('Equipment API failed')
     }
     setSelected(null); setShowAdd(false)
   }

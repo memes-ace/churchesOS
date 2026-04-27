@@ -120,7 +120,7 @@ export default function PurchasesPage() {
       }
     } catch(e) {
       if (selected) setPurchases(prev => prev.map(p => p.id === selected.id ? { ...p, ...form } : p))
-      else setPurchases(prev => [{ ...form, id: Date.now() }, ...prev])
+      console.warn('Purchases API failed')
     }
     setSelected(null); setShowAdd(false)
   }

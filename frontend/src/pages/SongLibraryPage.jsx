@@ -115,7 +115,7 @@ export default function SongLibraryPage() {
       }
     } catch(e) {
       if (selected) setSongs(prev => prev.map(s => s.id === selected.id ? { ...s, ...form } : s))
-      else setSongs(prev => [{ ...form, id: Date.now() }, ...prev])
+      console.warn('Song API failed')
     }
     setSelected(null); setShowAdd(false)
   }

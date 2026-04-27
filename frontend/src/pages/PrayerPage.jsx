@@ -40,7 +40,7 @@ export default function PrayerPage() {
       const saved = await prayerAPI.create(newRequest)
       save([saved, ...requests])
     } catch(e) {
-      save([{ ...newRequest, id: Date.now() }, ...requests])
+      console.warn('Prayer API failed - not saving fake data')
     }
     setForm({ name: '', request: '', anonymous: false })
     setShowAdd(false)
