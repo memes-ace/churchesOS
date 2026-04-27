@@ -73,18 +73,34 @@ function SermonModal({ sermon, onClose, onSave, onDelete }) {
 }
 
 export default function SermonsPage() {
-  const [sermons, setSermons] = useState(getSermons)
+  const [sermons, setSermons] = useState([])
   const [selected, setSelected] = useState(null)
+
+  useEffect(() => {
+    sermonsAPI.getAll()
+      .then(data => { if (Array.isArray(data)) setSermons(data) })
+      .catch(e => console.warn(e))
+  }, [])
   const [showAdd, setShowAdd] = useState(false)
   const [search, setSearch] = useState('')
 
-  const save = (list) => { setSermons(list);  }
-  const handleSave = (form) => {
-    if (selected) save(sermons.map(s => s.id === selected.id ? { ...s, ...form } : s))
-    else save([...sermons, { id: Date.now(), ...form, uploadedDate: new Date().toISOString() }])
+  const handleSave = async (form) => {
+    try {
+      if (selected) {
+        await sermonsAPI.update(selected.id, form)
+        setSermons(prev => prev.map(s => s.id === selected.id ? { ...s, ...form } : s))
+      } else {
+        const saved = await sermonsAPI.create({ ...form, uploadedDate: new Date().toISOString() })
+        setSermons(prev => [saved || { ...form, id: Date.now() }, ...prev])
+      }
+    } catch(e) { console.warn('Save failed:', e) }
     setSelected(null); setShowAdd(false)
   }
-  const handleDelete = (id) => { save(sermons.filter(s => s.id !== id)); setSelected(null) }
+  const handleDelete = async (id) => {
+    try { await sermonsAPI.delete(id) } catch(e) { console.warn(e) }
+    setSermons(prev => prev.filter(s => s.id !== id))
+    setSelected(null)
+  }
 
   const filtered = sermons.filter(s =>
     s.title?.toLowerCase().includes(search.toLowerCase()) ||

@@ -116,7 +116,7 @@ export default function CounsellingPage() {
       }
     } catch(e) {
       if (selected) setAppointments(prev => prev.map(a => a.id === selected.id ? { ...a, ...form } : a))
-      else setAppointments(prev => [{ ...form, id: Date.now() }, ...prev])
+      // API failed - don't add fake data
     }
     setSelected(null); setShowAdd(false)
   }

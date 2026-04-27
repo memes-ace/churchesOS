@@ -109,7 +109,7 @@ export default function AnnouncementsPage() {
       }
     } catch(e) {
       if (selected) setAnnouncements(prev => prev.map(a => a.id === selected.id ? { ...a, ...form } : a))
-      else setAnnouncements(prev => [{ ...form, id: Date.now(), created_at: new Date().toISOString() }, ...prev])
+      // API failed - don't add fake data
     }
     setSelected(null); setShowAdd(false)
   }

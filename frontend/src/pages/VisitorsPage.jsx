@@ -130,7 +130,7 @@ export default function VisitorsPage() {
       }
     } catch(e) {
       if (selected) setVisitors(prev => prev.map(v => v.id === selected.id ? { ...v, ...form } : v))
-      else setVisitors(prev => [{ ...form, id: Date.now() }, ...prev])
+      // API failed - don't add fake data
     }
     setSelected(null); setShowAdd(false)
   }
