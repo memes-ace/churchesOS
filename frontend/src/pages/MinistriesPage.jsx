@@ -621,7 +621,11 @@ function CreateMinistryModal({ onClose, onSave }) {
             </div>
           ))}
           <button
-            onClick={() => { if(form.name && form.leader) { onSave({ ...form, id: Date.now(), members: 0 }); onClose() } }}
+            onClick={async () => {
+              if(!form.name || !form.leader) return
+              await onSave(form)
+              onClose()
+            }}
             disabled={!form.name || !form.leader}
             className="w-full py-3 rounded-xl text-white text-sm font-medium disabled:opacity-50"
             style={{ background: '#1B4FD8' }}>
@@ -639,17 +643,15 @@ export default function MinistriesPage() {
 
   useEffect(() => {
     ministriesAPI.getAll().then(data => {
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         setMinistries(data.map(m => ({
           id: m.id, name: m.name, leader: m.leader || '', leaderPhone: m.leader_phone || '',
           members: 0, meetingDay: m.meeting_day || '', color: m.color || '#1B4FD8',
           emoji: m.emoji || '⛪', description: m.description || '',
         })))
-      } else {
-        // Load initial ministries if none in DB
-        setMinistries(initialMinistries)
       }
     }).catch(() => console.warn("Ministries API error"))
+    .finally(() => setLoadingMinistries(false))
   }, [])
   const [activeMinistry, setActiveMinistry] = useState(null)
   const [editMinistry, setEditMinistry] = useState(null)
@@ -723,15 +725,40 @@ export default function MinistriesPage() {
         <EditMinistryModal
           ministry={editMinistry}
           onClose={() => setEditMinistry(null)}
-          onSave={(updated) => {
-            setMinistries(prev => prev.map(m => m.id === updated.id ? updated : m))
+          onSave={async (updated) => {
+            try {
+              await ministriesAPI.update(updated.id, {
+                name: updated.name, leader: updated.leader,
+                leader_phone: updated.leaderPhone, meeting_day: updated.meetingDay,
+                description: updated.description, color: updated.color, emoji: updated.emoji
+              })
+              setMinistries(prev => prev.map(m => m.id === updated.id ? updated : m))
+              setEditMinistry(null)
+            } catch(e) { console.warn('Update failed:', e) }
           }}
         />
       )}
       {showCreate && (
         <CreateMinistryModal
           onClose={() => setShowCreate(false)}
-          onSave={(newM) => setMinistries(prev => [...prev, newM])}
+          onSave={async (form) => {
+            try {
+              const saved = await ministriesAPI.create({
+                name: form.name, leader: form.leader,
+                leader_phone: form.leaderPhone, meeting_day: form.meetingDay,
+                description: form.description, color: form.color, emoji: form.emoji
+              })
+              if (saved && saved.id) {
+                setMinistries(prev => [...prev, {
+                  id: saved.id, name: saved.name, leader: saved.leader || form.leader,
+                  leaderPhone: saved.leader_phone || form.leaderPhone,
+                  meetingDay: saved.meeting_day || form.meetingDay,
+                  description: saved.description || form.description,
+                  color: saved.color || form.color, emoji: saved.emoji || form.emoji, members: 0
+                }])
+              }
+            } catch(e) { console.warn('Create failed:', e) }
+          }}
         />
       )}
     </div>
