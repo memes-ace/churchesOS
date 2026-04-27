@@ -671,8 +671,6 @@ function CellGroupProfile({ cell, onBack, onEdit }) {
 
 // ─── Main Cell Groups Page ─────────────────────────────────────────────────────
 export default function CellGroupsPage() {
-  const mainKey = 'cos_cell_groups'
-
   const [cellGroups, setCellGroups] = useState([])
 
   useEffect(() => {
@@ -700,38 +698,51 @@ export default function CellGroupsPage() {
       .catch(e => console.warn('Cell groups load error:', e))
   }, [])
 
-  useEffect(() => {
-    cellGroupsAPI.getAll().then(data => {
-      if (Array.isArray(data)) setCellGroups(data.map(c => ({
-        id: c.id, name: c.name, cellGroupId: c.cell_group_id,
-        location: c.location, meetingAddress: c.meeting_address,
-        meetingDay: c.meeting_day, meetingTime: c.meeting_time,
-        leaderName: c.leader_name, leaderPhone: c.leader_phone,
-        leaderEmail: c.leader_email, assistantLeaderName: c.assistant_leader_name,
-        hostName: c.host_name, color: c.color || '#1B4FD8', dateCreated: c.date_created,
-      })))
-    }).catch(e => console.warn('Cell groups API error:', e.message))
-  }, [])
   const [activeCell, setActiveCell] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
   const [editCell, setEditCell] = useState(null)
 
-  const saveCellGroups = (list) => {
-    setCellGroups(list)
+  const mapCell = (c) => ({
+    id: c.id, name: c.name || '', cellGroupId: c.cell_group_id || '',
+    location: c.location || '', meetingAddress: c.meeting_address || '',
+    meetingDay: c.meeting_day || '', meetingTime: c.meeting_time || '',
+    leaderName: c.leader_name || '', leaderPhone: c.leader_phone || '',
+    leaderEmail: c.leader_email || '', assistantLeaderName: c.assistant_leader_name || '',
+    hostName: c.host_name || '', color: c.color || '#1B4FD8', dateCreated: c.date_created || '',
+  })
 
+  const handleCreate = async (form) => {
+    try {
+      const saved = await cellGroupsAPI.create({
+        name: form.name, cell_group_id: form.cellGroupId,
+        location: form.location, meeting_address: form.meetingAddress,
+        meeting_day: form.meetingDay, meeting_time: form.meetingTime,
+        leader_name: form.leaderName, leader_phone: form.leaderPhone,
+        leader_email: form.leaderEmail, assistant_leader_name: form.assistantLeaderName,
+        host_name: form.hostName, color: form.color, date_created: form.dateCreated,
+      })
+      if (saved?.id) setCellGroups(prev => [...prev, mapCell(saved)])
+    } catch(e) { console.warn('Create failed:', e) }
   }
 
-  const handleCreate = (form) => {
-    saveCellGroups([...cellGroups, { id: Date.now(), ...form }])
+  const handleEdit = async (form) => {
+    try {
+      await cellGroupsAPI.update(form.id, {
+        name: form.name, cell_group_id: form.cellGroupId,
+        location: form.location, meeting_address: form.meetingAddress,
+        meeting_day: form.meetingDay, meeting_time: form.meetingTime,
+        leader_name: form.leaderName, leader_phone: form.leaderPhone,
+        leader_email: form.leaderEmail, assistant_leader_name: form.assistantLeaderName,
+        host_name: form.hostName, color: form.color, date_created: form.dateCreated,
+      })
+      setCellGroups(prev => prev.map(c => c.id === form.id ? form : c))
+      if (activeCell?.id === form.id) setActiveCell(form)
+    } catch(e) { console.warn('Edit failed:', e) }
   }
 
-  const handleEdit = (form) => {
-    saveCellGroups(cellGroups.map(c => c.id === form.id ? form : c))
-    if (activeCell?.id === form.id) setActiveCell(form)
-  }
-
-  const handleDelete = (id) => {
-    saveCellGroups(cellGroups.filter(c => c.id !== id))
+  const handleDelete = async (id) => {
+    try { await cellGroupsAPI.delete(id) } catch(e) { console.warn('Delete failed:', e) }
+    setCellGroups(prev => prev.filter(c => c.id !== id))
     setActiveCell(null)
   }
 
